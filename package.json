@@ -10,6 +10,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "express": "^4.21.2",
+    "moment-timezone": "^0.5.46",
+    "morgan": "^1.10.0",
     "mysql": "^2.18.1"
   }
 }

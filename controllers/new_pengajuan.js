@@ -1,0 +1,273 @@
+const path = require("path");
+const { simpleExecute } = require("../services/db_e_approve");
+const fs = require('fs');
+// const path = required('path')
+
+exports.get_rekening = async (req, res) => {
+
+    console.log(req.query);
+
+    let xRes = [
+        {
+            REK_NAME : 'Aldi',
+            BANK_NAME : 'BCA',
+            REK_NUM : '1231231010',
+        },
+        {
+            REK_NAME : 'Suro',
+            BANK_NAME : 'BRI',
+            REK_NUM : '4591267584',
+        },
+        {
+            REK_NAME : 'Stuart',
+            BANK_NAME : 'Bank Sinarmas',
+            REK_NUM : '8478275619',
+        },
+    ] 
+
+    try {
+        return res.status(200).json({
+            isSuccess: true,
+            data: xRes
+        })
+    }
+    catch (e) {
+        console.error(e.message)
+        res.status(500).json({
+            isSuccess: false,
+            message: e.toString(),
+            data: null
+        })
+    }
+}
+
+
+
+exports.get_request_type = async (req, res) => {
+
+
+    try {
+        let q = `
+            select * from tf_eappr.tf_mst_type_request tmtr
+        `
+        let xRes = await simpleExecute(q);
+
+        console.log(xRes)
+
+        return res.status(200).json({
+            isSuccess: true,
+            data: xRes
+        })
+    }
+    catch (e) {
+        console.error(e.message)
+        res.status(500).json({
+            isSuccess: false,
+            message: e.toString(),
+            data: null
+        })
+    }
+}
+
+
+
+
+exports.get_pajak_type = async (req, res) => {
+
+
+    try {
+        // let q = `
+        //     select * from tf_eappr.tf_mst_type_request tmtr
+        // `
+        // let xRes = await simpleExecute(q);
+
+        xRes = [
+            {
+                PAJAK_CODE: 0,
+                PAJAK_NAME: 'PPN'
+            },
+            {
+                PAJAK_CODE: 1,
+                PAJAK_NAME: 'PPH'
+            },
+        ]
+
+        return res.status(200).json({
+            isSuccess: true,
+            data: xRes
+        })
+    }
+    catch (e) {
+        console.error(e.message)
+        res.status(500).json({
+            isSuccess: false,
+            message: e.toString(),
+            data: null
+        })
+    }
+}
+
+
+
+exports.new_pengajuan = async (req, res) => {
+    arr_pengajuan = req.body.data.pengajuan;
+    arr_komite = req.body.data.komite_approve;
+    user_data = req.body.user_data;
+    selected_file = req.body.file_data;
+
+    arr_files = [];
+
+
+    // console.log(arr_pengajuan);
+    // console.log(arr_komite);
+    // console.log(user_data);
+    // console.log(selected_file);
+
+    file_name = null;
+
+
+    // =======================================================================
+    // ============================= DATA CLEANING ===============================
+    // =======================================================================
+
+    arr_pengajuan.forEach(el => {
+        if (el['FILE_NAME'] != null) {
+
+            // // -----------------------------------------------------------------------
+            // // ------------ CHANGING THE FILE NAME WITH NIK AND TIMESTAMP ------------
+            // // -----------------------------------------------------------------------
+            
+            // const act_date = new Date();
+            // const dd = String(act_date.getDate()).padStart(2, '0'); 
+            // const mm = String(act_date.getMonth() + 1).padStart(2, '0'); 
+            // const yy = String(act_date.getFullYear()).slice(-2); 
+            // const hh = String(act_date.getHours()).padStart(2, '0'); 
+            // const minutes = String(act_date.getMinutes()).padStart(2, '0'); 
+            // const ss = String(act_date.getSeconds()).padStart(2, '0'); 
+
+            // const newFileName = `${user_data['empl_code']}_${dd}${mm}${yy}_${hh}${minutes}${ss}`;
+            // console.log(newFileName);
+        }
+        //
+        delete el['FILE_']
+    });
+
+    arr_komite.forEach(el => {
+        delete el['empl_name'];
+        delete el['function_name'];
+        delete el['office_code'];
+        delete el['office_name'];
+    });
+
+    let arr_pengajuan_str = JSON.stringify(arr_pengajuan);
+    let arr_komite_str = JSON.stringify(arr_komite);
+
+
+
+    // // =======================================================================
+    // // ============================= INSERT TO DB ===============================
+    // // =======================================================================
+
+    // let q = `
+    //     SET @result = '';
+    //     CALL P_INSERT_REQUEST('${user_data['office_code']}', '${user_data['empl_code']}', '${user_data['pengajuan_type']}', 
+    //                                                 '${arr_pengajuan_str}',
+    //                                                 '${arr_komite_str}',
+    //                                                 @result
+    //                                                 );
+    //     SELECT @result AS PESAN;
+    // `
+
+    // let xRes = await simpleExecute(q);
+    // let res_msg = xRes.flat().find(item => item?.PESAN)?.PESAN || "No PESAN found";
+
+
+
+
+
+
+
+
+
+    // =======================================================================
+    // ===================== HANDLING THE FILE UPLOAD =======================
+    // =======================================================================
+
+    if(arr_pengajuan[0]['FILE_NAME'] != null){
+
+
+
+        // -----------------------------------------------------------------------
+        // ---------------------- GETTING THE FILE EXTENSION ----------------------
+        // -----------------------------------------------------------------------
+
+        file_ext_name = selected_file['file_base64'].split(';')[0].split('/')[1];
+        // console.log(file_ext_name);
+
+
+
+        // -----------------------------------------------------------------------
+        // ------------ CHANGING THE FILE NAME WITH NIK AND TIMESTAMP ------------
+        // -----------------------------------------------------------------------
+        
+        const act_date = new Date();
+        const dd = String(act_date.getDate()).padStart(2, '0'); 
+        const mm = String(act_date.getMonth() + 1).padStart(2, '0'); 
+        const yy = String(act_date.getFullYear()).slice(-2); 
+        const hh = String(act_date.getHours()).padStart(2, '0'); 
+        const minutes = String(act_date.getMinutes()).padStart(2, '0'); 
+        const ss = String(act_date.getSeconds()).padStart(2, '0'); 
+
+        const newFileName = `${user_data['empl_code']}_${user_data['office_code']}_${dd}${mm}${yy}_${hh}${minutes}${ss}.${file_ext_name}`;
+        console.log(newFileName);
+
+
+
+        // ---------------------------------------------------------------------------------------------
+        // ---------------------------------------------------------------------------------------------
+        // ---------------------------------- NOTE TO FUTURE ASS SELF ----------------------------------
+        // ---------------------------------------------------------------------------------------------
+        // ---- BEFORE WRITING THE FILE TO DISK, SPLIT THE CONVERTED BASE64 STRING BY COMMAS, THEN -----
+        // ---- SELECT THE SECOND ELEMENT. CUS THATS THE REAL FILE, THE FIRST ELEMENT IS THE HEADER ---- 
+        // ---- DO IT LIKE WE DID BELOW. --------------------------------------------------------------- 
+        // ---------------------------------------------------------------------------------------------
+        // ---------------------------------------------------------------------------------------------
+
+        
+        let fileStorage_path = path.join(__dirname, '..', 'file_storage', 'file_pengajuan')
+        let fileData =  selected_file['file_base64'].split(',')[1]
+        const binary_data = Buffer.from(fileData, 'base64')
+    
+        // console.log(fileData);
+    
+        fs.writeFile(fileStorage_path + '/' + newFileName, binary_data, function (err) {
+            if (err) {
+                console.log(err)
+            }
+            console.log('file saved')
+        })
+
+    }
+    
+
+
+    // ============================================================
+
+
+    try {
+        return res.json({
+            isSuccess: false,
+            message: 'success_test',
+            data: null
+        })
+    }
+    catch (e) {
+        console.error(e.message)
+        res.status(500).json({
+            isSuccess: false,
+            message: e.toString(),
+            data: null
+        })
+    }
+}
+ 

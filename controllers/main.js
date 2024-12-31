@@ -4,120 +4,60 @@ const fs = require('fs');
 // const path = required('path')
 
 exports.login_main = async (req, res) => {
-
-    console.log(req);
-
+    console.log(req.query)
+    usn = req.query.usn;
+    pwd = req.query.pwd;
+    
     try {
-        return res.json({
-            message: 'test'
-        })
-    }
-    catch (e) {
-        console.error(e.message)
-        res.status(500).json({
-            isSuccess: false,
-            message: e.toString(),
-            data: null
-        })
-    }
-}
+        var q = `
+            select fme.*, fmo.NAME_SHORT, fmo.NAME_FULL, hmjc.JOB_DESCRIPTION from tf_absensi.fs_mst_employees fme 
+            join tf_absensi.fs_mst_offices fmo on fmo.OFFICE_CODE = fme.EMPL_BRANCH 
+            join tf_absensi.hr_mst_job_codes hmjc on fme.EMPL_JOB = hmjc.JOB_CODE 
+            WHERE fme.EMPL_CODE = '${usn}'
+        `
+        xRes = await simpleExecute(q)
 
+        // console.log(xRes[0]['EMPL_BRANCH']);
+    
 
-exports.new_pengajuan = async (req, res) => {
-    arr_pengajuan = req.body.data.pengajuan;
-    arr_komite = req.body.data.komite_approve;
-    user_data = req.body.user_data;
+        // ------------------------------------------------------------------
+        // ------------- IF DATA IS LESS THAN 1 OR 0 OR NOT EXIST -------------
+        // ------------------------------------------------------------------
 
-    arr_files = [];
-
-
-    // console.log(arr_pengajuan);
-    // console.log(arr_komite);
-    console.log(user_data);
-
-
-
-
-
-    // =======================================================================
-    // ============================= DATA CLEANING ===============================
-    // =======================================================================
-
-    arr_pengajuan.forEach(el => {
-        // console.log(el['FILE_NAME']);
-        if (el['FILE_NAME'] != null) {
-            obj = {
-                FILE_NAME: el['FILE_NAME'],
-                FILE_: el['FILE_'],
-            }
-            arr_files.push(obj);
+        if(xRes.length == 0 ){
+            return res.json({
+                isSuccess: false,
+                message: 'Username tidak terdaftar',
+                data: null
+            })
         }
-        delete el['FILE_']
-    });
-
-    arr_komite.forEach(el => {
-        delete el['empl_name'];
-        delete el['function_name'];
-        delete el['office_code'];
-        delete el['office_name'];
-    });
-
-    let arr_pengajuan_str = JSON.stringify(arr_pengajuan);
-    let arr_komite_str = JSON.stringify(arr_komite);
 
 
+        // ------------------------------------------------------------------
+        // ------------------------ SEARCH THE PASSWORD ------------------------
+        // ------------------------------------------------------------------
 
-    // =======================================================================
-    // ============================= INSERT TO DB ===============================
-    // =======================================================================
+        tmp_pwd = `Uat${xRes[0]['EMPL_CODE']}`
+        if(pwd != tmp_pwd){
+            return res.json({
+                isSuccess: false,
+                message: 'Username atau password salah',
+                data: null
+            })
+        }
+    
+    
+        // xRes = {
+        //     empl_name: 'Muhammad Ramzy',
+        //     empl_code: '71005122',
+        //     empl_jobcode: 'IT',
+        //     office_name: 'Depok',
+        // }
 
-    let q = `
-        SET @result = '';
-        CALL P_INSERT_REQUEST('${user_data['office_code']}', '${user_data['empl_code']}', '${user_data['pengajuan_type']}', 
-                                                    '${arr_pengajuan_str}',
-                                                    '${arr_komite_str}',
-                                                    @result
-                                                    );
-        SELECT @result AS PESAN;
-    `
-
-    let xRes = await simpleExecute(q);
-    let res_msg = xRes.flat().find(item => item?.PESAN)?.PESAN || "No PESAN found";
-
-
-
-
-
-
-
-
-
-    // =======================================================================
-    // ===================== HANDLING THE FILE UPLOADING =======================
-    // =======================================================================
-
-    // arr_pengajuan.forEach(el => {
-    //     // console.log(el.FILE_NAME)
-    // });
-
-    // let fileStorage_path = path.join(__dirname, '..', 'file_storage', 'file_pengajuan')
-    // let fileData = arr_pengajuan[0]['FILE_'].split(',')[1]
-    // const binary_data = Buffer.from(fileData, 'base64')
-
-    // console.log(fileData);
-
-    // fs.writeFile(fileStorage_path + '/asd.jpg', binary_data, function (err) {
-    //     if (err) {
-    //         console.log(err)
-    //     }
-    //     console.log('file saved')
-    // })
-
-
-
-    try {
         return res.json({
-            message: 'test'
+            isSuccess: true,
+            message: 'success',
+            data: xRes
         })
     }
     catch (e) {
@@ -129,6 +69,8 @@ exports.new_pengajuan = async (req, res) => {
         })
     }
 }
+
+
 
 
 exports.test = async (req, res) => {
