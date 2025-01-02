@@ -117,7 +117,6 @@ exports.new_pengajuan = async (req, res) => {
 
     arr_files = [];
 
-
     // console.log(arr_pengajuan);
     // console.log(arr_komite);
     // console.log(user_data);
@@ -131,24 +130,6 @@ exports.new_pengajuan = async (req, res) => {
     // =======================================================================
 
     arr_pengajuan.forEach(el => {
-        if (el['FILE_NAME'] != null) {
-
-            // // -----------------------------------------------------------------------
-            // // ------------ CHANGING THE FILE NAME WITH NIK AND TIMESTAMP ------------
-            // // -----------------------------------------------------------------------
-            
-            // const act_date = new Date();
-            // const dd = String(act_date.getDate()).padStart(2, '0'); 
-            // const mm = String(act_date.getMonth() + 1).padStart(2, '0'); 
-            // const yy = String(act_date.getFullYear()).slice(-2); 
-            // const hh = String(act_date.getHours()).padStart(2, '0'); 
-            // const minutes = String(act_date.getMinutes()).padStart(2, '0'); 
-            // const ss = String(act_date.getSeconds()).padStart(2, '0'); 
-
-            // const newFileName = `${user_data['empl_code']}_${dd}${mm}${yy}_${hh}${minutes}${ss}`;
-            // console.log(newFileName);
-        }
-        //
         delete el['FILE_']
     });
 
@@ -164,22 +145,22 @@ exports.new_pengajuan = async (req, res) => {
 
 
 
-    // // =======================================================================
-    // // ============================= INSERT TO DB ===============================
-    // // =======================================================================
+    // =======================================================================
+    // ============================= INSERT TO DB ===============================
+    // =======================================================================
 
-    // let q = `
-    //     SET @result = '';
-    //     CALL P_INSERT_REQUEST('${user_data['office_code']}', '${user_data['empl_code']}', '${user_data['pengajuan_type']}', 
-    //                                                 '${arr_pengajuan_str}',
-    //                                                 '${arr_komite_str}',
-    //                                                 @result
-    //                                                 );
-    //     SELECT @result AS PESAN;
-    // `
+    let q = `
+        SET @result = '';
+        CALL P_INSERT_REQUEST('${user_data['office_code']}', '${user_data['empl_code']}', '${user_data['pengajuan_type']}', 
+                                                    '${arr_pengajuan_str}',
+                                                    '${arr_komite_str}',
+                                                    @result
+                                                    );
+        SELECT @result AS PESAN;
+    `
 
-    // let xRes = await simpleExecute(q);
-    // let res_msg = xRes.flat().find(item => item?.PESAN)?.PESAN || "No PESAN found";
+    let xRes = await simpleExecute(q);
+    let res_msg = xRes.flat().find(item => item?.PESAN)?.PESAN || "No PESAN found";
 
 
 
@@ -233,7 +214,7 @@ exports.new_pengajuan = async (req, res) => {
         // ---------------------------------------------------------------------------------------------
         // ---------------------------------------------------------------------------------------------
 
-        
+
         let fileStorage_path = path.join(__dirname, '..', 'file_storage', 'file_pengajuan')
         let fileData =  selected_file['file_base64'].split(',')[1]
         const binary_data = Buffer.from(fileData, 'base64')
@@ -250,9 +231,9 @@ exports.new_pengajuan = async (req, res) => {
     }
     
 
-
-    // ============================================================
-
+    // =======================================================================
+    // =======================================================================
+    // =======================================================================
 
     try {
         return res.json({
