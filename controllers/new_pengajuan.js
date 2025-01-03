@@ -3,6 +3,12 @@ const { simpleExecute } = require("../services/db_e_approve");
 const fs = require('fs');
 // const path = required('path')
 
+
+// =======================================================================
+// ============================= GETTING DATA ===============================
+// =======================================================================
+
+
 exports.get_rekening = async (req, res) => {
 
     console.log(req.query);
@@ -52,7 +58,137 @@ exports.get_request_type = async (req, res) => {
         `
         let xRes = await simpleExecute(q);
 
-        console.log(xRes)
+        // console.log(xRes)
+
+        return res.status(200).json({
+            isSuccess: true,
+            data: xRes
+        })
+    }
+    catch (e) {
+        console.error(e.message)
+        res.status(500).json({
+            isSuccess: false,
+            message: e.toString(),
+            data: null
+        })
+    }
+}
+
+
+
+exports.get_appr_person = async (req, res) => {
+
+    console.log(req.query);
+
+    empl_branch = req.query['EMPL_BRANCH'];
+    empl_job = req.query['ACT_JOB'];
+    empl_subarea = req.query['empl_subarea'];
+
+
+    try {
+        let q = `
+            select * from tf_eappr.tf_list_user_approve_v tluav 
+                where 
+                    empl_branch = '${empl_branch}'
+                    and personal_subarea = '${empl_subarea}'
+                    and job_name = '${empl_job}'
+            order by job_name 
+        `
+
+        // console.log(q)
+
+        // let q = `
+        //     select distinct personal_subarea, empl_branch, cabang from hr_join_office_v where empl_branch = ${empl_branch} order by cabang
+        // `
+
+        let xRes = await simpleExecute(q);
+
+        // console.log(xRes)
+
+        return res.status(200).json({
+            isSuccess: true,
+            data: xRes
+        })
+    }
+    catch (e) {
+        console.error(e.message)
+        res.status(500).json({
+            isSuccess: false,
+            message: e.toString(),
+            data: null
+        })
+    }
+}
+
+
+
+exports.get_appr_subarea = async (req, res) => {
+
+    empl_branch = req.query.empl_branch
+    empl_subarea = req.query.empl_subarea
+
+    try {
+        let q = `
+            select distinct personal_subarea, job_name from tf_eappr.tf_list_user_approve_v tluav 
+            where 
+                empl_branch = '${empl_branch}'
+                and personal_subarea = '${empl_subarea}'
+                and job_name is not null
+            order by job_name 
+        `
+        console.log(q);
+        let xRes = await simpleExecute(q);
+
+        // console.log(xRes)
+
+        return res.status(200).json({
+            isSuccess: true,
+            data: xRes
+        })
+    }
+    catch (e) {
+        console.error(e.message)
+        res.status(500).json({
+            isSuccess: false,
+            message: e.toString(),
+            data: null
+        })
+    }
+}
+
+
+
+
+exports.get_user_cabang = async (req, res) => {
+    empl_branch = req.query.data
+
+    const f_cabangPusat = () => {
+        if(empl_branch != 100){
+            return `
+                select distinct (personal_subarea), empl_branch, cabang from hr_join_office_v 
+                where empl_branch in ('${empl_branch}','100')
+            `
+        }else{
+            return `
+                select distinct (personal_subarea), empl_branch, cabang from hr_join_office_v 
+                where empl_branch = '100'
+                UNION all
+                select * from (
+                    select distinct (personal_subarea), empl_branch, cabang from hr_join_office_v 
+                    where empl_branch != '100'
+                    order by cabang 
+                ) t2
+            `
+        }
+    }
+    
+    try {
+        let q = f_cabangPusat();
+
+        let xRes = await simpleExecute(q);
+
+        // console.log(xRes)
 
         return res.status(200).json({
             isSuccess: true,
@@ -131,6 +267,7 @@ exports.new_pengajuan = async (req, res) => {
 
     arr_pengajuan.forEach(el => {
         delete el['FILE_']
+        delete el['bind_calc']
     });
 
     arr_komite.forEach(el => {
@@ -139,6 +276,9 @@ exports.new_pengajuan = async (req, res) => {
         delete el['office_code'];
         delete el['office_name'];
     });
+
+    console.log(arr_pengajuan)
+    console.log(arr_komite)
 
     let arr_pengajuan_str = JSON.stringify(arr_pengajuan);
     let arr_komite_str = JSON.stringify(arr_komite);
@@ -161,12 +301,6 @@ exports.new_pengajuan = async (req, res) => {
 
     let xRes = await simpleExecute(q);
     let res_msg = xRes.flat().find(item => item?.PESAN)?.PESAN || "No PESAN found";
-
-
-
-
-
-
 
 
 
@@ -225,9 +359,7 @@ exports.new_pengajuan = async (req, res) => {
             if (err) {
                 console.log(err)
             }
-            console.log('file saved')
         })
-
     }
     
 
