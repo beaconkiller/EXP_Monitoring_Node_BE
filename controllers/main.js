@@ -10,9 +10,11 @@ exports.login_main = async (req, res) => {
     
     try {
         var q = `
-            select fme.*, fmo.NAME_SHORT, fmo.NAME_FULL, hmjc.JOB_DESCRIPTION from tf_absensi.fs_mst_employees fme 
+            select fme.*, fmo.NAME_SHORT, fmo.NAME_FULL, hmjc.JOB_DESCRIPTION,
+            (select PERSONAL_SUBAREA from tf_mst_division  where personal_number = fme.empl_code) as personal_subarea
+            from tf_absensi.fs_mst_employees fme 
             join tf_absensi.fs_mst_offices fmo on fmo.OFFICE_CODE = fme.EMPL_BRANCH 
-            join tf_absensi.hr_mst_job_codes hmjc on fme.EMPL_JOB = hmjc.JOB_CODE 
+            join tf_absensi.hr_mst_job_codes hmjc on fme.EMPL_JOB = hmjc.JOB_CODE
             WHERE fme.EMPL_CODE = '${usn}'
         `
         xRes = await simpleExecute(q)

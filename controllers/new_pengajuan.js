@@ -90,8 +90,7 @@ exports.get_appr_person = async (req, res) => {
         let q = `
             select * from tf_eappr.tf_list_user_approve_v tluav 
                 where 
-                    empl_branch = '${empl_branch}'
-                    and personal_subarea = '${empl_subarea}'
+                    personal_subarea = '${empl_subarea}'
                     and job_name = '${empl_job}'
             order by job_name 
         `
@@ -132,8 +131,8 @@ exports.get_appr_subarea = async (req, res) => {
         let q = `
             select distinct personal_subarea, job_name from tf_eappr.tf_list_user_approve_v tluav 
             where 
-                empl_branch = '${empl_branch}'
-                and personal_subarea = '${empl_subarea}'
+                -- empl_branch = '${empl_branch}'
+                personal_subarea = '${empl_subarea}'
                 and job_name is not null
             order by job_name 
         `
@@ -161,21 +160,30 @@ exports.get_appr_subarea = async (req, res) => {
 
 
 exports.get_user_cabang = async (req, res) => {
-    empl_branch = req.query.data
+    empl_branch = req.query.EMPL_BRANCH;
+    personal_subarea = req.query.personal_subarea;
+
+    // console.log(req.query)
+    // console.log([
+    //     empl_branch,
+    //     personal_subarea,
+    // ])
 
     const f_cabangPusat = () => {
         if(empl_branch != 100){
             return `
-                select distinct (personal_subarea), empl_branch, cabang from hr_join_office_v 
-                where empl_branch in ('${empl_branch}','100')
+            select distinct (personal_subarea), (empl_branch), (cabang)  from hr_join_office_v 
+            where 
+                personal_subarea in ("${personal_subarea}","T001")
+                and empl_branch in("${empl_branch}", "100")
             `
         }else{
             return `
-                select distinct (personal_subarea), empl_branch, cabang from hr_join_office_v 
+                select distinct (personal_subarea), cabang from hr_join_office_v 
                 where empl_branch = '100'
                 UNION all
                 select * from (
-                    select distinct (personal_subarea), empl_branch, cabang from hr_join_office_v 
+                    select distinct (personal_subarea), cabang from hr_join_office_v 
                     where empl_branch != '100'
                     order by cabang 
                 ) t2
@@ -185,6 +193,8 @@ exports.get_user_cabang = async (req, res) => {
     
     try {
         let q = f_cabangPusat();
+
+        console.log(q);
 
         let xRes = await simpleExecute(q);
 
@@ -259,119 +269,130 @@ exports.new_pengajuan = async (req, res) => {
     // console.log(selected_file);
 
     file_name = null;
+    
+    try {
 
+        // =======================================================================
+        // ============================= DATA CLEANING ===============================
+        // =======================================================================
 
-    // =======================================================================
-    // ============================= DATA CLEANING ===============================
-    // =======================================================================
-
-    arr_pengajuan.forEach(el => {
-        delete el['FILE_']
-        delete el['bind_calc']
-    });
-
-    arr_komite.forEach(el => {
-        delete el['empl_name'];
-        delete el['function_name'];
-        delete el['office_code'];
-        delete el['office_name'];
-    });
-
-    console.log(arr_pengajuan)
-    console.log(arr_komite)
-
-    let arr_pengajuan_str = JSON.stringify(arr_pengajuan);
-    let arr_komite_str = JSON.stringify(arr_komite);
-
-
-
-    // =======================================================================
-    // ============================= INSERT TO DB ===============================
-    // =======================================================================
-
-    let q = `
-        SET @result = '';
-        CALL P_INSERT_REQUEST('${user_data['office_code']}', '${user_data['empl_code']}', '${user_data['pengajuan_type']}', 
-                                                    '${arr_pengajuan_str}',
-                                                    '${arr_komite_str}',
-                                                    @result
-                                                    );
-        SELECT @result AS PESAN;
-    `
-
-    let xRes = await simpleExecute(q);
-    let res_msg = xRes.flat().find(item => item?.PESAN)?.PESAN || "No PESAN found";
-
-
-
-    // =======================================================================
-    // ===================== HANDLING THE FILE UPLOAD =======================
-    // =======================================================================
-
-    if(arr_pengajuan[0]['FILE_NAME'] != null){
-
-
-
-        // -----------------------------------------------------------------------
-        // ---------------------- GETTING THE FILE EXTENSION ----------------------
-        // -----------------------------------------------------------------------
-
-        file_ext_name = selected_file['file_base64'].split(';')[0].split('/')[1];
-        // console.log(file_ext_name);
-
-
-
-        // -----------------------------------------------------------------------
-        // ------------ CHANGING THE FILE NAME WITH NIK AND TIMESTAMP ------------
-        // -----------------------------------------------------------------------
-        
-        const act_date = new Date();
-        const dd = String(act_date.getDate()).padStart(2, '0'); 
-        const mm = String(act_date.getMonth() + 1).padStart(2, '0'); 
-        const yy = String(act_date.getFullYear()).slice(-2); 
-        const hh = String(act_date.getHours()).padStart(2, '0'); 
-        const minutes = String(act_date.getMinutes()).padStart(2, '0'); 
-        const ss = String(act_date.getSeconds()).padStart(2, '0'); 
-
-        const newFileName = `${user_data['empl_code']}_${user_data['office_code']}_${dd}${mm}${yy}_${hh}${minutes}${ss}.${file_ext_name}`;
+        let newFileName = await change_file_name();
         console.log(newFileName);
 
+        arr_pengajuan.forEach(el => {
+            delete el['FILE_']
+            delete el['bind_calc']
+            el['FILE_NAME'] = newFileName;
+        });
 
 
-        // ---------------------------------------------------------------------------------------------
-        // ---------------------------------------------------------------------------------------------
-        // ---------------------------------- NOTE TO FUTURE ASS SELF ----------------------------------
-        // ---------------------------------------------------------------------------------------------
-        // ---- BEFORE WRITING THE FILE TO DISK, SPLIT THE CONVERTED BASE64 STRING BY COMMAS, THEN -----
-        // ---- SELECT THE SECOND ELEMENT. CUS THATS THE REAL FILE, THE FIRST ELEMENT IS THE HEADER ---- 
-        // ---- DO IT LIKE WE DID BELOW. --------------------------------------------------------------- 
-        // ---------------------------------------------------------------------------------------------
-        // ---------------------------------------------------------------------------------------------
+        arr_komite.forEach(el => {
+            delete el['empl_name'];
+            delete el['function_name'];
+            delete el['office_code'];
+            delete el['office_name'];
+            
+        });
+
+        // console.log(arr_pengajuan)
+        // console.log(arr_komite)
+
+        let arr_pengajuan_str = JSON.stringify(arr_pengajuan);
+        let arr_komite_str = JSON.stringify(arr_komite);
 
 
-        let fileStorage_path = path.join(__dirname, '..', 'file_storage', 'file_pengajuan')
-        let fileData =  selected_file['file_base64'].split(',')[1]
-        const binary_data = Buffer.from(fileData, 'base64')
-    
-        // console.log(fileData);
-    
-        fs.writeFile(fileStorage_path + '/' + newFileName, binary_data, function (err) {
-            if (err) {
-                console.log(err)
-            }
-        })
-    }
-    
 
-    // =======================================================================
-    // =======================================================================
-    // =======================================================================
+        // =======================================================================
+        // ============================= INSERT TO DB ===============================
+        // =======================================================================
 
-    try {
+        let q = `
+            SET @result = '';
+            CALL P_INSERT_REQUEST(
+                '${user_data['office_code']}', 
+                '${user_data['empl_code']}', 
+                '${user_data['pengajuan_type']}', 
+                '${arr_pengajuan_str}',
+                '${arr_komite_str}',
+                @result
+            );
+            SELECT @result AS PESAN;
+        `
+
+        // console.log(q);
+
+        let xRes = await simpleExecute(q);
+        let res_msg = xRes.flat().find(item => item?.PESAN)?.PESAN || "No PESAN found";
+
+
+
+        // =======================================================================
+        // ===================== HANDLING THE FILE UPLOAD =======================
+        // =======================================================================
+
+        if(arr_pengajuan[0]['FILE_NAME'] != null){
+
+            // -----------------------------------------------------------------------
+            // ---------------------- GETTING THE FILE EXTENSION ----------------------
+            // -----------------------------------------------------------------------
+
+            file_ext_name = selected_file['file_base64'].split(';')[0].split('/')[1];
+            // console.log(file_ext_name);
+
+
+
+            // -----------------------------------------------------------------------
+            // ------------ CHANGING THE FILE NAME WITH NIK ANDs TIMESTAMP ------------
+            // -----------------------------------------------------------------------
+            
+            const act_date = new Date();
+            const dd = String(act_date.getDate()).padStart(2, '0'); 
+            const mm = String(act_date.getMonth() + 1).padStart(2, '0'); 
+            const yy = String(act_date.getFullYear()).slice(-2); 
+            const hh = String(act_date.getHours()).padStart(2, '0'); 
+            const minutes = String(act_date.getMinutes()).padStart(2, '0'); 
+            const ss = String(act_date.getSeconds()).padStart(2, '0'); 
+
+            const newFileName = `${user_data['empl_code']}_${user_data['office_code']}_${dd}${mm}${yy}_${hh}${minutes}${ss}.${file_ext_name}`;
+            console.log(newFileName);
+
+
+            // -----------------------------------------------------------------------------
+            // ------------ PUTTING THE NEW FILE NAME IN THE DATA WE'RE INSERTING ------------
+            // -----------------------------------------------------------------------------
+
+
+            
+
+
+            // ---------------------------------------------------------------------------------------------
+            // ---------------------------------------------------------------------------------------------
+            // ---------------------------------- NOTE TO FUTURE ASS SELF ----------------------------------
+            // ---------------------------------------------------------------------------------------------
+            // ---- BEFORE WRITING THE FILE TO DISK, SPLIT THE CONVERTED BASE64 STRING BY COMMAS, THEN -----
+            // ---- SELECT THE SECOND ELEMENT. CUS THATS THE REAL FILE, THE FIRST ELEMENT IS THE HEADER ---- 
+            // ---- DO IT LIKE WE DID BELOW. --------------------------------------------------------------- 
+            // ---------------------------------------------------------------------------------------------
+            // ---------------------------------------------------------------------------------------------
+
+
+            let fileStorage_path = path.join(__dirname, '..', 'file_storage', 'file_pengajuan')
+            let fileData =  selected_file['file_base64'].split(',')[1]
+            const binary_data = Buffer.from(fileData, 'base64')
+        
+            // console.log(fileData);
+        
+            fs.writeFile(fileStorage_path + '/' + newFileName, binary_data, function (err) {
+                if (err) {
+                    console.log(err)
+                }
+            })
+        }
+
         return res.json({
-            isSuccess: false,
-            message: 'success_test',
-            data: null
+            isSuccess: true,
+            message: res_msg,
+            data: res_msg
         })
     }
     catch (e) {
@@ -384,3 +405,32 @@ exports.new_pengajuan = async (req, res) => {
     }
 }
  
+
+
+change_file_name = async() => {
+    // -----------------------------------------------------------------------
+    // ---------------------- GETTING THE FILE EXTENSION ----------------------
+    // -----------------------------------------------------------------------
+
+    file_ext_name = selected_file['file_base64'].split(';')[0].split('/')[1];
+    // console.log(file_ext_name);
+
+
+
+    // -----------------------------------------------------------------------
+    // ------------ CHANGING THE FILE NAME WITH NIK ANDs TIMESTAMP ------------
+    // -----------------------------------------------------------------------
+    
+    const act_date = new Date();
+    const dd = String(act_date.getDate()).padStart(2, '0'); 
+    const mm = String(act_date.getMonth() + 1).padStart(2, '0'); 
+    const yy = String(act_date.getFullYear()).slice(-2); 
+    const hh = String(act_date.getHours()).padStart(2, '0'); 
+    const minutes = String(act_date.getMinutes()).padStart(2, '0'); 
+    const ss = String(act_date.getSeconds()).padStart(2, '0'); 
+
+    const newFileName = `${user_data['empl_code']}_${user_data['office_code']}_${dd}${mm}${yy}_${hh}${minutes}${ss}.${file_ext_name}`;
+
+    return newFileName;
+
+}
