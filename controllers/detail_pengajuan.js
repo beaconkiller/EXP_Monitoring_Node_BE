@@ -49,10 +49,11 @@ exports.get_approval_data = async (req, res) => {
 
     try {
         let q = `
-            select * from tf_eappr.tf_trn_approve_fppu ttaf 
+            select ttaf.*, tluav.empl_name, tluav.job_name, tluav.cabang  from tf_eappr.tf_trn_approve_fppu ttaf 
+            left join 
+                tf_eappr.tf_list_user_approve_v tluav on tluav.empl_code = ttaf.EMPL_CODE 
             where REQUEST_ID = '${req_id}'
-            order by LVL desc ;
-            ;
+            order by LVL asc
         `
 
         let xRes = await simpleExecute(q);

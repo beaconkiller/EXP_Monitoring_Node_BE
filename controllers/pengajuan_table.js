@@ -58,6 +58,67 @@ exports.get_table_data = async (req, res) => {
 
 
 
+exports.get_table_data_approval = async (req, res) => {
+    user_dtl = JSON.parse(req.query.user_dtl)
+    empl_code = user_dtl['EMPL_CODE'];
+    q_page = parseInt(req.query.q_page)
+
+    // console.log(empl_code);
+
+    f_paging = () => {
+        let limit = 8
+        let offset = (q_page-1) * limit
+        return [limit, offset]
+    }
+
+    try {
+        var q = `
+            SELECT ttfh.*, hjov.cabang, appr.*
+            FROM tf_eappr.tf_trn_fppu_hdrs ttfh
+            JOIN (
+                select distinct empl_branch, cabang, personal_subarea 
+                from hr_join_office_v hjov 
+            ) hjov ON ttfh.BRANCH_CODE = hjov.empl_branch
+            left join (
+                select REQUEST_ID, STATUS, EMPL_CODE from tf_eappr.tf_trn_approve_fppu ttaf 
+                where 
+                    EMPL_CODE = '${empl_code}'
+            ) appr on appr.REQUEST_ID = ttfh.REQUEST_ID 
+            where 
+                appr.EMPL_CODE = '${empl_code}'
+            ORDER BY ttfh.CREATED_DATE desc
+            
+            LIMIT ${f_paging()[0]}
+            OFFSET ${f_paging()[1]}
+        `
+        console.log(q);
+
+        xRes = await simpleExecute(q);
+        // console.log(xRes);
+
+
+        return res.json({
+            isSuccess: true,
+            message: 'success',
+            data: xRes
+        })
+
+
+
+
+    }
+    catch (e) {
+        console.error(e.message)
+        res.status(500).json({
+            isSuccess: false,
+            message: e.toString(),
+            data: null
+        })
+    }
+}
+
+
+
 
 exports.test = async (req, res) => {
 
