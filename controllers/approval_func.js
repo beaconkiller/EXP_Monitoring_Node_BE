@@ -48,11 +48,13 @@ exports.approval_approve = async (req, res) => {
             })
         }
 
+        // ===========================================================================
+        // ========================= SAVING THE SIGNATURE FILE ========================
+        // ===========================================================================
     
         save_file(FILE_DATA, FILE_NAME);
 
         
-
         return res.status(200).json({
             isSuccess: true,
             data: res_msg
@@ -76,7 +78,7 @@ save_file = (file_data, file_name) => {
     // ---------------------------------------------------------------------------------------------
     // ---------------------------------- NOTE TO FUTURE ASS SELF ----------------------------------
     // ---------------------------------------------------------------------------------------------
-    // ---- BEFORE WRITING THE FILE TO DISK, SPLIT THE CONVERTED BASE64 STRING BY COMMAS, THEN -----
+    // ----- BEFORE WRITING THE FILE TO DISK, SPLIT THE CONVERTED BASE64 STRING BY COMMA, THEN -----
     // ---- SELECT THE SECOND ELEMENT. CUS THATS THE REAL FILE, THE FIRST ELEMENT IS THE HEADER ---- 
     // ---- DO IT LIKE WE DID BELOW. --------------------------------------------------------------- 
     // ---------------------------------------------------------------------------------------------
@@ -84,8 +86,8 @@ save_file = (file_data, file_name) => {
 
 
     let fileStorage_path = path.join(__dirname, '..', 'file_storage', 'ttd_approval')
-    let fileData =  file_data
-    const binary_data = Buffer.from(fileData, 'base64')
+    let fileData =  file_data;
+    const binary_data = Buffer.from(fileData, 'base64');
 
     // console.log(fileData);
 

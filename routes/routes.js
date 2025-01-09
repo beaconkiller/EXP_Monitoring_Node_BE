@@ -24,6 +24,8 @@ router.route('/get_table_data_approval').get(pengajuan_table.get_table_data_appr
 router.route('/get_detail_pengajuan_item').get(detail_pengajuan.get_detail_pengajuan_item)
 router.route('/get_file_data').get(detail_pengajuan.get_file_data)
 router.route('/get_approval_data').get(detail_pengajuan.get_approval_data)
+router.route('/get_sig_img_data').get(detail_pengajuan.get_sig_img_data)
+
 
 router.route('/approval_approve').post(approval_func.approval_approve)
 

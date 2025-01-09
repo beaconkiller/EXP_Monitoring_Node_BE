@@ -27,7 +27,7 @@ exports.get_table_data = async (req, res) => {
             where 
                 CREATED_BY = '${empl_code}'
 
-            ORDER BY ttfh.CREATED_DATE desc
+            ORDER BY ttfh.CREATED_DATE desc, ttfh.REQUEST_ID desc
             LIMIT ${f_paging()[0]}
             OFFSET ${f_paging()[1]}
         `
@@ -73,24 +73,52 @@ exports.get_table_data_approval = async (req, res) => {
 
     try {
         var q = `
-            SELECT ttfh.*, hjov.cabang, appr.*
-            FROM tf_eappr.tf_trn_fppu_hdrs ttfh
-            JOIN (
-                select distinct empl_branch, cabang, personal_subarea 
-                from hr_join_office_v hjov 
-            ) hjov ON ttfh.BRANCH_CODE = hjov.empl_branch
-            left join (
-                select REQUEST_ID, STATUS, EMPL_CODE from tf_eappr.tf_trn_approve_fppu ttaf 
+            select ttfh.*, ta.LVL, ta.EMPL_CODE, ta.STATUS, ta.EMPL_NAME  from tf_trn_fppu_hdrs ttfh 
+            join (
+                select 
+                    ttaf.REQUEST_ID, 
+                    ttaf.EMPL_CODE, 
+                    ttaf.LVL, 
+                    ttaf.STATUS, 
+                    tlav.empl_name  
+                from tf_eappr.tf_trn_approve_fppu ttaf 
+                join tf_list_approve_v tlav on tlav.empl_code = ttaf.EMPL_CODE 
                 where 
-                    EMPL_CODE = '${empl_code}'
-            ) appr on appr.REQUEST_ID = ttfh.REQUEST_ID 
-            where 
-                appr.EMPL_CODE = '${empl_code}'
+                    ttaf.LVL = (
+                        select MIN(LVL) from tf_eappr.tf_trn_approve_fppu ttaf2 
+                        where 
+                            ttaf2.REQUEST_ID = ttaf.REQUEST_ID 
+                            and
+                            STATUS is null
+                    ) 
+            ) ta on ta.REQUEST_ID = ttfh.REQUEST_ID 
+            where ta.EMPL_CODE = '${empl_code}'
             ORDER BY ttfh.CREATED_DATE desc
             
             LIMIT ${f_paging()[0]}
             OFFSET ${f_paging()[1]}
         `
+
+        // var q = `
+        //     SELECT ttfh.*, hjov.cabang, appr.*
+        //     FROM tf_eappr.tf_trn_fppu_hdrs ttfh
+        //     JOIN (
+        //         select distinct empl_branch, cabang, personal_subarea 
+        //         from hr_join_office_v hjov 
+        //     ) hjov ON ttfh.BRANCH_CODE = hjov.empl_branch
+        //     left join (
+        //         select REQUEST_ID, STATUS, EMPL_CODE from tf_eappr.tf_trn_approve_fppu ttaf 
+        //         where 
+        //             EMPL_CODE = '${empl_code}'
+        //     ) appr on appr.REQUEST_ID = ttfh.REQUEST_ID 
+        //     where 
+        //         appr.EMPL_CODE = '${empl_code}'
+        //     ORDER BY ttfh.CREATED_DATE desc
+            
+        //     LIMIT ${f_paging()[0]}
+        //     OFFSET ${f_paging()[1]}
+        // `
+
         console.log(q);
 
         xRes = await simpleExecute(q);

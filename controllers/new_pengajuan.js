@@ -31,10 +31,23 @@ exports.get_rekening = async (req, res) => {
         },
     ] 
 
+
+    arr_filtered = () => {
+        new_arr = [];
+
+        xRes.forEach(el => {
+            new_str = `${el['BANK_NAME']} - ${el['REK_NAME']} - ${el['REK_NUM']}`
+            new_arr.push(new_str)
+        });
+
+        return new_arr;
+    }
+
+
     try {
         return res.status(200).json({
             isSuccess: true,
-            data: xRes
+            data: arr_filtered()
         })
     }
     catch (e) {
@@ -136,7 +149,7 @@ exports.get_appr_subarea = async (req, res) => {
                 and job_name is not null
             order by job_name 
         `
-        console.log(q);
+        // console.log(q);
         let xRes = await simpleExecute(q);
 
         // console.log(xRes)
@@ -172,19 +185,19 @@ exports.get_user_cabang = async (req, res) => {
     const f_cabangPusat = () => {
         if(empl_branch != 100){
             return `
-            select distinct (personal_subarea), (empl_branch), (cabang)  from hr_join_office_v 
+            select distinct (personal_subarea), (cabang)  from hr_join_office_v 
             where 
                 personal_subarea in ("${personal_subarea}","T001")
-                and empl_branch in("${empl_branch}", "100")
+                -- and empl_branch in("${empl_branch}", "200")
             `
         }else{
             return `
                 select distinct (personal_subarea), cabang from hr_join_office_v 
-                where empl_branch = '100'
+                where empl_branch = '200'
                 UNION all
                 select * from (
                     select distinct (personal_subarea), cabang from hr_join_office_v 
-                    where empl_branch != '100'
+                    where empl_branch != '200'
                     order by cabang 
                 ) t2
             `
@@ -194,7 +207,7 @@ exports.get_user_cabang = async (req, res) => {
     try {
         let q = f_cabangPusat();
 
-        console.log(q);
+        // console.log(q);
 
         let xRes = await simpleExecute(q);
 
@@ -256,6 +269,7 @@ exports.get_pajak_type = async (req, res) => {
 
 
 exports.new_pengajuan = async (req, res) => {
+    console.log('===== new_pengajuan =====')
     arr_pengajuan = req.body.data.pengajuan;
     arr_komite = req.body.data.komite_approve;
     user_data = req.body.user_data;
@@ -263,10 +277,12 @@ exports.new_pengajuan = async (req, res) => {
 
     arr_files = [];
 
-    // console.log(arr_pengajuan);
+    console.log(arr_pengajuan);
     // console.log(arr_komite);
     // console.log(user_data);
     // console.log(selected_file);
+
+
 
     file_name = null;
     
@@ -276,7 +292,11 @@ exports.new_pengajuan = async (req, res) => {
         // ============================= DATA CLEANING ===============================
         // =======================================================================
 
-        let newFileName = await change_file_name();
+        let newFileName = '';
+        if(arr_pengajuan['FILE_NAME'] != undefined || arr_pengajuan['FILE_NAME'] != null){
+            newFileName = await change_file_name();
+        }
+
         console.log(newFileName);
 
         arr_pengajuan.forEach(el => {
@@ -330,7 +350,7 @@ exports.new_pengajuan = async (req, res) => {
         // ===================== HANDLING THE FILE UPLOAD =======================
         // =======================================================================
 
-        if(arr_pengajuan[0]['FILE_NAME'] != null){
+        if(arr_pengajuan[0]['FILE_NAME']){
 
             // -----------------------------------------------------------------------
             // ---------------------- GETTING THE FILE EXTENSION ----------------------
@@ -403,6 +423,15 @@ exports.new_pengajuan = async (req, res) => {
             data: null
         })
     }
+
+
+    return res.json({
+        isSuccess: true,
+        message: 'res_msg',
+        data: 'res_msg'
+    })
+
+
 }
  
 
