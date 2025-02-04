@@ -17,9 +17,10 @@ exports.login_main = async (req, res) => {
             join tf_absensi.hr_mst_job_codes hmjc on fme.EMPL_JOB = hmjc.JOB_CODE
             WHERE fme.EMPL_CODE = '${usn}'
         `
-        xRes = await simpleExecute(q)
 
-        // console.log(xRes[0]['EMPL_BRANCH']);
+        var xRes = await simpleExecute(q)
+
+        console.log(xRes[0]['EMPL_BRANCH']);
     
 
         // ------------------------------------------------------------------

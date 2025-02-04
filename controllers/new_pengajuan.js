@@ -270,34 +270,34 @@ exports.get_pajak_type = async (req, res) => {
 
 exports.new_pengajuan = async (req, res) => {
     console.log('===== new_pengajuan =====')
-    arr_pengajuan = req.body.data.pengajuan;
-    arr_komite = req.body.data.komite_approve;
-    user_data = req.body.user_data;
-    selected_file = req.body.file_data;
+    let arr_pengajuan = req.body.data.pengajuan;
+    let arr_komite = req.body.data.komite_approve;
+    let user_data = req.body.user_data;
+    let selected_file = req.body.file_data;
+    let file_name = selected_file['file_name'];
 
     arr_files = [];
 
-    console.log(arr_pengajuan);
+    // console.log(arr_pengajuan);
     // console.log(arr_komite);
-    // console.log(user_data);
     // console.log(selected_file);
+    // console.log("file_name");
+    // console.log(file_name);
 
 
 
-    file_name = null;
     
     try {
 
         // =======================================================================
         // ============================= DATA CLEANING ===============================
         // =======================================================================
-
+        
         let newFileName = '';
-        if(arr_pengajuan['FILE_NAME'] != undefined || arr_pengajuan['FILE_NAME'] != null){
-            newFileName = await change_file_name();
+        if(file_name.length > 0){
+            console.log('there is file')
+            newFileName = await change_file_name(selected_file,user_data);
         }
-
-        console.log(newFileName);
 
         arr_pengajuan.forEach(el => {
             delete el['FILE_']
@@ -320,6 +320,11 @@ exports.new_pengajuan = async (req, res) => {
         let arr_pengajuan_str = JSON.stringify(arr_pengajuan);
         let arr_komite_str = JSON.stringify(arr_komite);
 
+
+        // console.log('================');
+        // console.log(JSON.stringify(arr_pengajuan_str[0]));
+        // console.log('================');
+        // console.log(arr_pengajuan_str);
 
 
         // =======================================================================
@@ -350,13 +355,13 @@ exports.new_pengajuan = async (req, res) => {
         // ===================== HANDLING THE FILE UPLOAD =======================
         // =======================================================================
 
-        if(arr_pengajuan[0]['FILE_NAME']){
+        if(file_name.length > 0){
 
             // -----------------------------------------------------------------------
             // ---------------------- GETTING THE FILE EXTENSION ----------------------
             // -----------------------------------------------------------------------
 
-            file_ext_name = selected_file['file_base64'].split(';')[0].split('/')[1];
+            let file_ext_name = selected_file['file_base64'].split(';')[0].split('/')[1];
             // console.log(file_ext_name);
 
 
@@ -374,7 +379,7 @@ exports.new_pengajuan = async (req, res) => {
             const ss = String(act_date.getSeconds()).padStart(2, '0'); 
 
             const newFileName = `${user_data['empl_code']}_${user_data['office_code']}_${dd}${mm}${yy}_${hh}${minutes}${ss}.${file_ext_name}`;
-            console.log(newFileName);
+            // console.log(newFileName);
 
 
             // -----------------------------------------------------------------------------
@@ -427,39 +432,80 @@ exports.new_pengajuan = async (req, res) => {
 
     return res.json({
         isSuccess: true,
-        message: 'res_msg',
-        data: 'res_msg'
+        message: 'success',
+        data: 'success'
     })
 
 
 }
+
+
+exports.get_newest_pengajuan = async (req, res) => {
+    console.log('\n ========== get_newest_pengajuan ========== \n')
+    empl_code = req.query['EMPL_CODE']
+
+    try {
+        let q = `
+            select * from tf_eappr.tf_trn_fppu_hdrs ttfh 
+            where 
+                CREATED_BY = '${empl_code}'
+            order by ttfh.CREATED_DATE desc , ttfh.REQUEST_ID desc
+            limit 0,1
+        `
+        let xRes = await simpleExecute(q);
+
+        console.log(xRes)
+
+        return res.status(200).json({
+            isSuccess: true,
+            data: xRes
+        })
+    }
+    catch (e) {
+        console.error(e.message)
+        res.status(500).json({
+            isSuccess: false,
+            message: e.toString(),
+            data: null
+        })
+    }
+}
+
+
  
 
 
-change_file_name = async() => {
-    // -----------------------------------------------------------------------
-    // ---------------------- GETTING THE FILE EXTENSION ----------------------
-    // -----------------------------------------------------------------------
+change_file_name = async(selected_file, user_data) => {
 
-    file_ext_name = selected_file['file_base64'].split(';')[0].split('/')[1];
-    // console.log(file_ext_name);
-
-
-
-    // -----------------------------------------------------------------------
-    // ------------ CHANGING THE FILE NAME WITH NIK ANDs TIMESTAMP ------------
-    // -----------------------------------------------------------------------
+    try {
+        // -----------------------------------------------------------------------
+        // ---------------------- GETTING THE FILE EXTENSION ----------------------
+        // -----------------------------------------------------------------------
     
-    const act_date = new Date();
-    const dd = String(act_date.getDate()).padStart(2, '0'); 
-    const mm = String(act_date.getMonth() + 1).padStart(2, '0'); 
-    const yy = String(act_date.getFullYear()).slice(-2); 
-    const hh = String(act_date.getHours()).padStart(2, '0'); 
-    const minutes = String(act_date.getMinutes()).padStart(2, '0'); 
-    const ss = String(act_date.getSeconds()).padStart(2, '0'); 
+        file_ext_name = selected_file['file_base64'].split(';')[0].split('/')[1];
+        console.log(file_ext_name);
+        
+    
+    
+        // -----------------------------------------------------------------------
+        // ------------ CHANGING THE FILE NAME WITH NIK ANDs TIMESTAMP ------------
+        // -----------------------------------------------------------------------
+        
+        const act_date = new Date();
+        const dd = String(act_date.getDate()).padStart(2, '0'); 
+        const mm = String(act_date.getMonth() + 1).padStart(2, '0'); 
+        const yy = String(act_date.getFullYear()).slice(-2); 
+        const hh = String(act_date.getHours()).padStart(2, '0'); 
+        const minutes = String(act_date.getMinutes()).padStart(2, '0'); 
+        const ss = String(act_date.getSeconds()).padStart(2, '0'); 
+    
+        const newFileName = `${user_data['empl_code']}_${user_data['office_code']}_${dd}${mm}${yy}_${hh}${minutes}${ss}.${file_ext_name}`;
+    
+        return newFileName;
+        
+    } catch (error) {
+        console.log(error);
+    }
 
-    const newFileName = `${user_data['empl_code']}_${user_data['office_code']}_${dd}${mm}${yy}_${hh}${minutes}${ss}.${file_ext_name}`;
-
-    return newFileName;
 
 }

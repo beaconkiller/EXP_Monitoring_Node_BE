@@ -18,12 +18,27 @@ exports.get_table_data = async (req, res) => {
 
     try {
         var q = `
-            SELECT ttfh.*, hjov.cabang
-            FROM tf_eappr.tf_trn_fppu_hdrs ttfh
-            JOIN (
-                select distinct empl_branch, cabang, personal_subarea 
-                from hr_join_office_v hjov 
-            ) hjov ON ttfh.BRANCH_CODE = hjov.empl_branch
+            select * from (
+                select ttfh.*, ta.LVL, ta.EMPL_CODE as EMPL_CODE_ON_HAND, ta.EMPL_NAME as EMPL_NAME_ON_HAND  from tf_trn_fppu_hdrs ttfh 
+                join (
+                    select 
+                        ttaf.REQUEST_ID, 
+                        ttaf.EMPL_CODE, 
+                        ttaf.LVL, 
+                        ttaf.STATUS, 
+                        tlav.empl_name  
+                    from tf_eappr.tf_trn_approve_fppu ttaf 
+                    join tf_list_approve_v tlav on tlav.empl_code = ttaf.EMPL_CODE 
+                    where 
+                        ttaf.LVL = (
+                            select MIN(LVL) from tf_eappr.tf_trn_approve_fppu ttaf2 
+                            where 
+                                ttaf2.REQUEST_ID = ttaf.REQUEST_ID 
+                                and
+                                STATUS is null
+                        ) 
+                ) ta on ta.REQUEST_ID = ttfh.REQUEST_ID
+            ) tbl_fin
             where 
                 CREATED_BY = '${empl_code}'
 

@@ -86,9 +86,18 @@ exports.get_approval_data = async (req, res) => {
 
 
 exports.get_file_data = async (req, res) => {
-    console.log('get_file_data')
+    console.log('get_file_data');
     console.log(req.query);
     req_id = req.query.req_id;
+
+
+    // test = {
+    //     test : 'null',
+    //     test2 : null
+    // }
+
+
+    // console.log(JSON.stringify(test))
 
     try {
 
@@ -96,6 +105,11 @@ exports.get_file_data = async (req, res) => {
         // ===================== GETTING THE FILE NAME ====================
         // ===============================================================
         
+
+        file_data = {
+            file_name : '',
+            file_data : ''
+        }
 
         let q = `
             select ttfd.* from tf_eappr.tf_trn_fppu_dtls ttfd
@@ -108,7 +122,30 @@ exports.get_file_data = async (req, res) => {
 
         let xRes = await simpleExecute(q);
 
-        file_name = xRes[0]['FILE_NAME'];
+
+        // ================================================================
+        // ============ IF FILE NAME IS NULL, OR NOT EXIST ================
+        // ================================================================
+        
+        let file_name = xRes[0]['FILE_NAME'];
+
+        console.log("xRes");
+        console.log(xRes[0]);
+        console.log(xRes[0]['FILE_NAME']);
+
+
+
+        if(xRes[0]['FILE_NAME'].length == 0){
+            return res.status(200).json({
+                isSuccess: true,
+                data: {
+                    file_name : '',
+                    file_data : ''
+                }
+            })    
+        }
+
+        file_data.file_name = xRes[0]['FILE_NAME'];
         file_path = path.join(__dirname,'..','file_storage','file_pengajuan',file_name)
 
 
@@ -190,7 +227,6 @@ exports.get_sig_img_data = async (req, res) => {
         }
 
         
-
         return res.status(200).json({
             isSuccess: true,
             data: {
