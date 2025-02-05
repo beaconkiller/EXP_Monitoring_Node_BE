@@ -1,6 +1,8 @@
 const path = require("path");
 const { simpleExecute } = require("../services/db_e_approve");
 const fs = require('fs');
+const f_helper = require('./f_helper')
+
 // const path = required('path')
 
 
@@ -269,15 +271,17 @@ exports.get_pajak_type = async (req, res) => {
 
 
 exports.new_pengajuan = async (req, res) => {
-    console.log('===== new_pengajuan =====')
+    console.log('\n ===== new_pengajuan ===== \n')
     let arr_pengajuan = req.body.data.pengajuan;
     let arr_komite = req.body.data.komite_approve;
     let user_data = req.body.user_data;
     let selected_file = req.body.file_data;
     let file_name = selected_file['file_name'];
+    let base64_sig_data = user_data['base64_sig_data'];
 
     arr_files = [];
 
+    // console.log(user_data);
     // console.log(arr_pengajuan);
     // console.log(arr_komite);
     // console.log(selected_file);
@@ -339,6 +343,7 @@ exports.new_pengajuan = async (req, res) => {
                 '${user_data['pengajuan_type']}', 
                 '${arr_pengajuan_str}',
                 '${arr_komite_str}',
+                '${get_ttd_filename(base64_sig_data, user_data)}',
                 @result
             );
             SELECT @result AS PESAN;
@@ -378,7 +383,7 @@ exports.new_pengajuan = async (req, res) => {
             const minutes = String(act_date.getMinutes()).padStart(2, '0'); 
             const ss = String(act_date.getSeconds()).padStart(2, '0'); 
 
-            const newFileName = `${user_data['empl_code']}_${user_data['office_code']}_${dd}${mm}${yy}_${hh}${minutes}${ss}.${file_ext_name}`;
+            const newFileName = `${user_data['empl_code']}_${user_data['office_code']}_${f_helper.get_timestamp_string()}`;
             // console.log(newFileName);
 
 
@@ -386,33 +391,14 @@ exports.new_pengajuan = async (req, res) => {
             // ------------ PUTTING THE NEW FILE NAME IN THE DATA WE'RE INSERTING ------------
             // -----------------------------------------------------------------------------
 
-
-            
-
-
-            // ---------------------------------------------------------------------------------------------
-            // ---------------------------------------------------------------------------------------------
-            // ---------------------------------- NOTE TO FUTURE ASS SELF ----------------------------------
-            // ---------------------------------------------------------------------------------------------
-            // ---- BEFORE WRITING THE FILE TO DISK, SPLIT THE CONVERTED BASE64 STRING BY COMMAS, THEN -----
-            // ---- SELECT THE SECOND ELEMENT. CUS THATS THE REAL FILE, THE FIRST ELEMENT IS THE HEADER ---- 
-            // ---- DO IT LIKE WE DID BELOW. --------------------------------------------------------------- 
-            // ---------------------------------------------------------------------------------------------
-            // ---------------------------------------------------------------------------------------------
-
-
-            let fileStorage_path = path.join(__dirname, '..', 'file_storage', 'file_pengajuan')
-            let fileData =  selected_file['file_base64'].split(',')[1]
-            const binary_data = Buffer.from(fileData, 'base64')
-        
-            // console.log(fileData);
-        
-            fs.writeFile(fileStorage_path + '/' + newFileName, binary_data, function (err) {
-                if (err) {
-                    console.log(err)
-                }
-            })
+            let fileStorage_path = path.join(__dirname, '..', 'file_storage', 'file_pengajuan')        
+            await f_helper.file_upload(newFileName, selected_file['file_base64'], fileStorage_path)
         }
+
+        let file_path = path.join(__dirname, '..', 'file_storage', 'ttd_approval');
+        console.log('\n file upload \n');
+        await f_helper.file_upload(get_ttd_filename(base64_sig_data, user_data), base64_sig_data, file_path);
+        
 
         return res.json({
             isSuccess: true,
@@ -437,6 +423,25 @@ exports.new_pengajuan = async (req, res) => {
     })
 
 
+}
+
+
+
+get_ttd_filename = (base64_sig_data,user_data) => {
+    file_ext_str = base64_sig_data.split(',')[0].split(';')[0].split('/')[1];
+
+    const act_date = new Date();
+    const dd = String(act_date.getDate()).padStart(2, '0'); 
+    const mm = String(act_date.getMonth() + 1).padStart(2, '0'); 
+    const yy = String(act_date.getFullYear()).slice(-2); 
+    const hh = String(act_date.getHours()).padStart(2, '0'); 
+    const minutes = String(act_date.getMinutes()).padStart(2, '0'); 
+    const ss = String(act_date.getSeconds()).padStart(2, '0');    
+
+    
+    file_name_str = `TTD_${user_data['empl_code']}_${dd}${mm}${yy}_${hh}${minutes}${ss}.${file_ext_str}`
+
+    return file_name_str;
 }
 
 

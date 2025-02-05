@@ -1,6 +1,8 @@
 const path = require("path");
 const { simpleExecute } = require("../services/db_e_approve");
 const fs = require('fs');
+// const sendMail = require('../controllers/f_mailer')
+const sendMail = require('./f_mailer')
 
 
 // =======================================================================
@@ -47,6 +49,10 @@ exports.get_approval_data = async (req, res) => {
     console.log("get_approval_data")
     console.log(req.query);
     req_id = req.query.req_id;
+
+
+    sendMail.sendMail();
+
 
     try {
         let q = `
