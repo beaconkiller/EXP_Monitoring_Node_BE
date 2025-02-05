@@ -4,16 +4,28 @@ const fs = require('fs');
 // const path = required('path')
 
 exports.get_table_data = async (req, res) => {
-    user_dtl = JSON.parse(req.query.user_dtl)
-    empl_code = user_dtl['EMPL_CODE'];
-    q_page = parseInt(req.query.q_page)
+    let user_dtl = JSON.parse(req.query.user_dtl)
+    let empl_code = user_dtl['EMPL_CODE'];
+    let q_page = parseInt(req.query.q_page)
+    let q_search = req.query.q_search
 
-    // console.log(empl_code);
-
+    
     f_paging = () => {
         let limit = 8
         let offset = (q_page-1) * limit
         return [limit, offset]
+    }
+
+    f_search = () => {
+        if(q_search.length == 0){
+            return ``;
+        }else{
+            return `
+            -- Con Search
+            and KATEGORI_REQUEST like '%${q_search}%'
+            -- Con Search
+            `
+        }
     }
 
     try {
@@ -41,6 +53,7 @@ exports.get_table_data = async (req, res) => {
             ) tbl_fin
             where 
                 CREATED_BY = '${empl_code}'
+                ${f_search()}
 
             ORDER BY ttfh.CREATED_DATE desc, ttfh.REQUEST_ID desc
             LIMIT ${f_paging()[0]}
