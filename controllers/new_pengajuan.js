@@ -31,6 +31,11 @@ exports.get_rekening = async (req, res) => {
             BANK_NAME : 'Bank Sinarmas',
             REK_NUM : '8478275619',
         },
+        {
+            REK_NAME : 'Doni',
+            BANK_NAME : 'BRI',
+            REK_NUM : '8478745619',
+        },
     ] 
 
 
@@ -383,7 +388,7 @@ exports.new_pengajuan = async (req, res) => {
             const minutes = String(act_date.getMinutes()).padStart(2, '0'); 
             const ss = String(act_date.getSeconds()).padStart(2, '0'); 
 
-            const newFileName = `${user_data['empl_code']}_${user_data['office_code']}_${f_helper.get_timestamp_string()}`;
+            const newFileName = `${user_data['empl_code']}_${user_data['office_code']}_${f_helper.get_timestamp_string()}.${file_ext_name}`;
             // console.log(newFileName);
 
 

@@ -21,7 +21,7 @@ exports.get_table_data = async (req, res) => {
             return ``;
         }else{
             return `
-            -- Con Search
+            -- Con Search // BISA ADA BISA GAADA
             and KATEGORI_REQUEST like '%${q_search}%'
             -- Con Search
             `
@@ -46,8 +46,8 @@ exports.get_table_data = async (req, res) => {
                             select MIN(LVL) from tf_eappr.tf_trn_approve_fppu ttaf2 
                             where 
                                 ttaf2.REQUEST_ID = ttaf.REQUEST_ID 
-                                and
-                                STATUS is null
+                                -- and
+                                -- STATUS is null
                         ) 
                 ) ta on ta.REQUEST_ID = ttfh.REQUEST_ID
             ) tbl_fin

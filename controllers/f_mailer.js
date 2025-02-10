@@ -1,10 +1,40 @@
 var nodeMailer = require('nodemailer');
 
-exports.sendMail = async() => {
-    console.log("\n ============= SENDMAIL ============= \n")
-    
-    mail_id = process.env.MAIL_ID;
-    mail_pw = process.env.MAIL_PW;
+exports.sendMail = async(mail_to, str) => {
+    // console.log("\n ============= SENDMAIL ============= \n")
 
-    console.log(nodeMailer);
+    if(mail_to != null || mail_to != undefined){
+        try {
+            mail_id = process.env.MAIL_ID;
+            mail_pw = process.env.MAIL_PW;
+        
+            const transporter = nodeMailer.createTransport({
+                service: 'gmail',
+                host: 'smtp.gmail.com',
+                port: 465,
+                secure: true,
+                auth: {
+                    user: mail_id,
+                    pass: 'rdhv zlbl hvno hefx'
+                },
+               });        
+              
+            var mailOptions = {
+                from: mail_id,
+                to: mail_to,
+                subject: 'EApproval - Mail Notifications',
+                text: str
+            };
+              
+            transporter.sendMail(mailOptions, function(error, info){
+                if (error) {
+                    console.log(error);
+                } else {
+                    console.log('Email sent: ' + info.response);
+                }
+            });
+        } catch (error) {
+            console.log(error)
+        }
+    }
 }

@@ -54,6 +54,13 @@ exports.approval_approve = async (req, res) => {
     
         save_file(FILE_DATA, FILE_NAME);
 
+
+
+        // ===========================================================================
+        // =================== SEND EMAIL TO NEXT APPROVAL COMMITTEE  ==================
+        // ===========================================================================
+
+
         
         return res.status(200).json({
             isSuccess: true,

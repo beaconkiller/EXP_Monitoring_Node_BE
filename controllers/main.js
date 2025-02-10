@@ -19,8 +19,6 @@ exports.login_main = async (req, res) => {
         `
 
         var xRes = await simpleExecute(q)
-
-        console.log(xRes[0]['EMPL_BRANCH']);
     
 
         // ------------------------------------------------------------------
