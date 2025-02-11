@@ -45,7 +45,7 @@ function initialize() {
             next();
         });
 
-        app.use('/api', routes)
+        app.use('/api-eappr', routes)
 
         httpServer.on('error', onError);
         httpServer.listen(webServerConfig.port, err => {

@@ -6,9 +6,15 @@ const pengajuan_table = require('../controllers/pengajuan_table')
 const detail_pengajuan = require('../controllers/detail_pengajuan')
 const approval_func = require('../controllers/approval_func')
 const revisi_pengajuan = require('../controllers/revisi_pengajuan')
+const crypt = require('../middleware/mobile/crypt')
+const auth = require('../controllers/mobile/v1/auth')
+
+const mobile = require('../routes/mobile/v1/mobile_routes')
 
 
 router.route('/login_main').get(main.login_main);
+
+router.use('/mobile/v1/', mobile);
 
 
 router.route('/get_rekening').get(new_pengajuan.get_rekening);
