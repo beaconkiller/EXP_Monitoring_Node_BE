@@ -10,12 +10,18 @@ const crypt = require('../middleware/mobile/crypt')
 const auth = require('../controllers/mobile/v1/auth')
 
 const mobile = require('../routes/mobile/v1/mobile_routes')
+const user_edit = require('../controllers/user_edit')
 
 
 router.route('/login_main').get(main.login_main);
 
 router.use('/mobile/v1/', mobile);
 
+
+
+// ====================================================
+// ================== GET NEW PENGAJUAN ================
+// ====================================================
 
 router.route('/get_rekening').get(new_pengajuan.get_rekening);
 router.route('/get_request_type').get(new_pengajuan.get_request_type);
@@ -27,14 +33,26 @@ router.route('/get_newest_pengajuan').get(new_pengajuan.get_newest_pengajuan);
 
 
 
+// ====================================================
+// ================== REVISI PENGAJUAN ================
+// ====================================================
+
 router.route('/get_detail_pengajuan_item_revisi').get(revisi_pengajuan.get_detail_pengajuan_item);
 
 
+
+// ====================================================
+// ================= GET DATA FOR TABLES ===============
+// ====================================================
 
 router.route('/get_table_data').get(pengajuan_table.get_table_data)
 router.route('/get_table_data_approval').get(pengajuan_table.get_table_data_approval)
 
 
+
+// ====================================================
+// ================== DETAIL PENGAJUAN ================
+// ====================================================
 
 router.route('/get_detail_pengajuan_item').get(detail_pengajuan.get_detail_pengajuan_item)
 router.route('/get_file_data').get(detail_pengajuan.get_file_data)
@@ -42,7 +60,23 @@ router.route('/get_approval_data').get(detail_pengajuan.get_approval_data)
 router.route('/get_sig_img_data').get(detail_pengajuan.get_sig_img_data)
 
 
-router.route('/approval_approve').post(approval_func.approval_approve)
+
+// ====================================================
+// ==================== USER APPROVAL ==================
+// ====================================================
+
+router.route('/approval_approve').post(approval_func.approval_approve);
+
+
+
+// ====================================================
+// ==================== USER APPROVAL ==================
+// ====================================================
+
+router.route('/user_change_email').post(user_edit.user_change_email);
+
+
+
 
 
 router.route('/test')

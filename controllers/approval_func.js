@@ -1,5 +1,6 @@
 const path = require("path");
 const { simpleExecute } = require("../services/db_e_approve");
+const sendMail = require('./f_mailer')
 const fs = require('fs');
 
 
@@ -22,31 +23,33 @@ exports.approval_approve = async (req, res) => {
     ]
 
     try {        
-        let q = `
-            set @pesan  = '';
+        // let q = `
+        //     set @pesan  = '';
 
-            call P_APPROVE_REQUEST(
-                '${REQ_ID}', 
-                '${EMPL_CODE}', 
-                '${STATUS}', 
-                '${REASON}', 
-                '${FILE_NAME}',
-                @pesan
-            );
-            select @pesan as pesan;
-        `
+        //     call P_APPROVE_REQUEST(
+        //         '${REQ_ID}', 
+        //         '${EMPL_CODE}', 
+        //         '${STATUS}', 
+        //         '${REASON}', 
+        //         '${FILE_NAME}',
+        //         @pesan
+        //     );
+        //     select @pesan as pesan;
+        // `
 
         
-        let xRes = await simpleExecute(q);
-        let res_msg = xRes.flat().find(item => item?.pesan)?.pesan || "No MSG found";
-        console.log(res_msg);
+        // let xRes = await simpleExecute(q);
+        // let res_msg = xRes.flat().find(item => item?.pesan)?.pesan || "No MSG found";
+        // console.log(res_msg);
 
-        if(arr_fails.includes(res_msg)){
-            return res.status(200).json({
-                isSuccess: true,
-                data: res_msg
-            })
-        }
+        // if(arr_fails.includes(res_msg)){
+        //     return res.status(200).json({
+        //         isSuccess: true,
+        //         data: res_msg
+        //     })
+        // }
+
+
 
         // ===========================================================================
         // ========================= SAVING THE SIGNATURE FILE ========================
@@ -57,10 +60,40 @@ exports.approval_approve = async (req, res) => {
 
 
         // ===========================================================================
+        // ====================== FIND CURRENT APPROVAL COMMITTEE =====================
+        // ===========================================================================
+
+        var curr_approval = await search_curr_request_id(REQ_ID);
+
+
+
+        // ===========================================================================
         // =================== SEND EMAIL TO NEXT APPROVAL COMMITTEE  ==================
         // ===========================================================================
 
+        if(curr_approval.length > 0){
+            let mail = curr_approval[0]['email']
+            if(mail != null){
+                let mail_str = `
+                <p>
+                    Anda memiliki pengajuan untuk di approve dengan detail berikut : 
+                    <br>
+                    <br>Nomor Pengajuan : ${REQ_ID}
+                    <br>Judul Pengajuan : ${curr_approval[0]['KATEGORI_REQUEST']}
+                </p>
+                <a href="http://192.168.18.4:3026/">Go to E-Approval</a>
+                `
 
+                sendMail.sendMail(mail, mail_str);
+            }
+        }
+        
+
+        
+        return res.status(200).json({
+            isSuccess: true,
+            data: 'res_msg'
+        })
         
         return res.status(200).json({
             isSuccess: true,
@@ -77,6 +110,16 @@ exports.approval_approve = async (req, res) => {
     }
 }
 
+
+exports.search_curr_request_id = async(req_id) => {
+    let q = `
+        select * from TF_EAPPR.TF_LIST_USER_APPROVED_V
+        where REQUEST_ID = '${req_id}';
+    `
+
+    var xRes = await simpleExecute(q);
+    return xRes;
+}
 
 
 save_file = (file_data, file_name) => {

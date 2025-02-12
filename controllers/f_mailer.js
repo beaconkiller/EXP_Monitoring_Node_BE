@@ -23,7 +23,7 @@ exports.sendMail = async(mail_to, str) => {
                 from: mail_id,
                 to: mail_to,
                 subject: 'EApproval - Mail Notifications',
-                text: str
+                html: str
             };
               
             transporter.sendMail(mailOptions, function(error, info){

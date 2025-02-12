@@ -1,8 +1,9 @@
 const path = require("path");
 const { simpleExecute } = require("../services/db_e_approve");
 const fs = require('fs');
-const f_helper = require('./f_helper')
-
+const f_helper = require('./f_helper');
+const { search_curr_request_id } = require("./approval_func");
+const sendMail = require("./f_mailer");
 // const path = required('path')
 
 
@@ -401,8 +402,30 @@ exports.new_pengajuan = async (req, res) => {
         }
 
         let file_path = path.join(__dirname, '..', 'file_storage', 'ttd_approval');
-        console.log('\n file upload \n');
         await f_helper.file_upload(get_ttd_filename(base64_sig_data, user_data), base64_sig_data, file_path);
+        
+
+        // =======================================================================
+        // ===================== MAILING THE NEXT COMMITTEE =======================
+        // =======================================================================
+
+
+        var act_request = await get_newest_pengajuan_local(user_data['empl_code']);
+        var act_req_data = await search_curr_request_id(act_request);
+        
+        if(act_req_data[0]['email'] != null){
+            let mail_str = `
+                <p>
+                    Anda memiliki pengajuan untuk di approve dengan detail berikut : 
+                    <br>
+                    <br>Nomor Pengajuan : ${act_req_data[0]['REQUEST_ID']}
+                    <br>Judul Pengajuan : ${act_req_data[0]['KATEGORI_REQUEST']}
+                </p>
+                <a href="http://192.168.18.4:3026/">Go to E-Approval</a>
+            `
+
+            sendMail.sendMail(act_req_data[0]['email'], mail_str);
+        }
         
 
         return res.json({
@@ -478,6 +501,27 @@ exports.get_newest_pengajuan = async (req, res) => {
             message: e.toString(),
             data: null
         })
+    }
+}
+
+
+
+get_newest_pengajuan_local = async (empl_code) => {
+    console.log('\n ========== get_newest_pengajuan_local ========== \n')
+
+    try {
+        let q = `
+            select * from tf_eappr.tf_trn_fppu_hdrs ttfh 
+            where 
+                CREATED_BY = '${empl_code}'
+            order by ttfh.CREATED_DATE desc , ttfh.REQUEST_ID desc
+            limit 0,1
+        `
+        let xRes = await simpleExecute(q);
+        return xRes[0]['REQUEST_ID'];
+    }
+    catch (e) {
+        return e;
     }
 }
 

@@ -51,7 +51,6 @@ exports.get_approval_data = async (req, res) => {
     req_id = req.query.req_id;
 
 
-    // sendMail.sendMail('beaconkiller@gmail.com', 'test mail');
 
 
     try {
