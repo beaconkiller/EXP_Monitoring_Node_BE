@@ -6,11 +6,13 @@ const pengajuan_table = require('../controllers/pengajuan_table')
 const detail_pengajuan = require('../controllers/detail_pengajuan')
 const approval_func = require('../controllers/approval_func')
 const revisi_pengajuan = require('../controllers/revisi_pengajuan')
-const crypt = require('../middleware/mobile/crypt')
-const auth = require('../controllers/mobile/v1/auth')
+const set_ups = require('../controllers/set_ups')
 
 const mobile = require('../routes/mobile/v1/mobile_routes')
 const user_edit = require('../controllers/user_edit')
+
+const crypt = require('../middleware/mobile/crypt')
+const auth = require('../controllers/mobile/v1/auth')
 
 
 router.route('/login_main').get(main.login_main);
@@ -69,18 +71,27 @@ router.route('/approval_approve').post(approval_func.approval_approve);
 
 
 
-// ====================================================
-// ==================== USER APPROVAL ==================
-// ====================================================
+// ======================================================
+// ==================== USER MANAGEMENT ==================
+// ======================================================
 
 router.route('/user_change_email').post(user_edit.user_change_email);
 
 
 
+// ======================================================
+// ======================== SET UPS ======================
+// ======================================================
+
+router.route('/get_suppliers').get(set_ups.get_suppliers);
+router.route('/add_supplier').post(set_ups.add_supplier);
 
 
-router.route('/test')
-    .get(main.test);
+
+
+
+router.route('/tests')
+    .get(main.tests);
 
 
 

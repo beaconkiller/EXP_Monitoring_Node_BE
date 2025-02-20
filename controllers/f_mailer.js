@@ -15,7 +15,7 @@ exports.sendMail = async(mail_to, str) => {
                 secure: true,
                 auth: {
                     user: mail_id,
-                    pass: 'rdhv zlbl hvno hefx'
+                    pass: 'nuay jacj naym gcvs'
                 },
                });        
               

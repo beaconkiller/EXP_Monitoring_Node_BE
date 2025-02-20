@@ -81,26 +81,10 @@ exports.login_main = async (req, res) => {
 
 
 
-exports.test = async (req, res) => {
+exports.tests = async (req, res) => {
 
-    console.log(req);
-
-    try {
-
-        let xRes = await simpleExecute('SELECT * FROM CITY');
-        console.log(xRes);
-
-        return res.status(200).json({
-            isSuccess: true,
-            data: xRes
-        })
-    }
-    catch (e) {
-        console.error(e.message)
-        res.status(500).json({
-            isSuccess: false,
-            message: e.toString(),
-            data: null
-        })
-    }
+    return res.status(200).json({
+        isSuccess: true,
+        data: 'ok'
+    })
 }

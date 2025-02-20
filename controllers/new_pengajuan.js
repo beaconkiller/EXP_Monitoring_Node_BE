@@ -13,38 +13,43 @@ const sendMail = require("./f_mailer");
 
 
 exports.get_rekening = async (req, res) => {
-
+    console.log('\n ============ get_rekening ========== \n')
     console.log(req.query);
 
-    let xRes = [
-        {
-            REK_NAME : 'Aldi',
-            BANK_NAME : 'BCA',
-            REK_NUM : '1231231010',
-        },
-        {
-            REK_NAME : 'Suro',
-            BANK_NAME : 'BRI',
-            REK_NUM : '4591267584',
-        },
-        {
-            REK_NAME : 'Stuart',
-            BANK_NAME : 'Bank Sinarmas',
-            REK_NUM : '8478275619',
-        },
-        {
-            REK_NAME : 'Doni',
-            BANK_NAME : 'BRI',
-            REK_NUM : '8478745619',
-        },
-    ] 
+    // let xRes = [
+    //     {
+    //         REK_NAME : 'Aldi',
+    //         BANK_NAME : 'BCA',
+    //         REK_NUM : '1231231010',
+    //     },
+    //     {
+    //         REK_NAME : 'Suro',
+    //         BANK_NAME : 'BRI',
+    //         REK_NUM : '4591267584',
+    //     },
+    //     {
+    //         REK_NAME : 'Stuart',
+    //         BANK_NAME : 'Bank Sinarmas',
+    //         REK_NUM : '8478275619',
+    //     },
+    //     {
+    //         REK_NAME : 'Doni',
+    //         BANK_NAME : 'BRI',
+    //         REK_NUM : '8478745619',
+    //     },
+    // ] 
+
+
+    q = 'select * from tf_mst_supplier tms'
+    var xRes = await simpleExecute(q);
+    console.log(xRes);
 
 
     arr_filtered = () => {
         new_arr = [];
 
         xRes.forEach(el => {
-            new_str = `${el['BANK_NAME']} - ${el['REK_NAME']} - ${el['REK_NUM']}`
+            new_str = `${el['BANK_NAME']} - ${el['REK_NAME']} - ${el['SUPPLIER_NAME']} - ${el['REK_NO']}`
             new_arr.push(new_str)
         });
 
@@ -324,16 +329,17 @@ exports.new_pengajuan = async (req, res) => {
             
         });
 
-        // console.log(arr_pengajuan)
-        // console.log(arr_komite)
+        console.log(arr_pengajuan)
+        console.log(arr_komite)
 
         let arr_pengajuan_str = JSON.stringify(arr_pengajuan);
         let arr_komite_str = JSON.stringify(arr_komite);
 
 
-        // console.log('================');
-        // console.log(JSON.stringify(arr_pengajuan_str[0]));
-        // console.log('================');
+        console.log('================');
+        console.log(arr_pengajuan_str);
+        console.log(arr_komite_str);
+        console.log('================');
         // console.log(arr_pengajuan_str);
 
 
@@ -563,3 +569,6 @@ change_file_name = async(selected_file, user_data) => {
 
 
 }
+
+
+
