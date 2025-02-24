@@ -71,9 +71,42 @@ exports.get_suppliers = async (req, res) => {
 
 
 // =======================================================================
-// =========================== UPDATE STUFFS =============================
+// ========================= GETTING THE BANKS ===========================
 // =======================================================================
 
+exports.get_banks = async (req, res) => {
+    console.log('\n ==================== exports.get_banks ==================== \n')
+    console.log(req.query);
+
+    let q = `select * from xx_mst_bank xmb order by BANK_NAME ;`;
+    var xRes = await simpleExecute(q);
+
+    console.log(xRes);
+
+    try {
+        return res.json({
+            status:200,
+            isSuccess: true,
+            message:'Success',
+            data: xRes
+        })
+    }
+    catch (e) {
+        console.error(e.message)
+        res.status(500).json({
+            status : 500,
+            isSuccess: false,
+            message: e.toString(),
+            data: null
+        })
+    }
+}
+
+
+
+// =======================================================================
+// =========================== UPDATE STUFFS =============================
+// =======================================================================
 
 exports.add_supplier = async (req, res) => {
     console.log('\n add_supplier \n')
@@ -84,7 +117,12 @@ exports.add_supplier = async (req, res) => {
     suppl_name = req.body.suppl_name;
     suppl_bank_name = req.body.suppl_bank_name;
     empl_code = req.body.empl_code;
+    bank_code = req.body.bank_code;
+    bank_name = req.body.bank_name;
 
+    let supplier_id = bank_code+'-'+suppl_rek_no;
+
+    console.log(supplier_id);
 
     try {
 
@@ -94,7 +132,7 @@ exports.add_supplier = async (req, res) => {
 
         let q_checkExist = `
             select * from tf_mst_supplier tms
-            where REK_NO = '${suppl_rek_no}'
+            where SUPL_ID = '${supplier_id}'
         `;
         
         var xResCheck = (await simpleExecute(q_checkExist));
@@ -110,13 +148,13 @@ exports.add_supplier = async (req, res) => {
 
 
 
-        // -----------------------------------------------------------------
-        // ---------------- GET ID FROM FETCHING COUNT TABLE ---------------
-        // -----------------------------------------------------------------
+        // // -----------------------------------------------------------------
+        // // ---------------- GET ID FROM FETCHING COUNT TABLE ---------------
+        // // -----------------------------------------------------------------
 
-        let q_count = `select count(*) from tf_mst_supplier tms`;
-        var xResCount = (await simpleExecute(q_count))[0]['count(*)'];
-        console.log(xResCount);
+        // let q_count = `select count(*) from tf_mst_supplier tms`;
+        // var xResCount = (await simpleExecute(q_count))[0]['count(*)'];
+        // console.log(xResCount);
 
 
 
@@ -136,11 +174,11 @@ exports.add_supplier = async (req, res) => {
                 CREATED_DATE
             )
             VALUES (
-                '${xResCount}',
+                '${supplier_id}',
                 '${suppl_name}',
                 '${suppl_rek_no}',
                 '${suppl_rek_name}',
-                '${suppl_bank_name}',
+                '${bank_name}',
                 'Y',
                 '${empl_code}',
                 '${(new Date()).toISOString().split('T')[0]}'
@@ -151,19 +189,19 @@ exports.add_supplier = async (req, res) => {
         // console.log(xRes.affectedRows);
 
 
-        if(xRes.affectedRows != 0){
-            return res.json({
-                status:204,
-                isSuccess: true,
-                message: 'Success',
-                data: 'Penambahan supplier gagal'
-            })
-        }else{
+        if(xRes.affectedRows >= 1){
             return res.json({
                 status:200,
                 isSuccess: true,
-                message: 'Success',
+                message: 'Penambahan supplier berhasil',
                 data: 'Penambahan supplier berhasil'
+            })
+        }else{
+            return res.json({
+                status:204,
+                isSuccess: true,
+                message: 'Penambahan supplier gagal',
+                data: 'Penambahan supplier gagal'
             })
         }
 
