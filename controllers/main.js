@@ -13,19 +13,25 @@ exports.login_main = async (req, res) => {
             select 
                 fme.*, 
                 fmo.NAME_SHORT, 
-                fmo.NAME_FULL, 
+                fmo.NAME_FULL,                 
                 hmjc.JOB_DESCRIPTION,
                 mst_e.email,
                 mst_e.supervisor_id,
+                sec_usr.USER_PWD,
                 (select PERSONAL_SUBAREA from tf_mst_division  where personal_number = fme.empl_code) as personal_subarea
             from tf_absensi.fs_mst_employees fme 
             join tf_absensi.fs_mst_offices fmo on fmo.OFFICE_CODE = fme.EMPL_BRANCH 
             join tf_absensi.hr_mst_job_codes hmjc on fme.EMPL_JOB = hmjc.JOB_CODE
             join tf_absensi.hr_mst_employees mst_e on mst_e.EMPL_CODE = fme.EMPL_CODE 
-            WHERE fme.EMPL_CODE = '${usn}'
+            join tf_absensi.fs_sec_users sec_usr on fme.EMPL_CODE = sec_usr.USER_ID
+            where 
+                fme.EMPL_CODE = '${usn}'
+                and 
+                sec_usr.USER_PWD = sha2('${pwd}',256)
         `
 
         var xRes = await simpleExecute(q)
+        console.log(xRes);
     
 
         // ------------------------------------------------------------------
@@ -35,7 +41,7 @@ exports.login_main = async (req, res) => {
         if(xRes.length == 0 ){
             return res.json({
                 isSuccess: false,
-                message: 'Username tidak terdaftar',
+                message: 'Username atau password salah',
                 data: null
             })
         }
@@ -45,14 +51,14 @@ exports.login_main = async (req, res) => {
         // ------------------------ SEARCH THE PASSWORD ------------------------
         // ------------------------------------------------------------------
 
-        tmp_pwd = `Uat${xRes[0]['EMPL_CODE']}`
-        if(pwd != tmp_pwd){
-            return res.json({
-                isSuccess: false,
-                message: 'Username atau password salah',
-                data: null
-            })
-        }
+        // tmp_pwd = `Uat${xRes[0]['EMPL_CODE']}`
+        // if(pwd != tmp_pwd){
+        //     return res.json({
+        //         isSuccess: false,
+        //         message: 'Username atau password salah',
+        //         data: null
+        //     })
+        // }
     
     
         // xRes = {
