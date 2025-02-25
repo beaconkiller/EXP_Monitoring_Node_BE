@@ -4,10 +4,13 @@ const fs = require('fs');
 // const path = required('path')
 
 exports.get_table_data = async (req, res) => {
-    let user_dtl = JSON.parse(req.query.user_dtl)
+    console.log(req.query);
+
+    let user_dtl = JSON.parse(req.query.user_dtl);
     let empl_code = user_dtl['EMPL_CODE'];
-    let q_page = parseInt(req.query.q_page)
-    let q_search = req.query.q_search
+    let q_page = parseInt(req.query.q_page);
+    let q_search = req.query.q_search;
+    let q_filter = req.query.q_filter;
 
     
     f_paging = () => {
@@ -17,14 +20,26 @@ exports.get_table_data = async (req, res) => {
     }
 
     f_search = () => {
-        if(q_search.length == 0){
+        if(q_search.trim().length == 0){
             return ``;
         }else{
             return `
             -- Con Search // BISA ADA BISA GAADA
-            and KATEGORI_REQUEST like '%${q_search}%'
+            and (
+                KATEGORI_REQUEST like '%${q_search}%'
+                OR
+                REQUEST_ID like '%${q_search}%'                
+            )
             -- Con Search
             `
+        }
+    }
+
+    f_filter = () => {
+        if(q_filter == 'All'){
+            return ``;
+        }else{
+            return `AND tbl_fin.STATUS = '${q_filter}'`
         }
     }
 
@@ -53,12 +68,15 @@ exports.get_table_data = async (req, res) => {
             ) tbl_fin
             where 
                 CREATED_BY = '${empl_code}'
+                ${f_filter()}
                 ${f_search()}
 
             ORDER BY ttfh.CREATED_DATE desc, ttfh.REQUEST_ID desc
             LIMIT ${f_paging()[0]}
             OFFSET ${f_paging()[1]}
         `
+
+        // console.log(q);
 
         xRes = await simpleExecute(q);
         // console.log(xRes);
@@ -69,10 +87,6 @@ exports.get_table_data = async (req, res) => {
             message: 'success',
             data: xRes
         })
-
-
-
-
     }
     catch (e) {
         console.error(e.message)
@@ -126,26 +140,6 @@ exports.get_table_data_approval = async (req, res) => {
             LIMIT ${f_paging()[0]}
             OFFSET ${f_paging()[1]}
         `
-
-        // var q = `
-        //     SELECT ttfh.*, hjov.cabang, appr.*
-        //     FROM tf_eappr.tf_trn_fppu_hdrs ttfh
-        //     JOIN (
-        //         select distinct empl_branch, cabang, personal_subarea 
-        //         from hr_join_office_v hjov 
-        //     ) hjov ON ttfh.BRANCH_CODE = hjov.empl_branch
-        //     left join (
-        //         select REQUEST_ID, STATUS, EMPL_CODE from tf_eappr.tf_trn_approve_fppu ttaf 
-        //         where 
-        //             EMPL_CODE = '${empl_code}'
-        //     ) appr on appr.REQUEST_ID = ttfh.REQUEST_ID 
-        //     where 
-        //         appr.EMPL_CODE = '${empl_code}'
-        //     ORDER BY ttfh.CREATED_DATE desc
-            
-        //     LIMIT ${f_paging()[0]}
-        //     OFFSET ${f_paging()[1]}
-        // `
 
         console.log(q);
 

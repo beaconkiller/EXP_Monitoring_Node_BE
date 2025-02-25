@@ -44,3 +44,9 @@ exports.get_timestamp_string = () => {
 
     return `${dd}${mm}${yy}_${hh}${minutes}${ss}`;
 }
+
+
+
+exports.log_ = (v) => {
+    console.log(`\n =================== ${v} =================== \n`)
+}
