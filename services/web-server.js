@@ -2,7 +2,8 @@ const http = require('http');
 const express = require('express');
 const cookieParser = require("cookie-parser");
 const webServerConfig = require('../config/web-server.js')
-const moment = require('moment-timezone')
+const moment = require('moment-timezone');
+const path = require('path');
 // const logger = require('morgan');
 // const helper = require('../helper/helper')
 // const cors = require('cors')
@@ -47,6 +48,17 @@ function initialize() {
 
         app.use('/api-eappr', routes)
 
+
+        // ================ DEPLOYING IN ONE SAME NODE ================
+        
+        app.use(express.static(path.join(__dirname, '..', 'web')));
+        app.get('*', (req, res) => {
+            res.sendFile(path.join(__dirname, '..', 'web/index.html'));
+        });
+        
+        // ===========================================================
+
+        
         httpServer.on('error', onError);
         httpServer.listen(webServerConfig.port, err => {
             if (err) {

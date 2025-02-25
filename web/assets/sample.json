@@ -1,0 +1,57 @@
+'[
+    {
+        "KETERANGAN": "TEST KETERANGAN",
+        "HARGA_SATUAN": 150000,
+        "QTY": 10,
+        "TOTAL_HARGA": 1500000,
+        "NO_REK": "123456789",
+        "NAMA_REK": "SAMIDI AMBUARTO",
+        "BANK_NAME": "SINOBI KONOHA",
+        "JENIS_PEMBIAYAAN": "RUTIN BULANAN",
+        "FILE_NAME": "file0101"
+    },
+    {
+        "KETERANGAN": "TEST KETERANGAN 2",
+        "HARGA_SATUAN": 200000,
+        "QTY": 10,
+        "TOTAL_HARGA": 2000000,
+        "NO_REK": "123456789",
+        "NAMA_REK": "SAMIDI AMBUARTO",
+        "BANK_NAME": "SINOBI KONOHA",
+        "JENIS_PEMBIAYAAN": "RUTIN BULANAN",
+        "FILE_NAME": "file0102"
+    }
+]',
+
+                                            '[
+    {
+        "EMPL_CODE": "16021575",
+        "LVL": 1,
+        "POSISION": "CEK"
+    },
+    {
+        "EMPL_CODE": "15102020",
+        "LVL": 2,
+        "POSISION": "CEK"
+    },
+    {
+        "EMPL_CODE": "13012923",
+        "LVL": 3,
+        "POSISION": "APPROVE"
+    },
+    {
+        "EMPL_CODE": "12908099",
+        "LVL": 4,
+        "POSISION": "APPROVE"
+    },
+    {
+        "EMPL_CODE": "11202320",
+        "LVL": 5,
+        "POSISION": "APPROVE"
+    },
+    {
+        "EMPL_CODE": "10002002",
+        "LVL": 6,
+        "POSISION": "APPROVE"
+    }
+]',
