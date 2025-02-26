@@ -1,5 +1,6 @@
 module.exports = {
     e_approve: {
+        // host: '192.168.18.4',
         host: process.env.E_APPROVE_HOST,
         user: process.env.E_APPROVE_USER,
         password: process.env.E_APPROVE_PWD,

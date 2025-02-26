@@ -9,6 +9,7 @@ async function startup() {
     // ----------------------------------------
     // ------------- DB_E_APPROVE -------------
     // ----------------------------------------
+    console.log(process.env.E_APPROVE_HOST);
 
     try {
         console.log('\n Initializing db_e_approve \n');
