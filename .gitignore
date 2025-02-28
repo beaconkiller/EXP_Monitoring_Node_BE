@@ -130,8 +130,8 @@ dist
 .pnp.*
 
 
-ecosystem.config.js
-.ecosystem.config.js
+# ecosystem.config.js
+# .ecosystem.config.js
 file_storage/
 file_storage
 .file_storage/
