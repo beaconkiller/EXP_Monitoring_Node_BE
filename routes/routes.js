@@ -49,6 +49,7 @@ router.route('/get_detail_pengajuan_item_revisi').get(revisi_pengajuan.get_detai
 
 router.route('/get_table_data').get(pengajuan_table.get_table_data)
 router.route('/get_table_data_approval').get(pengajuan_table.get_table_data_approval)
+router.route('/get_table_data_histori').get(pengajuan_table.get_table_data_histori)
 
 
 
@@ -56,10 +57,10 @@ router.route('/get_table_data_approval').get(pengajuan_table.get_table_data_appr
 // ================== DETAIL PENGAJUAN ================
 // ====================================================
 
-router.route('/get_detail_pengajuan_item').get(detail_pengajuan.get_detail_pengajuan_item)
-router.route('/get_file_data').get(detail_pengajuan.get_file_data)
-router.route('/get_approval_data').get(detail_pengajuan.get_approval_data)
-router.route('/get_sig_img_data').get(detail_pengajuan.get_sig_img_data)
+router.route('/get_detail_pengajuan_item').get(detail_pengajuan.get_detail_pengajuan_item);
+router.route('/get_file_data').get(detail_pengajuan.get_file_data);
+router.route('/get_approval_data').get(detail_pengajuan.get_approval_data);
+router.route('/get_sig_img_data').get(detail_pengajuan.get_sig_img_data);
 
 
 
