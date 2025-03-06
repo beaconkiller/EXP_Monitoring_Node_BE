@@ -31,7 +31,8 @@ exports.user_change_email = async (req, res) => {
         if(xRes.changedRows == 0 ){
             res_msg = 'Perubahan email gagal'
 
-            return res.status(200).json({
+            return res.json({
+                status:204,
                 isSuccess: false,
                 message: res_msg,
                 data: res_msg
@@ -40,6 +41,7 @@ exports.user_change_email = async (req, res) => {
             res_msg = 'Perubahan email berhasil'
 
             return res.status(200).json({
+                status:200,
                 isSuccess: true,
                 message: res_msg,
                 data: res_msg
@@ -50,6 +52,7 @@ exports.user_change_email = async (req, res) => {
     catch (e) {
         console.error(e.message)
         res.status(500).json({
+            status:500,
             isSuccess: false,
             message: e.toString(),
             data: null
