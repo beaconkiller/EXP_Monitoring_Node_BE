@@ -87,6 +87,8 @@ router.route('/user_change_email').post(user_edit.user_change_email);
 router.route('/get_suppliers').get(set_ups.get_suppliers);
 router.route('/get_banks').get(set_ups.get_banks);
 router.route('/add_supplier').post(set_ups.add_supplier);
+router.route('/remove_suppl').post(set_ups.remove_suppl);
+router.route('/update_suppl').post(set_ups.update_suppl);
 
 
 

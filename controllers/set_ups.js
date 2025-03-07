@@ -13,49 +13,51 @@ const sendMail = require("./f_mailer");
 
 
 exports.get_suppliers = async (req, res) => {
+    console.log("\n ================= get_suppliers =============== \n")
 
-    console.log(req.query);
+    q_page = req.query.q_page;
+    q_search = req.query.q_search;
 
-    let xRes = [
-        {
-            REK_NAME : 'Aldi',
-            BANK_NAME : 'BCA',
-            REK_NUM : '1231231010',
-        },
-        {
-            REK_NAME : 'Suro',
-            BANK_NAME : 'BRI',
-            REK_NUM : '4591267584',
-        },
-        {
-            REK_NAME : 'Stuart',
-            BANK_NAME : 'Bank Sinarmas',
-            REK_NUM : '8478275619',
-        },
-        {
-            REK_NAME : 'Doni',
-            BANK_NAME : 'BRI',
-            REK_NUM : '8478745619',
-        },
-    ] 
-
-
-    arr_filtered = () => {
-        new_arr = [];
-
-        xRes.forEach(el => {
-            new_str = `${el['BANK_NAME']} - ${el['REK_NAME']} - ${el['REK_NUM']}`
-            new_arr.push(new_str)
-        });
-
-        return new_arr;
+    f_paging = () => {
+        let limit = 8
+        let offset = (q_page-1) * limit
+        return [limit, offset]
     }
+
+    f_search = () => {
+        if(q_search.trim().length > 0){
+            return `
+                AND (
+                    SUPPLIER_NAME LIKE '%${q_search}%' 
+                    OR REK_NO LIKE '%${q_search}%' 
+                    OR REK_NAME LIKE '%${q_search}%'
+                )
+            `
+        }else{
+            return ``;
+        }
+    }
+
+    q = `
+        select * from tf_mst_supplier tms
+        WHERE 
+            SUPPLIER_NAME IS NOT NULL
+            ${f_search()}
+        LIMIT ${f_paging()[0]}
+        OFFSET ${f_paging()[1]}        
+    `
+
+    var xRes = await simpleExecute(q);
+
+
+    console.log(xRes);
+
 
 
     try {
         return res.status(200).json({
             isSuccess: true,
-            data: arr_filtered()
+            data: xRes
         })
     }
     catch (e) {
@@ -66,6 +68,7 @@ exports.get_suppliers = async (req, res) => {
             data: null
         })
     }
+
 }
 
 
@@ -81,7 +84,7 @@ exports.get_banks = async (req, res) => {
     let q = `select * from xx_mst_bank xmb order by BANK_NAME ;`;
     var xRes = await simpleExecute(q);
 
-    console.log(xRes);
+    // console.log(xRes);
 
     try {
         return res.json({
@@ -213,6 +216,75 @@ exports.add_supplier = async (req, res) => {
             isSuccess: false,
             message: e.toString(),
             data: e.toString()
+        })
+    }
+}
+
+
+
+
+exports.remove_suppl = async (req, res) => {
+    console.log('\n ==================== exports.remove_suppl ==================== \n')
+    console.log(req.body);
+
+    let supl_id = req.body.supl_id;
+
+    let q = `
+    DELETE FROM tf_eappr.tf_mst_supplier
+	    WHERE SUPL_ID = '${supl_id}'    
+    `;
+
+    console.log(q);
+
+    var xRes = await simpleExecute(q);
+    console.log(xRes);
+
+    try {
+        return res.json({
+            status:200,
+            isSuccess: true,
+            message:'Success',
+            data: xRes
+        })
+    }
+    catch (e) {
+        console.error(e.message)
+        res.status(500).json({
+            status : 500,
+            isSuccess: false,
+            message: e.toString(),
+            data: null
+        })
+    }
+}
+
+
+
+
+exports.update_suppl = async (req, res) => {
+    console.log('\n ==================== exports.update_suppl ==================== \n')
+    console.log(req.body);
+
+    let q = `select * from xx_mst_bank xmb order by BANK_NAME`;
+    var xRes = await simpleExecute(q);
+
+    // console.log(xRes);
+
+    try {
+        return res.json({
+            status:200,
+            isSuccess: true,
+            message:'Success',
+            data: xRes
+        })
+    }
+    catch (e) {
+        console.error(e.message)
+        res.status(500).json({
+            status : 500,
+            isSuccess: false,
+            message: e.toString(),
+            data: null
         })
     }
 }
