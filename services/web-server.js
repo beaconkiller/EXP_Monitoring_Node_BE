@@ -1,6 +1,7 @@
 const http = require('http');
 const express = require('express');
 const cookieParser = require("cookie-parser");
+const bodyParser = require("body-parser");
 const webServerConfig = require('../config/web-server.js')
 const moment = require('moment-timezone');
 const path = require('path');
@@ -35,16 +36,25 @@ function initialize() {
         //     stream: writer //fs.createWriteStream(path.join(__dirname, '../access.log'), { flags: 'a' })
         // }))
 
-        app.use(express.json());
-        app.use(express.urlencoded({ extended: true }));
-        app.use(cookieParser());
 
+        // ==================== SETTING THE PAYLOAD MAX SIZE =====================
+        
+        app.use(express.json({ limit: '100mb' }));
+        app.use(express.urlencoded({ limit: '100mb', extended: true }));        
+        app.use(bodyParser.json({ limit: '100mb' }));
+        app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
+        
+        app.use(cookieParser());
+        
         app.use(function (req, res, next) {
             res.append('Access-Control-Allow-Origin', ['*']);
             res.append('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
             res.append('Access-Control-Allow-Headers', 'Authorization, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method');
             next();
         });
+        
+        // ======================================================================
+
 
         app.use('/api-eappr', routes)
 

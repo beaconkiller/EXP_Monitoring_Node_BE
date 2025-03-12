@@ -230,8 +230,10 @@ exports.remove_suppl = async (req, res) => {
     let supl_id = req.body.supl_id;
 
     let q = `
-    DELETE FROM tf_eappr.tf_mst_supplier
-	    WHERE SUPL_ID = '${supl_id}'    
+        UPDATE tf_eappr.tf_mst_supplier
+            SET IS_ACTIVE='N'
+        WHERE 
+            SUPL_ID = '${supl_id}'    
     `;
 
     console.log(q);
