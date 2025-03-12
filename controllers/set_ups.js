@@ -4,6 +4,7 @@ const fs = require('fs');
 const f_helper = require('./f_helper');
 const { search_curr_request_id } = require("./approval_func");
 const sendMail = require("./f_mailer");
+const moment = require("moment-timezone");
 // const path = required('path')
 
 
@@ -279,6 +280,163 @@ exports.update_suppl = async (req, res) => {
             message:'Success',
             data: xRes
         })
+    }
+    catch (e) {
+        console.error(e.message)
+        res.status(500).json({
+            status : 500,
+            isSuccess: false,
+            message: e.toString(),
+            data: null
+        })
+    }
+}
+
+
+
+
+exports.get_jenis_pembayaran = async (req, res) => {
+    console.log('\n ==================== exports.get_jenis_pembayaran ==================== \n')
+    console.log(req.query);
+
+    let q_page = req.query.q_page;
+    let q_search = req.query.q_search;
+
+
+    f_paging = () => {
+        let limit = 10
+        let offset = (q_page-1) * limit
+        return [limit, offset]
+    }
+
+    
+    try {
+
+        // ---------------------------------------------------------
+        // --------------- FIND ORDERS / ID NUMBERING --------------
+        // ---------------------------------------------------------
+
+        let q = `
+            select * from tf_mst_type_request tmk
+            order by NAME_TYPE
+            LIMIT ${f_paging()[0]}
+            OFFSET ${f_paging()[1]}        
+        `;
+        var xRes = await simpleExecute(q);
+        
+
+        return res.json({
+            status:200,
+            isSuccess: true,
+            message:'Penambahan jenis pembayaran berhasil',
+            data: xRes    
+        })
+    }
+    catch (e) {
+        console.error(e.message)
+        res.status(500).json({
+            status : 500,
+            isSuccess: false,
+            message: e.toString(),
+            data: null
+        })
+    }
+}
+
+
+
+
+exports.add_jenis_pembayaran = async (req, res) => {
+    console.log('\n ==================== exports.add_jenis_pembayaran ==================== \n')
+    console.log(req.body);
+
+    let name_type = req.body.name_type.trim().toUpperCase();
+    let group_type = req.body.group_type;
+    let empl_code = req.body.empl_code;
+    
+    
+    try {
+
+        // ---------------------------------------------------------
+        // ------ MINIMAL CHECK FOR DUPLICATE / EXISTING VALUE -----
+        // ---------------------------------------------------------
+
+        let q_dupe = `
+            select * from tf_mst_type_request tmk
+            where NAME_TYPE = '${name_type}'
+        `;
+        var xRes_dupe = await simpleExecute(q_dupe);
+
+        console.log(xRes_dupe.length);
+
+        if(xRes_dupe.length > 0){
+            return res.json({
+                status:409,
+                isSuccess: false,
+                message:'Data sudah ada.',
+                data: 'Data sudah ada.'    
+            })            
+        }
+
+        
+        
+
+        // ---------------------------------------------------------
+        // --------------- FIND ORDERS / ID NUMBERING --------------
+        // ---------------------------------------------------------
+
+        let q_count = `select count(*) from tf_mst_type_request tmk`;
+        var xRes_count = await simpleExecute(q_count);
+    
+        let r_count = String(parseInt(xRes_count[0]['count(*)'])+1).padStart(4, '0');    
+        
+        
+        
+        
+        // ---------------------------------------------------------
+        // --------------- FIND ORDERS / ID NUMBERING --------------
+        // ---------------------------------------------------------
+        
+        const dateValue = moment().tz('Asia/Jakarta').format('YYYY-MM-DD');
+        let q = `
+            INSERT INTO tf_eappr.tf_mst_type_request (
+                id_type,
+                NAME_TYPE,
+                group_type,
+                is_active,
+                created_by,
+                created_date
+            )
+            VALUES (
+                'REQ${r_count}',
+                '${name_type}',
+                '${group_type}',
+                'AC',
+                '${empl_code}',
+                '${dateValue}'
+            )        
+        `;
+
+        var xRes = await simpleExecute(q);
+        
+        console.log(xRes.affectedRows);
+
+        if(xRes.affectedRows == 1){
+            return res.json({
+                status:200,
+                isSuccess: true,
+                message:'Penambahan jenis pembayaran berhasil',
+                data: 'Penambahan jenis pembayaran berhasil'    
+            })
+        }else{
+            return res.json({
+                status:204,
+                isSuccess: true,
+                message:'Penambahan jenis pembayaran gagal',
+                data: 'Penambahan jenis pembayaran gagal'    
+            })            
+        }
+
     }
     catch (e) {
         console.error(e.message)

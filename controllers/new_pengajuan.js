@@ -77,10 +77,10 @@ exports.get_rekening = async (req, res) => {
 
 exports.get_request_type = async (req, res) => {
 
-
     try {
         let q = `
-            select * from tf_eappr.tf_mst_type_request tmtr
+            select * from tf_mst_type_request tmk
+            order by NAME_TYPE
         `
         let xRes = await simpleExecute(q);
 

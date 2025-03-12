@@ -89,6 +89,8 @@ router.route('/get_banks').get(set_ups.get_banks);
 router.route('/add_supplier').post(set_ups.add_supplier);
 router.route('/remove_suppl').post(set_ups.remove_suppl);
 router.route('/update_suppl').post(set_ups.update_suppl);
+router.route('/get_jenis_pembayaran').get(set_ups.get_jenis_pembayaran);
+router.route('/add_jenis_pembayaran').post(set_ups.add_jenis_pembayaran);
 
 
 
