@@ -26,9 +26,9 @@ exports.get_table_data = async (req, res) => {
             return `
             -- Con Search // BISA ADA BISA GAADA
             and (
-                KATEGORI_REQUEST like '%${q_search}%'
+                ttaf.KATEGORI_REQUEST like '%${q_search}%'
                 OR
-                REQUEST_ID like '%${q_search}%'                
+                ttaf.REQUEST_ID like '%${q_search}%'                
             )
             -- Con Search
             `
@@ -126,9 +126,9 @@ exports.get_table_data_approval = async (req, res) => {
             return `
             -- Con Search // BISA ADA BISA GAADA
             and (
-                KATEGORI_REQUEST like '%${q_search}%'
+                ttfh.KATEGORI_REQUEST like '%${q_search}%'
                 OR
-                REQUEST_ID like '%${q_search}%'                
+                ttfh.REQUEST_ID like '%${q_search}%'                
             )
             -- Con Search
             `
@@ -237,9 +237,9 @@ exports.get_table_data_histori = async (req, res) => {
             return `
             -- Con Search // BISA ADA BISA GAADA
             and (
-                KATEGORI_REQUEST like '%${q_search}%'
+                ttfh.KATEGORI_REQUEST like '%${q_search}%'
                 OR
-                REQUEST_ID like '%${q_search}%'                
+                ttfh.REQUEST_ID like '%${q_search}%'                
             )
             -- Con Search
             `
