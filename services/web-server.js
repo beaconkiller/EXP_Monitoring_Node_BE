@@ -77,7 +77,6 @@ function initialize() {
             }
 
             console.log(`Web server listening on localhost:${webServerConfig.port}`);
-
             resolve();
         });
     });

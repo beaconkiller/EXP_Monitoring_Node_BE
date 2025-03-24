@@ -268,10 +268,23 @@ exports.update_suppl = async (req, res) => {
     console.log('\n ==================== exports.update_suppl ==================== \n')
     console.log(req.body);
 
-    let q = `select * from xx_mst_bank xmb order by BANK_NAME`;
-    var xRes = await simpleExecute(q);
+    let data = req.body.data;
+    
+    let SUPL_ID = data.SUPL_ID;
+    let IS_ACTIVE = data.IS_ACTIVE;
+    let SUPPLIER_NAME = data.SUPPLIER_NAME;
 
-    // console.log(xRes);
+    let q_update = `
+        UPDATE tf_eappr.tf_mst_supplier
+        SET 
+            IS_ACTIVE='${IS_ACTIVE}',
+            SUPPLIER_NAME='${SUPPLIER_NAME}'
+        WHERE SUPL_ID='${SUPL_ID}'
+    `
+
+    var xRes = await simpleExecute(q_update);
+
+    console.log(xRes);
 
     try {
         return res.json({
@@ -436,7 +449,6 @@ exports.add_jenis_pembayaran = async (req, res) => {
                 data: 'Penambahan jenis pembayaran gagal'    
             })            
         }
-
     }
     catch (e) {
         console.error(e.message)
@@ -449,5 +461,41 @@ exports.add_jenis_pembayaran = async (req, res) => {
     }
 }
 
+
+
+
+exports.get_menu = async (req, res) => {
+    console.log('\n ==================== exports.get_menu ==================== \n')
+    console.log(req.body);
+
+    
+    
+    try {
+
+        let q = `
+            select * from tf_mst_menu tmm
+            order by MENU_LVL
+        `;
+        var xRes = await simpleExecute(q);
+        
+        console.log(xRes);
+
+        return res.json({
+            status:200,
+            isSuccess: true,
+            message:'getMenu success',
+            data: xRes    
+        })
+    }
+    catch (e) {
+        console.error(e.message)
+        res.status(500).json({
+            status : 500,
+            isSuccess: false,
+            message: e.toString(),
+            data: null
+        })
+    }
+}
 
 
