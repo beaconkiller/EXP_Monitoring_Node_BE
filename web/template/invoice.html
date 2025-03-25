@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice</title>
+    <style>
+        @page {
+            size: A4;
+            margin-bottom: 5mm;
+
+            @bottom-center {
+                content: "Page " counter(page) " of " counter(pages);
+                font-size: 10px;
+            }
+        }
+
+
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #fff;
+            font-size: 12px;
+            background-image: url("{{logoBase64}}");
+            background-repeat: no-repeat;
+            background-position: center;
+            /* Ukuran font lebih kecil untuk hemat ruang */
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            color: black;
+            font-size: 12px;
+            font-weight: bold;
+            /* margin-bottom: 15px; */
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            /* Agar elemen sejajar secara vertikal */
+            /* border-bottom: 2px solid #ddd; */
+            border-bottom: 2px solid black;
+            gap: 20px;
+            /* Beri jarak antara logo dan teks */
+
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+
+        .logo-container img {
+            width: 300px;
+            height: auto;
+        }
+
+
+        .kop-garis {
+            border: 2px solid black;
+            /* margin-top: 10px; */
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            table-layout: auto;
+            /* Menghindari tabel melebar berlebihan */
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 6px;
+            text-align: left;
+            word-wrap: break-word;
+            white-space: normal;
+            /* Agar teks tidak terpotong */
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        .total {
+            font-size: 16px;
+            font-weight: bold;
+            text-align: right;
+            color: #d32f2f;
+            margin-top: 10px;
+        }
+
+        .total-value {
+            text-align: right;
+            font-weight: bold;
+            white-space: nowrap;
+
+            /* Supaya angka tidak terpotong */
+        }
+
+        .approval-container {
+            display: flex;
+            flex-wrap: wrap;
+            /* Agar elemen bisa turun ke bawah */
+            gap: 10px;
+            /* Beri jarak antar elemen */
+            justify-content: space-between;
+            /* Meratakan elemen */
+
+        }
+
+        .approval-box {
+            width: calc(20% - 10px);
+            /* 5 kolom dalam 1 baris */
+            flex: 1 1 calc(20% - 10px);
+            /* 5 kolom dalam 1 baris */
+
+            min-width: 120px;
+            /* Batas minimum agar tetap responsif */
+            text-align: center;
+            border: 1px solid #ddd;
+            padding: 8px;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+            font-size: 10px;
+        }
+
+        /* Pastikan tidak ada margin atau padding ekstra yang membuatnya turun sebelum waktunya */
+
+
+
+        .signature {
+            width: 100px;
+            height: auto;
+            margin-top: 5px;
+            border-bottom: 1px solid black;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 10px;
+            color: #555;
+            margin-top: 20px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .watermark {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.1;
+            /* Atur transparansi */
+            z-index: 1;
+            /* Pastikan berada di belakang konten */
+            width: 100%;
+            /* Sesuaikan ukuran */
+            max-width: 400px;
+            /* Batas maksimal ukuran */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <img src="{{logoBase64}}" class="watermark" alt="Watermark Logo">
+
+        <!-- <div class="header">
+            <div class="logo-container">
+                <img src="{{logoBase64}}" alt="Logo Perusahaan">
+                <p><strong>Jl. Prof. Dr. Latumeten, Jakarta Barat</strong></p>
+            </div>
+        </div> -->
+        <!-- <hr class="kop-garis"> -->
+        <div class="row">
+            <div class="logo-container">
+                <img src="{{logoBase64}}" alt="Logo Perusahaan">
+                <!-- <p><strong>Jl. Prof. Dr. Latumeten, Jakarta Barat</strong></p> -->
+            </div>
+            {{#each invoice}}
+            <div>
+                <p><strong>No Order:</strong> {{REQUEST_ID}}</p>
+                <p><strong>Tanggal:</strong> {{CREATED_DATE}}</p>
+            </div>
+        </div>
+        <!-- <hr class="kop-garis"> -->
+
+        <div>
+            <p><strong>Kantor Pusat/Cabang:</strong> {{officeCode}}/{{officeName}}</p>
+        </div>
+        {{/each}}
+
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Ket</th>
+                    <th>Jenis</th>
+                    <th>Bank</th>
+                    <th>Harga Satuan</th>
+                    <th>QTY</th>
+                    <th>PPN</th>
+                    <th>PPH</th>
+                    <th>Total Harga</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each products}}
+                <tr>
+                    <td>{{KETERANGAN}}</td>
+                    <td>{{JENIS_PEMBIAYAAN}}</td>
+                    <td>{{BANK_NAME}}</td>
+                    <!-- <td>{{HARGA_SATUAN}}</td> -->
+                    <td style="display: flex; justify-content: space-between;">
+                        <span>Rp</span>
+                        {{HARGA_SATUAN}}
+                    </td>
+                    <td>{{QTY}}</td>
+                    <td>{{PPN}}%</td>
+                    <td>{{PPH}}%</td>
+                    <!-- <td>{{TOTAL_ITEM}}</td> -->
+                    <td style="display: flex; justify-content: space-between;">
+                        <span>Rp</span>
+                        {{TOTAL_ITEM}}
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+
+        <!-- <p class="total">Total PPN: {{totalPPN}}</p>
+        <p class="total">Total PPH: {{totalPPH}}</p> -->
+        <!-- <p class="total">Total Tagihan: {{total}}</p>
+
+        <p class="total">Sub Total Tagihan: {{grandTotal}}</p> -->
+
+        <div></div>
+        <table>
+            <!-- <tr>
+                <td class="total-label">Total PPN</td>
+                <td class="total-value">{{totalPPN}}</td>
+            </tr>
+            <tr>
+                <td class="total-label">Total PPH</td>
+                <td class="total-value">{{totalPPH}}</td>
+            </tr>
+            <tr>
+                <td class="total-label">Total Tagihan</td>
+                <td class="total-value">{{total}}</td>
+            </tr> -->
+            <br>
+
+            <!-- <tr>
+                <td class="total-label">Total ITEM</td>
+                <td class="total-value">{{TOTAL_ITEM}}</td>
+            </tr> -->
+            <tr>
+                <!-- <td style="text-align: left;">Rp</td> -->
+
+                <td class="total-label">Total PPN Dikeluarkan</td>
+                <td class="total-value" style="display: flex; justify-content: space-between;">
+                    <span>Rp</span>
+                    {{totalPPN}}
+                </td>
+            </tr>
+            <tr>
+                <td class="total-label">Total PPH Dikeluarkan</td>
+                <td class="total-value" style="display: flex; justify-content: space-between;">
+                    <span>Rp</span>
+                    {{totalPPH}}
+                </td>
+            </tr>
+            <tr>
+                <td class="total-label">Total Tagihan</td>
+                <td class="total-value" style="display: flex; justify-content: space-between;">
+                    <span>Rp</span>
+                    {{grandTotal}}
+                </td>
+            </tr>
+        </table>
+
+        <p class="total">Sub Total Tagihan: {{grandTotal}}</p>
+
+
+
+
+        <!-- <div class="approval-container">
+            {{#each approvals}}
+            <div class="approval-box">
+                <p><strong>{{role}}</strong></p>
+                <p>{{name}}</p>
+                {{#if signature}}
+                <img src="{{signature}}" alt="Tanda Tangan" class="signature" width="100">
+                {{else}}
+                <img src="https://www.shutterstock.com/image-vector/fake-hand-drawn-autographs-set-260nw-2303856541.jpg"
+                    alt="Tanda Tangan" class="signature" width="100">
+                {{/if}}
+
+                <p><strong>{{divisi}}</strong></p>
+                {{#if status}}
+                <p><strong>{{status}} - {{stat_date}}</strong></p>
+                <p><strong>Note: {{reason}}</strong></p>
+
+                {{else}}
+                <p><strong>Pending</strong></p>
+                {{/if}}
+
+            </div>
+            {{/each}}
+        </div> -->
+
+        <div class="approval-container">
+            {{#each approvals}}
+            <div class="approval-box">
+
+                {{#if (eq @index 0)}}
+                <p><strong>Diajukan</strong></p>
+                {{else if (isLastThree @index ../approvals.length)}}
+                <p><strong>Disetujui</strong></p>
+                {{else}}
+                <p><strong>Diperiksa</strong></p>
+                {{/if}}
+
+
+
+
+                {{#if signature}}
+                <img src="{{signature}}" alt="Tanda Tangan" class="signature" width="100">
+                {{else}}
+                <!-- <p>Pending</p> -->
+                <img src="https://www.shutterstock.com/image-vector/fake-hand-drawn-autographs-set-260nw-2303856541.jpg"
+                    alt="Tanda Tangan" class="signature" width="100">
+                {{/if}}
+                <p>{{name}}</p>
+
+                <p><strong>{{divisi}}</strong></p>
+
+                {{#if status}}
+                <p><strong>{{status}} - {{stat_date}}</strong></p>
+                <p><strong>Note: {{reason}}</strong></p>
+
+                {{else}}
+                <p><strong>Pending</strong></p>
+                {{/if}}
+
+            </div>
+            {{/each}}
+        </div>
+
+        <div class="footer">
+            {{#each invoice}}
+            <p>Form Pengajuan ini tergenerated oleh sistem pada {{CREATED_DATE}}</p>
+            {{/each}}
+        </div>
+
+    </div>
+
+</body>
+
+</html>
