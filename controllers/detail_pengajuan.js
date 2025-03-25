@@ -277,6 +277,8 @@ exports.get_pdf_export = async (req, res) => {
     console.log('get_pdf_export')
     req_id = req.query.req_id;
 
+    console.log(req_id);
+
     // ====================== BANG BIL DISINI BANGBIL ======================
     // ====================== BANG BIL DISINI BANGBIL ======================
     // ====================== BANG BIL DISINI BANGBIL ======================
@@ -443,26 +445,32 @@ async function getInvoiceData(invoiceId) {
             A.STATUS as status, 
             A.REASON as reason, 
             A.STAT_DATE as stat_date,
+            A.FILE_NAME as file_name,
             B.NAME AS name, 
             B.DIVISI as divisi
          FROM tf_trn_approve_fppu A
          JOIN TF_MST_DIVISION B ON A.EMPL_CODE = B.PERSONAL_NUMBER
          WHERE A.REQUEST_ID = :invoiceId`,
             bind
-            // [invoiceId]
         );
         console.log('10');
 
 
+        img_base64 = (imgPath) => {
+            const logoBgBase64 = fs.readFileSync(imgPath).toString("base64");
+            return `data:image/png;base64,${logoBgBase64}`;        
+        }
+        
         const formattedApproval = approvals.map((item, index) => ({
             index: index + 1, // Nomor urut dalam tabel
             empl_code: item.empl_code,
             lvl: item.lvl,
             status: item.status,
             reason: item.reason,
-            stat_date: item.stat_date ? item.stat_date.toLocaleDateString("id-ID") : "-",
+            stat_date: item.stat_date ?? ' - ',
             name: item.name,
-            divisi: item.divisi
+            divisi: item.divisi,
+            signature: item.file_name ? img_base64(path.join(__dirname, "..", "file_storage", "ttd_approval", item.file_name)) : null  
         }))
             .sort((a, b) => a.lvl - b.lvl); // Urutkan dari level terendah ke tertinggi
 
