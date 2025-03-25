@@ -251,6 +251,17 @@ exports.get_sig_img_data = async (req, res) => {
 }
 
 
+exports.get_pdf_export = async (req, res) => {
+    console.log('get_pdf_export')
+    req_id = req.query.req_id;
+
+    // ====================== BANG BIL DISINI BANGBIL ======================
+    // ====================== BANG BIL DISINI BANGBIL ======================
+    // ====================== BANG BIL DISINI BANGBIL ======================
+    
+}
+
+
 function give_base64_sig(file_name){    
     try {
         const file_path = path.join(__dirname,'..','file_storage','ttd_approval',file_name)
