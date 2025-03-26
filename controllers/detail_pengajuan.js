@@ -457,8 +457,12 @@ async function getInvoiceData(invoiceId) {
 
 
         img_base64 = (imgPath) => {
-            const logoBgBase64 = fs.readFileSync(imgPath).toString("base64");
-            return `data:image/png;base64,${logoBgBase64}`;        
+            try {
+                const logoBgBase64 = fs.readFileSync(imgPath).toString("base64");
+                return `data:image/png;base64,${logoBgBase64}`;        
+            } catch (error) {
+                return ' - '
+            }
         }
         
         const formattedApproval = approvals.map((item, index) => ({
