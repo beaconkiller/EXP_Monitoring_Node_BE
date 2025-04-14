@@ -315,8 +315,9 @@ exports.new_pengajuan = async (req, res) => {
         }
 
         arr_pengajuan.forEach(el => {
-            delete el['FILE_']
-            delete el['bind_calc']
+            delete el['FILE_'];
+            delete el['bind_calc'];
+            delete el['unf_rek'];
             el['FILE_NAME'] = newFileName;
         });
 

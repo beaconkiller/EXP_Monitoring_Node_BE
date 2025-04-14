@@ -13,7 +13,7 @@ module.exports = {
         MAIL_PW: "pdsa tsvn hemx zgqb",
         LOGS_FORMAT: "dev",
         JWT_SECRET: "secret",
-        THE_KEY_V1 : 'NGASAL',
+        THE_KEY_V1 : 'klapaucius',
       },
       env_dev: {
           PORT: 3026,

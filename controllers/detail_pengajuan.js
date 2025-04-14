@@ -24,6 +24,8 @@ handlebars.registerHelper("isLastThree", function (index, total) {
 
 
 exports.get_detail_pengajuan_item = async (req, res) => {
+    console.log('\n ============== get_detail_pengajuan_item ================ \n')
+
     console.log(req.query);
     req_id = req.query.req_id;
 

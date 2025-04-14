@@ -13,9 +13,11 @@ const user_edit = require('../controllers/user_edit')
 
 const crypt = require('../middleware/mobile/crypt')
 const auth = require('../controllers/mobile/v1/auth')
+const { verify } = require('../middleware/auth_web')
 
 
 router.route('/login_main').get(main.login_main);
+router.route('/session_check').get(verify,main.session_check);
 
 router.use('/mobile/v1/', mobile);
 

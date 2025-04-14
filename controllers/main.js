@@ -1,6 +1,7 @@
 const path = require("path");
 const { simpleExecute } = require("../services/db_e_approve");
 const fs = require('fs');
+const { sign } = require("../middleware/auth_web");
 // const path = required('path')
 
 exports.login_main = async (req, res) => {
@@ -68,6 +69,13 @@ exports.login_main = async (req, res) => {
         //     office_name: 'Depok',
         // }
 
+        let token = sign(usn);
+
+        console.log(xRes[0]);
+        xRes[0].token = token;
+        console.log(xRes[0]);
+        
+
         return res.json({
             isSuccess: true,
             message: 'success',
@@ -82,6 +90,19 @@ exports.login_main = async (req, res) => {
             data: null
         })
     }
+}
+
+
+
+exports.session_check = async(req,res) => {
+    console.log(req.query);
+
+    return res.json({
+        status: 200,
+        isSuccess: true,
+        message: 'success',
+        data: xRes
+    })
 }
 
 
