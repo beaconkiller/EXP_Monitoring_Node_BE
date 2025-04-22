@@ -22,10 +22,14 @@ exports.approval_approve = async (req, res) => {
 
     const arr_fails = [
         'Bukan dalam komite Approve',
-        'Data sudah di approve'
+        'Data sudah di approve',
+        null,
+        '',
+        'No MSG found',
+        'Pengajuan gagal'
     ]
 
-    try {        
+    try {
         let q = `
             set @pesan  = '';
 
@@ -40,13 +44,14 @@ exports.approval_approve = async (req, res) => {
             select @pesan as pesan;
         `
 
-        
+
         let xRes = await simpleExecute(q);
-        let res_msg = xRes.flat().find(item => item?.pesan)?.pesan || "No MSG found";
+        let res_msg = xRes.flat().find(item => item?.pesan)?.pesan || "Pengajuan gagal";
         console.log(res_msg);
 
-        if(arr_fails.includes(res_msg)){
-            return res.status(200).json({
+        if (arr_fails.includes(res_msg)) {
+            return res.json({
+                status : 400,
                 isSuccess: true,
                 data: res_msg
             })
@@ -57,20 +62,20 @@ exports.approval_approve = async (req, res) => {
         // ===========================================================================
         // ========================= SAVING THE SIGNATURE FILE ========================
         // ===========================================================================
-    
+
         save_file(FILE_DATA, FILE_NAME);
 
 
-        if(STATUS == 'AP'){
+        if (STATUS == 'AP') {
 
             // ============================== USER APPROVED ==============================
-            
+
 
             // ===========================================================================
             // ================== SEND EMAIL TO NEXT APPROVAL COMMITTEE  =================
             // ===========================================================================
 
-            if(await f_is_last_person(REQ_ID, EMPL_CODE)){
+            if (await f_is_last_person(REQ_ID, EMPL_CODE)) {
 
                 // ===========================================================================
                 // ========== IF THE USER IS THE LAST PERSON AND FINISHED THE ORDER ==========
@@ -80,13 +85,13 @@ exports.approval_approve = async (req, res) => {
                 // ===========================================================================
                 // ===================== GET CURRENT ORDER'S CREATOR CODE ====================
                 // ===========================================================================d
-            
+
                 let curr_order_data = await f_get_curr_order(REQ_ID);
                 let creator_code = curr_order_data[0]['EMPL_CODE'];
                 let kat_request = curr_order_data[0]['KATEGORI_REQUEST']
 
                 let mail = curr_order_data[0]['email'];
-                if(mail != null){
+                if (mail != null) {
                     let mail_str = `
                         <p>
                             Pengajuan anda telah selesai dengan detail berikut : 
@@ -98,7 +103,7 @@ exports.approval_approve = async (req, res) => {
                     `
                     sendMail.sendMail(mail, mail_str);
                 }
-            }else{
+            } else {
 
                 // ===========================================================================
                 // ====================== FIND CURRENT APPROVAL COMMITTEE =====================
@@ -106,9 +111,9 @@ exports.approval_approve = async (req, res) => {
 
                 var act_pengajuan = await this.search_curr_request_id(REQ_ID);
 
-                if(act_pengajuan.length > 0){
+                if (act_pengajuan.length > 0) {
                     let mail = act_pengajuan[0]['email']
-                    if(mail != null){
+                    if (mail != null) {
                         let mail_str = `
                             <p>
                                 Anda memiliki pengajuan untuk di approve dengan detail berikut : 
@@ -121,19 +126,19 @@ exports.approval_approve = async (req, res) => {
                         sendMail.sendMail(mail, mail_str);
                     }
                 }
-            }            
+            }
 
-        }else if(STATUS == 'RJ'){
+        } else if (STATUS == 'RJ') {
 
             // ===========================================================================
             // ====================== USER HAS REJECTED THE REQUEST ======================
             // ===========================================================================
-            
+
 
             // ===========================================================================
             // ===================== GET CURRENT ORDER'S CREATOR CODE ====================
             // ===========================================================================d
-        
+
             let curr_order_data = await f_get_curr_order(REQ_ID);
             let creator_code = curr_order_data[0]['EMPL_CODE'];
             let kat_request = curr_order_data[0]['KATEGORI_REQUEST']
@@ -141,7 +146,7 @@ exports.approval_approve = async (req, res) => {
             console.log(curr_order_data);
 
             let mail = curr_order_data[0]['email'];
-            if(mail != null){
+            if (mail != null) {
                 let mail_str = `
                     <p>
                         Pengajuan anda telah di reject dengan detail berikut : 
@@ -152,15 +157,15 @@ exports.approval_approve = async (req, res) => {
                     <a href="http://192.168.18.4:3026/">Go to E-Approval</a>
                 `
                 sendMail.sendMail(mail, mail_str);
-            }            
+            }
         }
 
-        
+
         // return res.status(200).json({
         //     isSuccess: true,
         //     data: 'res_msg'
         // })
-        
+
         return res.status(200).json({
             isSuccess: true,
             data: res_msg
@@ -179,7 +184,7 @@ exports.approval_approve = async (req, res) => {
 
 
 
-exports.search_curr_request_id = async(req_id) => {
+exports.search_curr_request_id = async (req_id) => {
     log_('search_curr_request_id');
 
     let q = `
@@ -207,7 +212,7 @@ save_file = (file_data, file_name) => {
 
 
     let fileStorage_path = path.join(__dirname, '..', 'file_storage', 'ttd_approval')
-    let fileData =  file_data;
+    let fileData = file_data;
     const binary_data = Buffer.from(fileData, 'base64');
 
     // console.log(fileData);
@@ -223,9 +228,9 @@ save_file = (file_data, file_name) => {
 
 
 
-f_is_last_person = async(req_id, EMPL_CODE) => {
+f_is_last_person = async (req_id, EMPL_CODE) => {
     log_('f_is_last_person')
-    
+
     q = `
         select * from tf_trn_approve_fppu ttaf 
         where 
@@ -238,9 +243,9 @@ f_is_last_person = async(req_id, EMPL_CODE) => {
     console.log(xRes);
 
     position = 0;
-    for(let i = 0 ; i<xRes.length ; i++){
+    for (let i = 0; i < xRes.length; i++) {
         curr_empl_code = xRes[i]['EMPL_CODE'];
-        if(EMPL_CODE == curr_empl_code){
+        if (EMPL_CODE == curr_empl_code) {
             position = i;
             break;
         }
@@ -250,10 +255,10 @@ f_is_last_person = async(req_id, EMPL_CODE) => {
     console.log(`approval length : ${xRes.length}`);
     console.log(`committee position : ${position}`)
 
-    
-    if(position == xRes.length){
+
+    if (position == xRes.length) {
         return true;
-    }else{
+    } else {
         return false;
     }
 }
@@ -261,10 +266,10 @@ f_is_last_person = async(req_id, EMPL_CODE) => {
 
 
 
-f_get_curr_order = async(req_id) => {
+f_get_curr_order = async (req_id) => {
     log_('f_get_curr_order')
-    
-    try {        
+
+    try {
         q = `
             select ttaf.*, hme.email, ttfh.KATEGORI_REQUEST from tf_trn_approve_fppu ttaf 
             join tf_absensi.hr_mst_employees hme on hme.EMPL_CODE = ttaf.EMPL_CODE
@@ -273,10 +278,10 @@ f_get_curr_order = async(req_id) => {
                 ttaf.REQUEST_ID = '${req_id}'
             order by LVL    
         `
-    
+
         var xRes = await simpleExecute(q);
-    
-        return xRes;   
+
+        return xRes;
     } catch (error) {
         console.log(error);
         return false;

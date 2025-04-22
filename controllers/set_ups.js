@@ -322,6 +322,15 @@ exports.get_jenis_pembayaran = async (req, res) => {
         return [limit, offset]
     }
 
+    f_search = () => {
+        if(q_search != ''){
+            return `
+                where NAME_TYPE like "%${q_search}%"
+            `;
+        }else{
+            return ``;
+        }
+    }
     
     try {
 
@@ -331,6 +340,7 @@ exports.get_jenis_pembayaran = async (req, res) => {
 
         let q = `
             select * from tf_mst_type_request tmk
+            ${f_search()} 
             order by NAME_TYPE
             LIMIT ${f_paging()[0]}
             OFFSET ${f_paging()[1]}        

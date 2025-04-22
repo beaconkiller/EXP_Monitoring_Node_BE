@@ -502,6 +502,7 @@ exports.get_newest_pengajuan = async (req, res) => {
         })
     }
     catch (e) {
+        console.log('\n +++++++++++ ERR get_newest_pengajuan +++++++++++ \n')
         console.error(e.message)
         res.status(500).json({
             isSuccess: false,
@@ -528,6 +529,7 @@ get_newest_pengajuan_local = async (empl_code) => {
         return xRes[0]['REQUEST_ID'];
     }
     catch (e) {
+        console.log('\n +++++++++++ ERR get_newest_pengajuan_local +++++++++++ \n')
         return e;
     }
 }
