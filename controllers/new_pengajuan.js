@@ -304,6 +304,22 @@ exports.new_pengajuan = async (req, res) => {
     
     try {
 
+
+
+        // =======================================================================
+        // ============================= VARIABLES ===============================
+        // =======================================================================
+        
+        const arr_fails = [
+            'Bukan dalam komite Approve',
+            'Data sudah di approve',
+            null,
+            '',
+            'No MSG found',
+            'Pengajuan gagal'
+        ]
+    
+
         // =======================================================================
         // =========================== DATA CLEANING =============================
         // =======================================================================
@@ -364,8 +380,19 @@ exports.new_pengajuan = async (req, res) => {
 
         // console.log(q);
 
+
+        
         let xRes = await simpleExecute(q);
-        let res_msg = xRes.flat().find(item => item?.PESAN)?.PESAN || "No PESAN found";
+        let res_msg = xRes.flat().find(item => item?.PESAN)?.PESAN || "Pengajuan gagal";
+
+        if (arr_fails.includes(res_msg)) {
+            return res.json({
+                status : 400,
+                isSuccess: true,
+                data: res_msg
+            })
+        }
+
 
 
 
