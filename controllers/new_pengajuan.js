@@ -196,14 +196,14 @@ exports.get_user_cabang = async (req, res) => {
     // ])
 
     const f_cabangPusat = () => {
-        if(empl_branch != 100){
+        if (empl_branch != 100) {
             return `
             select distinct (personal_subarea), (cabang)  from hr_join_office_v 
             where 
                 personal_subarea in ("${personal_subarea}","T001")
                 -- and empl_branch in("${empl_branch}", "200")
             `
-        }else{
+        } else {
             return `
                 select distinct (personal_subarea), cabang from hr_join_office_v 
                 where empl_branch = '200'
@@ -216,7 +216,7 @@ exports.get_user_cabang = async (req, res) => {
             `
         }
     }
-    
+
     try {
         let q = f_cabangPusat();
 
@@ -301,7 +301,7 @@ exports.new_pengajuan = async (req, res) => {
 
 
 
-    
+
     try {
 
 
@@ -309,7 +309,7 @@ exports.new_pengajuan = async (req, res) => {
         // =======================================================================
         // ============================= VARIABLES ===============================
         // =======================================================================
-        
+
         const arr_fails = [
             'Bukan dalam komite Approve',
             'Data sudah di approve',
@@ -318,16 +318,16 @@ exports.new_pengajuan = async (req, res) => {
             'No MSG found',
             'Pengajuan gagal'
         ]
-    
+
 
         // =======================================================================
         // =========================== DATA CLEANING =============================
         // =======================================================================
-        
+
         let newFileName = '';
-        if(file_name.length > 0){
+        if (file_name.length > 0) {
             console.log('there is file')
-            newFileName = await change_file_name(selected_file,user_data);
+            newFileName = await change_file_name(selected_file, user_data);
         }
 
         arr_pengajuan.forEach(el => {
@@ -343,7 +343,7 @@ exports.new_pengajuan = async (req, res) => {
             delete el['function_name'];
             delete el['office_code'];
             delete el['office_name'];
-            
+
         });
 
         console.log(arr_pengajuan)
@@ -381,13 +381,13 @@ exports.new_pengajuan = async (req, res) => {
         // console.log(q);
 
 
-        
+
         let xRes = await simpleExecute(q);
         let res_msg = xRes.flat().find(item => item?.PESAN)?.PESAN || "Pengajuan gagal";
 
         if (arr_fails.includes(res_msg)) {
             return res.json({
-                status : 400,
+                status: 400,
                 isSuccess: true,
                 data: res_msg
             })
@@ -400,7 +400,7 @@ exports.new_pengajuan = async (req, res) => {
         // ===================== HANDLING THE FILE UPLOAD =======================
         // =======================================================================
 
-        if(file_name.length > 0){
+        if (file_name.length > 0) {
 
             // -----------------------------------------------------------------------
             // ---------------------- GETTING THE FILE EXTENSION ----------------------
@@ -414,14 +414,14 @@ exports.new_pengajuan = async (req, res) => {
             // -----------------------------------------------------------------------
             // ------------ CHANGING THE FILE NAME WITH NIK ANDs TIMESTAMP ------------
             // -----------------------------------------------------------------------
-            
+
             const act_date = new Date();
-            const dd = String(act_date.getDate()).padStart(2, '0'); 
-            const mm = String(act_date.getMonth() + 1).padStart(2, '0'); 
-            const yy = String(act_date.getFullYear()).slice(-2); 
-            const hh = String(act_date.getHours()).padStart(2, '0'); 
-            const minutes = String(act_date.getMinutes()).padStart(2, '0'); 
-            const ss = String(act_date.getSeconds()).padStart(2, '0'); 
+            const dd = String(act_date.getDate()).padStart(2, '0');
+            const mm = String(act_date.getMonth() + 1).padStart(2, '0');
+            const yy = String(act_date.getFullYear()).slice(-2);
+            const hh = String(act_date.getHours()).padStart(2, '0');
+            const minutes = String(act_date.getMinutes()).padStart(2, '0');
+            const ss = String(act_date.getSeconds()).padStart(2, '0');
 
             const newFileName = `${user_data['empl_code']}_${user_data['office_code']}_${f_helper.get_timestamp_string()}.${file_ext_name}`;
             // console.log(newFileName);
@@ -431,13 +431,13 @@ exports.new_pengajuan = async (req, res) => {
             // ------------ PUTTING THE NEW FILE NAME IN THE DATA WE'RE INSERTING ------------
             // -----------------------------------------------------------------------------
 
-            let fileStorage_path = path.join(__dirname, '..', 'file_storage', 'file_pengajuan')        
+            let fileStorage_path = path.join(__dirname, '..', 'file_storage', 'file_pengajuan')
             await f_helper.file_upload(newFileName, selected_file['file_base64'], fileStorage_path)
         }
 
         let file_path = path.join(__dirname, '..', 'file_storage', 'ttd_approval');
         await f_helper.file_upload(get_ttd_filename(base64_sig_data, user_data), base64_sig_data, file_path);
-        
+
 
         // =======================================================================
         // ===================== MAILING THE NEXT COMMITTEE =======================
@@ -446,8 +446,8 @@ exports.new_pengajuan = async (req, res) => {
 
         var act_request = await get_newest_pengajuan_local(user_data['empl_code']);
         var act_req_data = await search_curr_request_id(act_request);
-        
-        if(act_req_data[0]['email'] != null){
+
+        if (act_req_data[0]['email'] != null) {
             let mail_str = `
                 <p>
                     Anda memiliki pengajuan untuk di approve dengan detail berikut : 
@@ -455,12 +455,12 @@ exports.new_pengajuan = async (req, res) => {
                     <br>Nomor Pengajuan : ${act_req_data[0]['REQUEST_ID']}
                     <br>Judul Pengajuan : ${act_req_data[0]['KATEGORI_REQUEST']}
                 </p>
-                <a href="http://192.168.18.4:3026/">Go to E-Approval</a>
+                <a href="http://182.253.238.218:4026/">Go to E-Approval</a>
             `
 
             sendMail.sendMail(act_req_data[0]['email'], mail_str);
         }
-        
+
 
         return res.json({
             isSuccess: true,
@@ -489,18 +489,18 @@ exports.new_pengajuan = async (req, res) => {
 
 
 
-get_ttd_filename = (base64_sig_data,user_data) => {
+get_ttd_filename = (base64_sig_data, user_data) => {
     file_ext_str = base64_sig_data.split(',')[0].split(';')[0].split('/')[1];
 
     const act_date = new Date();
-    const dd = String(act_date.getDate()).padStart(2, '0'); 
-    const mm = String(act_date.getMonth() + 1).padStart(2, '0'); 
-    const yy = String(act_date.getFullYear()).slice(-2); 
-    const hh = String(act_date.getHours()).padStart(2, '0'); 
-    const minutes = String(act_date.getMinutes()).padStart(2, '0'); 
-    const ss = String(act_date.getSeconds()).padStart(2, '0');    
+    const dd = String(act_date.getDate()).padStart(2, '0');
+    const mm = String(act_date.getMonth() + 1).padStart(2, '0');
+    const yy = String(act_date.getFullYear()).slice(-2);
+    const hh = String(act_date.getHours()).padStart(2, '0');
+    const minutes = String(act_date.getMinutes()).padStart(2, '0');
+    const ss = String(act_date.getSeconds()).padStart(2, '0');
 
-    
+
     file_name_str = `TTD_${user_data['empl_code']}_${dd}${mm}${yy}_${hh}${minutes}${ss}.${file_ext_str}`
 
     return file_name_str;
@@ -562,37 +562,37 @@ get_newest_pengajuan_local = async (empl_code) => {
 }
 
 
- 
 
 
-change_file_name = async(selected_file, user_data) => {
+
+change_file_name = async (selected_file, user_data) => {
 
     try {
         // -----------------------------------------------------------------------
         // ---------------------- GETTING THE FILE EXTENSION ----------------------
         // -----------------------------------------------------------------------
-    
+
         file_ext_name = selected_file['file_base64'].split(';')[0].split('/')[1];
         console.log(file_ext_name);
-        
-    
-    
+
+
+
         // -----------------------------------------------------------------------
         // ------------ CHANGING THE FILE NAME WITH NIK ANDs TIMESTAMP ------------
         // -----------------------------------------------------------------------
-        
+
         const act_date = new Date();
-        const dd = String(act_date.getDate()).padStart(2, '0'); 
-        const mm = String(act_date.getMonth() + 1).padStart(2, '0'); 
-        const yy = String(act_date.getFullYear()).slice(-2); 
-        const hh = String(act_date.getHours()).padStart(2, '0'); 
-        const minutes = String(act_date.getMinutes()).padStart(2, '0'); 
-        const ss = String(act_date.getSeconds()).padStart(2, '0'); 
-    
+        const dd = String(act_date.getDate()).padStart(2, '0');
+        const mm = String(act_date.getMonth() + 1).padStart(2, '0');
+        const yy = String(act_date.getFullYear()).slice(-2);
+        const hh = String(act_date.getHours()).padStart(2, '0');
+        const minutes = String(act_date.getMinutes()).padStart(2, '0');
+        const ss = String(act_date.getSeconds()).padStart(2, '0');
+
         const newFileName = `${user_data['empl_code']}_${user_data['office_code']}_${dd}${mm}${yy}_${hh}${minutes}${ss}.${file_ext_name}`;
-    
+
         return newFileName;
-        
+
     } catch (error) {
         console.log(error);
     }
