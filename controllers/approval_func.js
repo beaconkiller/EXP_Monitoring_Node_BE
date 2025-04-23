@@ -99,7 +99,7 @@ exports.approval_approve = async (req, res) => {
                             <br>Nomor Pengajuan : ${REQ_ID}
                             <br>Judul Pengajuan : ${kat_request}
                         </p>
-                        <a href="http://182.253.238.218:4026/">Go to E-Approval</a>
+                        <a href="http://182.253.238.218:4026/request-dtl?id=${REQ_ID}">Go to E-Approval</a>
                     `
                     sendMail.sendMail(mail, mail_str);
                 }
@@ -121,7 +121,7 @@ exports.approval_approve = async (req, res) => {
                                 <br>Nomor Pengajuan : ${REQ_ID}
                                 <br>Judul Pengajuan : ${act_pengajuan[0]['KATEGORI_REQUEST']}
                             </p>
-                            <a href="http://182.253.238.218:4026/">Go to E-Approval</a>
+                            <a href="http://182.253.238.218:4026/request-dtl?id=${REQ_ID}">Go to E-Approval</a>
                         `
                         sendMail.sendMail(mail, mail_str);
                     }
@@ -154,7 +154,7 @@ exports.approval_approve = async (req, res) => {
                         <br>Nomor Pengajuan : ${REQ_ID}
                         <br>Judul Pengajuan : ${kat_request}
                     </p>
-                    <a href="http://182.253.238.218:4026/">Go to E-Approval</a>
+                    <a href="http://182.253.238.218:4026/request-dtl?id=${REQ_ID}">Go to E-Approval</a>
                 `
                 sendMail.sendMail(mail, mail_str);
             }

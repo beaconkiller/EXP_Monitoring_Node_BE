@@ -455,7 +455,7 @@ exports.new_pengajuan = async (req, res) => {
                     <br>Nomor Pengajuan : ${act_req_data[0]['REQUEST_ID']}
                     <br>Judul Pengajuan : ${act_req_data[0]['KATEGORI_REQUEST']}
                 </p>
-                <a href="http://182.253.238.218:4026/">Go to E-Approval</a>
+                <a href="http://182.253.238.218:4026/request-dtl?id=${act_req_data[0]['REQUEST_ID']}">Go to E-Approval</a>
             `
 
             sendMail.sendMail(act_req_data[0]['email'], mail_str);
