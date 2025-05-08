@@ -91,6 +91,8 @@ exports.approval_approve = async (req, res) => {
                 let creator_code = curr_order_data[0]['EMPL_CODE'];
                 let kat_request = curr_order_data[0]['KATEGORI_REQUEST']
 
+                console.log(curr_order_data);
+
                 let mail = curr_order_data[0]['email'];
                 if (mail != null) {
                     let mail_str = `
@@ -104,14 +106,21 @@ exports.approval_approve = async (req, res) => {
                     `
                     sendMail.sendMail(mail, mail_str);
                 }
+                await send_whatsapp(curr_order_data[0]['NO_HP'], curr_order_data[0]['REQUEST_ID'], 
+                    `Pengajuan anda telah selesai.%0D%0A%0D%0Ahttps://approval.transfinance.id/request-dtl?id=${curr_order_data[0]['REQUEST_ID']}        
+                `);
+
             } else {
 
                 // ===========================================================================
                 // ====================== FIND CURRENT APPROVAL COMMITTEE =====================
                 // ===========================================================================
 
+                
                 var act_pengajuan = await this.search_curr_request_id(REQ_ID);
-
+                
+                console.log(act_pengajuan)
+                
                 if (act_pengajuan.length > 0) {
                     let mail = act_pengajuan[0]['email']
                     if (mail != null) {
@@ -127,12 +136,8 @@ exports.approval_approve = async (req, res) => {
                         sendMail.sendMail(mail, mail_str);
                     }
 
-                    send_whatsapp(act_pengajuan[0]['NO_HP'], REQ_ID, `
-                        Anda memiliki pengajuan untuk di approve dengan detail berikut : 
-                        Nomor Pengajuan : ${REQ_ID}
-                        Judul Pengajuan : ${act_pengajuan[0]['KATEGORI_REQUEST']}
-
-                        https://approval.transfinance.id/request-dtl?id=${REQ_ID}
+                    await send_whatsapp(act_pengajuan[0]['NO_HP'], act_pengajuan[0]['REQUEST_ID'], 
+                        `Anda memiliki pengajuan untuk di approve.%0D%0A%0D%0Ahttps://approval.transfinance.id/request-dtl?id=${act_pengajuan[0]['REQUEST_ID']}        
                     `);
                 }
             }
@@ -168,12 +173,8 @@ exports.approval_approve = async (req, res) => {
                 sendMail.sendMail(mail, mail_str);
             }
 
-            send_whatsapp(act_pengajuan[0]['NO_HP'], REQ_ID, `
-                Pengajuan anda telah di reject dengan detail berikut :
-                Nomor Pengajuan : ${REQ_ID}
-                Judul Pengajuan : ${act_pengajuan[0]['KATEGORI_REQUEST']}
-
-                https://approval.transfinance.id/request-dtl?id=${REQ_ID}
+            await send_whatsapp(curr_order_data[0]['NO_HP'], curr_order_data[0]['REQUEST_ID'], 
+                `Pengajuan anda telah di reject.%0D%0A%0D%0Ahttps://approval.transfinance.id/request-dtl?id=${curr_order_data[0]['REQUEST_ID']}        
             `);
         }
 
@@ -289,7 +290,7 @@ f_get_curr_order = async (req_id) => {
 
     try {
         q = `
-            select ttaf.*, hme.email, ttfh.KATEGORI_REQUEST from tf_trn_approve_fppu ttaf 
+            select ttaf.*, hme.email, hme.NO_HP, ttfh.KATEGORI_REQUEST from tf_trn_approve_fppu ttaf 
             join tf_absensi.hr_mst_employees hme on hme.EMPL_CODE = ttaf.EMPL_CODE
             join tf_eappr.tf_trn_fppu_hdrs ttfh on ttfh.REQUEST_ID = ttaf.REQUEST_ID 
             where 
