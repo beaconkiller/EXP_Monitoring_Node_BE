@@ -1,6 +1,7 @@
 var db_e_approve = require('./services/db_e_approve');
 const conf_e_approve = require('./config/database')
 const webServer = require('./services/web-server');
+const { send_whatsapp } = require('./controllers/f_whatsapp');
 
 
 

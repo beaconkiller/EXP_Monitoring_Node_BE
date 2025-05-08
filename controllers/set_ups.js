@@ -317,7 +317,7 @@ exports.get_jenis_pembayaran = async (req, res) => {
 
 
     f_paging = () => {
-        let limit = 10
+        let limit = 8
         let offset = (q_page-1) * limit
         return [limit, offset]
     }

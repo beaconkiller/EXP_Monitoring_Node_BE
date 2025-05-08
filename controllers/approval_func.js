@@ -188,7 +188,8 @@ exports.search_curr_request_id = async (req_id) => {
     log_('search_curr_request_id');
 
     let q = `
-        select * from TF_EAPPR.TF_LIST_USER_APPROVED_V
+        select T1.*, mst_e.NO_HP from TF_EAPPR.TF_LIST_USER_APPROVED_V T1
+        join tf_absensi.hr_mst_employees mst_e on mst_e.EMPL_CODE = T1.EMPL_CODE
         where REQUEST_ID = '${req_id}';
     `
 

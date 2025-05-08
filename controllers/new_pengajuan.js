@@ -4,6 +4,7 @@ const fs = require('fs');
 const f_helper = require('./f_helper');
 const { search_curr_request_id } = require("./approval_func");
 const sendMail = require("./f_mailer");
+const { send_whatsapp } = require("./f_whatsapp");
 // const path = required('path')
 
 
@@ -460,6 +461,9 @@ exports.new_pengajuan = async (req, res) => {
 
             sendMail.sendMail(act_req_data[0]['email'], mail_str);
         }
+
+        await send_whatsapp(act_req_data[0]['NO_HP'], act_req_data[0]['REQUEST_ID']);
+
 
 
         return res.json({

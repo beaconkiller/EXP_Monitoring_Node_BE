@@ -18,6 +18,7 @@ exports.login_main = async (req, res) => {
                 hmjc.JOB_DESCRIPTION,
                 mst_e.email,
                 mst_e.supervisor_id,
+                mst_e.NO_HP,
                 sec_usr.USER_PWD,
                 (select PERSONAL_SUBAREA from tf_mst_division  where personal_number = fme.empl_code) as personal_subarea
             from tf_absensi.fs_mst_employees fme 
@@ -35,9 +36,9 @@ exports.login_main = async (req, res) => {
         console.log(xRes);
     
 
-        // ------------------------------------------------------------------
+        // --------------------------------------------------------------------
         // ------------- IF DATA IS LESS THAN 1 OR 0 OR NOT EXIST -------------
-        // ------------------------------------------------------------------
+        // --------------------------------------------------------------------
 
         if(xRes.length == 0 ){
             return res.json({
