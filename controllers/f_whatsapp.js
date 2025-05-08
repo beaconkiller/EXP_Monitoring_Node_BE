@@ -1,7 +1,7 @@
 const { default: axios } = require("axios");
 
 
-exports.send_whatsapp = async(no_telp, req_id) => {
+exports.send_whatsapp = async(no_telp, req_id, msg) => {
     console.log('=============== send_whatsapp ===============');
     console.log(no_telp);
 
@@ -13,7 +13,7 @@ exports.send_whatsapp = async(no_telp, req_id) => {
     }
 
     try {
-        const url_base = `https://testi.transfinance.id/send-message?api_key=TFj@y@654321&sender=6287716598524&number=${no_telp}&message=`
+        const url_base = `https://testi.transfinance.id/send-message?api_key=TFj@y@654321&sender=6287716598524&number=${no_telp}&message=${msg}`
         const url = `${url_base}https://approval.transfinance.id/request-dtl?id=${req_id}`;
     
         console.log(url);

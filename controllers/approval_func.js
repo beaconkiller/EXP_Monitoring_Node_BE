@@ -3,6 +3,7 @@ const { simpleExecute } = require("../services/db_e_approve");
 const sendMail = require('./f_mailer')
 const { log_ } = require('./f_helper')
 const fs = require('fs');
+const { send_whatsapp } = require("./f_whatsapp");
 
 
 // ===============================================================
@@ -125,6 +126,14 @@ exports.approval_approve = async (req, res) => {
                         `
                         sendMail.sendMail(mail, mail_str);
                     }
+
+                    send_whatsapp(act_pengajuan[0]['NO_HP'], REQ_ID, `
+                        Anda memiliki pengajuan untuk di approve dengan detail berikut : 
+                        Nomor Pengajuan : ${REQ_ID}
+                        Judul Pengajuan : ${act_pengajuan[0]['KATEGORI_REQUEST']}
+
+                        https://approval.transfinance.id/request-dtl?id=${REQ_ID}
+                    `);
                 }
             }
 
@@ -158,6 +167,14 @@ exports.approval_approve = async (req, res) => {
                 `
                 sendMail.sendMail(mail, mail_str);
             }
+
+            send_whatsapp(act_pengajuan[0]['NO_HP'], REQ_ID, `
+                Pengajuan anda telah di reject dengan detail berikut :
+                Nomor Pengajuan : ${REQ_ID}
+                Judul Pengajuan : ${act_pengajuan[0]['KATEGORI_REQUEST']}
+
+                https://approval.transfinance.id/request-dtl?id=${REQ_ID}
+            `);
         }
 
 
@@ -277,7 +294,7 @@ f_get_curr_order = async (req_id) => {
             join tf_eappr.tf_trn_fppu_hdrs ttfh on ttfh.REQUEST_ID = ttaf.REQUEST_ID 
             where 
                 ttaf.REQUEST_ID = '${req_id}'
-            order by LVL    
+            order by LVL
         `
 
         var xRes = await simpleExecute(q);

@@ -462,7 +462,14 @@ exports.new_pengajuan = async (req, res) => {
             sendMail.sendMail(act_req_data[0]['email'], mail_str);
         }
 
-        await send_whatsapp(act_req_data[0]['NO_HP'], act_req_data[0]['REQUEST_ID']);
+        
+        await send_whatsapp(act_req_data[0]['NO_HP'], act_req_data[0]['REQUEST_ID'], `
+            Anda memiliki pengajuan untuk di approve dengan detail berikut : 
+            Nomor Pengajuan : ${act_req_data[0]['REQUEST_ID']}
+            Judul Pengajuan : ${act_req_data[0]['KATEGORI_REQUEST']}
+
+            https://approval.transfinance.id/request-dtl?id=${act_req_data[0]['REQUEST_ID']}        
+        `);
 
 
 
