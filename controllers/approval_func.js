@@ -28,7 +28,8 @@ exports.approval_approve = async (req, res) => {
         null,
         '',
         'No MSG found',
-        'Pengajuan gagal'
+        'Pengajuan gagal',
+        'Request masuk status RJ/RC'
     ]
 
     try {
@@ -51,7 +52,9 @@ exports.approval_approve = async (req, res) => {
         let res_msg = xRes.flat().find(item => item?.pesan)?.pesan || "Pengajuan gagal";
         console.log(res_msg);
 
-        if (arr_fails.includes(res_msg)) {
+        if (arr_fails.includes(res_msg.trim())) {
+
+            console.log('pengajuan gagal');
             return res.json({
                 status: 400,
                 isSuccess: true,
