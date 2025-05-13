@@ -175,6 +175,7 @@ exports.get_table_data_approval = async (req, res) => {
             ) ta on ta.REQUEST_ID = ttfh.REQUEST_ID 
             where 
                 ta.EMPL_CODE = '${empl_code}'
+                 and ttfh.status = 'OP'
                 ${f_filter()}
                 ${f_search()}            
             
