@@ -14,13 +14,15 @@ exports.user_change_email = async (req, res) => {
     let empl_code = req.body['empl_code'];
     let mail_to_change = req.body['mail_to_change'];
     let hp_to_change = req.body['phone_to_change'];
+    let hp_to_change_2 = req.body['phone_to_change_2'];
 
     try {        
         let q = `
             UPDATE tf_absensi.hr_mst_employees
                 SET 
                     EMAIL='${mail_to_change}',
-                    NO_HP='${hp_to_change}'
+                    NO_HP='${hp_to_change}',
+                    NO_HP_2='${hp_to_change_2}'
                 WHERE EMPL_CODE='${empl_code}'
             ;
         `

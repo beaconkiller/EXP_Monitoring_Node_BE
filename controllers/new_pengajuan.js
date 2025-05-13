@@ -5,6 +5,7 @@ const f_helper = require('./f_helper');
 const { search_curr_request_id } = require("./approval_func");
 const sendMail = require("./f_mailer");
 const { send_whatsapp } = require("./f_whatsapp");
+const moment = require('moment');
 // const path = required('path')
 
 
@@ -448,6 +449,8 @@ exports.new_pengajuan = async (req, res) => {
         var act_request = await get_newest_pengajuan_local(user_data['empl_code']);
         var act_req_data = await search_curr_request_id(act_request);
 
+        console.log(act_req_data);
+
         if (act_req_data[0]['email'] != null) {
             let mail_str = `
                 <p>
@@ -459,13 +462,28 @@ exports.new_pengajuan = async (req, res) => {
                 <a href="http://182.253.238.218:4026/request-dtl?id=${act_req_data[0]['REQUEST_ID']}">Go to E-Approval</a>
             `
 
-            sendMail.sendMail(act_req_data[0]['email'], mail_str);
+            sendMail.sendMail(act_req_data[0]['email'], mail_str, act_req_data[0]['KATEGORI_REQUEST']);
         }
 
-        
-        await send_whatsapp(act_req_data[0]['NO_HP'], act_req_data[0]['REQUEST_ID'], 
-            `Anda memiliki pengajuan untuk di approve.%0D%0A%0D%0Ahttps://approval.transfinance.id/request-dtl?id=${act_req_data[0]['REQUEST_ID']}        
-        `);
+        const lineBr = '%0D%0A%0D%0A';
+                
+        await send_whatsapp(
+            act_req_data[0]['NO_HP'], act_req_data[0]['REQUEST_ID'], 
+            `${act_req_data[0]['EMPL_NAME_PEMBUAT']} meminta approve.${lineBr}` +
+            `Nomor   : ${act_req_data[0]['REQUEST_ID']} %0D%0A` +
+            `Tanggal  : ${moment(act_req_data[0]['CREATED_DATE'], 'YYYY-MM-DD').format("DD-MM-YYYY")} %0D%0A`+
+            `Judul      : *${act_req_data[0]['KATEGORI_REQUEST']}* ${lineBr}` +
+            `https://approval.transfinance.id/request-dtl?id=${act_req_data[0]['REQUEST_ID']}`        
+        );
+                
+        await send_whatsapp(
+            act_req_data[0]['NO_HP_2'], act_req_data[0]['REQUEST_ID'], 
+            `${act_req_data[0]['EMPL_NAME_PEMBUAT']} meminta approve.${lineBr}` +
+            `Nomor   : ${act_req_data[0]['REQUEST_ID']} %0D%0A` +
+            `Tanggal  : ${moment(act_req_data[0]['CREATED_DATE'], 'YYYY-MM-DD').format("DD-MM-YYYY")} %0D%0A`+
+            `Judul      : *${act_req_data[0]['KATEGORI_REQUEST']}* ${lineBr}` +
+            `https://approval.transfinance.id/request-dtl?id=${act_req_data[0]['REQUEST_ID']}`        
+        );
 
 
 

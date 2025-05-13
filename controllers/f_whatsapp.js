@@ -15,17 +15,13 @@ exports.send_whatsapp = async(no_telp, req_id, msg) => {
 
     try {
         const url_base = `https://testi.transfinance.id/send-message?api_key=TFj@y@654321&sender=6287716598524&number=${no_telp}&message=${msg}`
-        console.log(url_base);
-        // const url = `${url_base}https://approval.transfinance.id/request-dtl?id=${req_id}`;
-    
-        console.log(url_base);
     
         const response = await axios({
             method: 'get',
             url: url_base,
         });
     
-        console.log(response.data.code);
+        console.log(response.data);
     } catch (error) {
         console.error(error)
         console.error(error.status);

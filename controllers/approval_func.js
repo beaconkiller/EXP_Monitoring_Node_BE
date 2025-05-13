@@ -3,6 +3,7 @@ const { simpleExecute } = require("../services/db_e_approve");
 const sendMail = require('./f_mailer')
 const { log_ } = require('./f_helper')
 const fs = require('fs');
+const moment = require('moment');
 const { send_whatsapp } = require("./f_whatsapp");
 
 
@@ -104,11 +105,27 @@ exports.approval_approve = async (req, res) => {
                         </p>
                         <a href="http://182.253.238.218:4026/request-dtl?id=${REQ_ID}">Go to E-Approval</a>
                     `
-                    sendMail.sendMail(mail, mail_str);
+                    sendMail.sendMail(mail, mail_str, kat_request);
                 }
-                await send_whatsapp(curr_order_data[0]['NO_HP'], curr_order_data[0]['REQUEST_ID'], 
-                    `Pengajuan anda telah selesai.%0D%0A%0D%0Ahttps://approval.transfinance.id/request-dtl?id=${curr_order_data[0]['REQUEST_ID']}        
-                `);
+
+                const lineBr = '%0D%0A%0D%0A'
+
+                send_whatsapp(
+                    curr_order_data[0]['NO_HP'], curr_order_data[0]['REQUEST_ID'], 
+                    `Pengajuan anda telah selesai.${lineBr}` +
+                    `Nomor   : ${curr_order_data[0]['REQUEST_ID']} %0D%0A` +
+                    `Tanggal  : ${moment(curr_order_data[0]['CREATED_DATE'], 'YYYY-MM-DD').format("DD-MM-YYYY")} %0D%0A`+
+                    `https://approval.transfinance.id/request-dtl?id=${curr_order_data[0]['REQUEST_ID']}`                
+                );
+
+                send_whatsapp(
+                    curr_order_data[0]['NO_HP_2'], curr_order_data[0]['REQUEST_ID'], 
+                    `Pengajuan anda telah selesai.${lineBr}` +
+                    `Nomor   : ${curr_order_data[0]['REQUEST_ID']} %0D%0A` +
+                    `Tanggal  : ${moment(curr_order_data[0]['CREATED_DATE'], 'YYYY-MM-DD').format("DD-MM-YYYY")} %0D%0A`+
+                    `Judul      : *${curr_order_data[0]['KATEGORI_REQUEST']}* ${lineBr}` +
+                    `https://approval.transfinance.id/request-dtl?id=${curr_order_data[0]['REQUEST_ID']}`                
+                );
 
             } else {
 
@@ -133,12 +150,26 @@ exports.approval_approve = async (req, res) => {
                             </p>
                             <a href="http://182.253.238.218:4026/request-dtl?id=${REQ_ID}">Go to E-Approval</a>
                         `
-                        sendMail.sendMail(mail, mail_str);
+                        sendMail.sendMail(mail, mail_str, act_pengajuan[0]['KATEGORI_REQUEST']);
                     }
 
-                    await send_whatsapp(act_pengajuan[0]['NO_HP'], act_pengajuan[0]['REQUEST_ID'], 
-                        `Anda memiliki pengajuan untuk di approve.%0D%0A%0D%0Ahttps://approval.transfinance.id/request-dtl?id=${act_pengajuan[0]['REQUEST_ID']}        
-                    `);
+                    const lineBr = '%0D%0A%0D%0A'
+
+                    send_whatsapp(
+                        act_pengajuan[0]['NO_HP'], act_pengajuan[0]['REQUEST_ID'], 
+                        `${act_pengajuan[0]['EMPL_NAME_PEMBUAT']} meminta approve.${lineBr}` +
+                        `Nomor   : ${act_pengajuan[0]['REQUEST_ID']} %0D%0A` +
+                        `Tanggal  : ${moment(act_pengajuan[0]['CREATED_DATE'], 'YYYY-MM-DD').format("DD-MM-YYYY")} %0D%0A`+
+                        `https://approval.transfinance.id/request-dtl?id=${act_pengajuan[0]['REQUEST_ID']}`                
+                    );
+    
+                    send_whatsapp(
+                        act_pengajuan[0]['NO_HP_2'], act_pengajuan[0]['REQUEST_ID'], 
+                        `${act_pengajuan[0]['EMPL_NAME_PEMBUAT']} meminta approve.${lineBr}` +
+                        `Nomor   : ${act_pengajuan[0]['REQUEST_ID']} %0D%0A` +
+                        `Tanggal  : ${moment(act_pengajuan[0]['CREATED_DATE'], 'YYYY-MM-DD').format("DD-MM-YYYY")} %0D%0A`+
+                        `https://approval.transfinance.id/request-dtl?id=${act_pengajuan[0]['REQUEST_ID']}`                
+                    );
                 }
             }
 
@@ -170,13 +201,27 @@ exports.approval_approve = async (req, res) => {
                     </p>
                     <a href="http://182.253.238.218:4026/request-dtl?id=${REQ_ID}">Go to E-Approval</a>
                 `
-                sendMail.sendMail(mail, mail_str);
+                sendMail.sendMail(mail, mail_str, kat_request);
             }
 
-            await send_whatsapp(curr_order_data[0]['NO_HP'], curr_order_data[0]['REQUEST_ID'], 
-                `Pengajuan anda telah di reject.%0D%0A%0D%0Ahttps://approval.transfinance.id/request-dtl?id=${curr_order_data[0]['REQUEST_ID']}        
-            `);
-        }
+            const lineBr = '%0D%0A%0D%0A'
+
+            send_whatsapp(
+                curr_order_data[0]['NO_HP'], curr_order_data[0]['REQUEST_ID'], 
+                `Pengajuan anda telah di reject. ${lineBr}` +
+                `Nomor   : ${curr_order_data[0]['REQUEST_ID']} %0D%0A` +
+                `Tanggal  : ${moment(curr_order_data[0]['CREATED_DATE'], 'YYYY-MM-DD').format("DD-MM-YYYY")} %0D%0A`+
+                `https://approval.transfinance.id/request-dtl?id=${curr_order_data[0]['REQUEST_ID']}`                
+            );
+
+            send_whatsapp(
+                curr_order_data[0]['NO_HP_2'], curr_order_data[0]['REQUEST_ID'], 
+                `Pengajuan anda telah di reject. ${lineBr}` +
+                `Nomor   : ${curr_order_data[0]['REQUEST_ID']} %0D%0A` +
+                `Tanggal  : ${moment(curr_order_data[0]['CREATED_DATE'], 'YYYY-MM-DD').format("DD-MM-YYYY")} %0D%0A`+
+                `https://approval.transfinance.id/request-dtl?id=${curr_order_data[0]['REQUEST_ID']}`                
+            );
+}
 
 
         // return res.status(200).json({
@@ -206,10 +251,22 @@ exports.search_curr_request_id = async (req_id) => {
     log_('search_curr_request_id');
 
     let q = `
-        select T1.*, mst_e.NO_HP from TF_EAPPR.TF_LIST_USER_APPROVED_V T1
-        join tf_absensi.hr_mst_employees mst_e on mst_e.EMPL_CODE = T1.EMPL_CODE
-        where REQUEST_ID = '${req_id}';
+        select t1.*, ttfh.CREATED_DATE, t2.empl_code as EMPL_CODE_PEMBUAT, hme.EMPL_NAME as EMPL_NAME_PEMBUAT from(
+            select T1.*, mst_e.NO_HP, mst_e.NO_HP_2 from TF_EAPPR.TF_LIST_USER_APPROVED_V T1
+            join tf_absensi.hr_mst_employees mst_e on mst_e.EMPL_CODE = T1.EMPL_CODE
+            where REQUEST_ID = '${req_id}'
+        ) t1
+        join tf_trn_approve_fppu t2 on t2.request_id = t1.request_id 
+        join tf_absensi.hr_mst_employees hme on hme.EMPL_CODE = t2.EMPL_CODE 
+        join tf_eappr.tf_trn_fppu_hdrs ttfh on t2.REQUEST_ID = ttfh.REQUEST_ID 
+        order by t2.lvl asc limit 1;
     `
+
+    // let q = `
+    //     select T1.*, mst_e.NO_HP, mst_e.NO_HP_2 from TF_EAPPR.TF_LIST_USER_APPROVED_V T1
+    //     join tf_absensi.hr_mst_employees mst_e on mst_e.EMPL_CODE = T1.EMPL_CODE
+    //     where REQUEST_ID = '${req_id}';
+    // `
 
     var xRes = await simpleExecute(q);
     return xRes;
@@ -290,7 +347,7 @@ f_get_curr_order = async (req_id) => {
 
     try {
         q = `
-            select ttaf.*, hme.email, hme.NO_HP, ttfh.KATEGORI_REQUEST from tf_trn_approve_fppu ttaf 
+            select ttaf.*, hme.email, hme.NO_HP, hme.NO_HP_2, ttfh.KATEGORI_REQUEST from tf_trn_approve_fppu ttaf 
             join tf_absensi.hr_mst_employees hme on hme.EMPL_CODE = ttaf.EMPL_CODE
             join tf_eappr.tf_trn_fppu_hdrs ttfh on ttfh.REQUEST_ID = ttaf.REQUEST_ID 
             where 

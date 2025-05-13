@@ -1,6 +1,6 @@
 var nodeMailer = require('nodemailer');
 
-exports.sendMail = async(mail_to, str) => {
+exports.sendMail = async(mail_to, str, str_subject) => {
     // console.log("\n ============= SENDMAIL ============= \n")
 
     if(mail_to != null || mail_to != undefined){
@@ -22,7 +22,7 @@ exports.sendMail = async(mail_to, str) => {
             var mailOptions = {
                 from: mail_id,
                 to: mail_to,
-                subject: 'EApproval - Mail Notifications',
+                subject: `EApproval - ${str_subject}`,
                 html: str
             };
               

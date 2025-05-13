@@ -2,6 +2,7 @@ var db_e_approve = require('./services/db_e_approve');
 const conf_e_approve = require('./config/database')
 const webServer = require('./services/web-server');
 const { send_whatsapp } = require('./controllers/f_whatsapp');
+const moment = require('moment');
 
 
 
@@ -33,6 +34,12 @@ async function startup() {
         console.error(`${err}`);
         process.exit(1); // Non-zero failure code
     }
+
+    // ================= DEBUG ===================
+
+    // const xRes = await db_e_approve.simpleExecute('select * from tf_eappr.tf_trn_fppu_hdrs ttfh');
+    // var x = moment(xRes[0]['CREATED_DATE'], 'YYYY-MM-DD').format("DD-MM-YYYY");
+    // console.log(x);
 }
 
 async function shutdown(e) {
