@@ -163,6 +163,7 @@ exports.approval_approve = async (req, res) => {
                         `${act_pengajuan[0]['EMPL_NAME_PEMBUAT']} meminta approve.${lineBr}` +
                         `Nomor   : ${act_pengajuan[0]['REQUEST_ID']} %0D%0A` +
                         `Tanggal  : ${moment(act_pengajuan[0]['CREATED_DATE'], 'YYYY-MM-DD').format("DD-MM-YYYY")} %0D%0A`+
+                        `Judul      : *${act_pengajuan[0]['KATEGORI_REQUEST']}* ${lineBr}` +
                         `https://approval.transfinance.id/request-dtl?id=${act_pengajuan[0]['REQUEST_ID']}`                
                     );
     
@@ -171,6 +172,7 @@ exports.approval_approve = async (req, res) => {
                         `${act_pengajuan[0]['EMPL_NAME_PEMBUAT']} meminta approve.${lineBr}` +
                         `Nomor   : ${act_pengajuan[0]['REQUEST_ID']} %0D%0A` +
                         `Tanggal  : ${moment(act_pengajuan[0]['CREATED_DATE'], 'YYYY-MM-DD').format("DD-MM-YYYY")} %0D%0A`+
+                        `Judul      : *${act_pengajuan[0]['KATEGORI_REQUEST']}* ${lineBr}` +
                         `https://approval.transfinance.id/request-dtl?id=${act_pengajuan[0]['REQUEST_ID']}`                
                     );
                 }
@@ -214,7 +216,9 @@ exports.approval_approve = async (req, res) => {
                 `Pengajuan anda telah di reject. ${lineBr}` +
                 `Nomor   : ${curr_order_data[0]['REQUEST_ID']} %0D%0A` +
                 `Tanggal  : ${moment(curr_order_data[0]['CREATED_DATE'], 'YYYY-MM-DD').format("DD-MM-YYYY")} %0D%0A`+
+                `Judul      : *${curr_order_data[0]['KATEGORI_REQUEST']}* ${lineBr}` +
                 `https://approval.transfinance.id/request-dtl?id=${curr_order_data[0]['REQUEST_ID']}`                
+
             );
 
             send_whatsapp(
@@ -222,6 +226,7 @@ exports.approval_approve = async (req, res) => {
                 `Pengajuan anda telah di reject. ${lineBr}` +
                 `Nomor   : ${curr_order_data[0]['REQUEST_ID']} %0D%0A` +
                 `Tanggal  : ${moment(curr_order_data[0]['CREATED_DATE'], 'YYYY-MM-DD').format("DD-MM-YYYY")} %0D%0A`+
+                `Judul      : *${curr_order_data[0]['KATEGORI_REQUEST']}* ${lineBr}` +
                 `https://approval.transfinance.id/request-dtl?id=${curr_order_data[0]['REQUEST_ID']}`                
             );
 }
