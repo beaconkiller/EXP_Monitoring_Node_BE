@@ -31,9 +31,10 @@ exports.get_detail_pengajuan_item = async (req, res) => {
 
     try {
         let q = `
-            select ttfd.* from tf_eappr.tf_trn_fppu_dtls ttfd
+            select ttfh.KATEGORI_REQUEST ,ttfd.* from tf_eappr.tf_trn_fppu_dtls ttfd
+            join tf_eappr.tf_trn_fppu_hdrs ttfh on ttfd.REQUEST_ID = ttfh.REQUEST_ID 
             where
-                REQUEST_ID = '${req_id}'
+                ttfd.REQUEST_ID = '${req_id}'
             order by 
                 ttfd.CREATED_DATE DESC, 
                 ttfd.REQUEST_ID DESC
