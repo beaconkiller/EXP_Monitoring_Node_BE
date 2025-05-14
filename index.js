@@ -40,6 +40,7 @@ async function startup() {
     // const xRes = await db_e_approve.simpleExecute('select * from tf_eappr.tf_trn_fppu_hdrs ttfh');
     // var x = moment(xRes[0]['CREATED_DATE'], 'YYYY-MM-DD').format("DD-MM-YYYY");
     // console.log(x);
+    // send_whatsapp('085156951407','test','test');
 }
 
 async function shutdown(e) {
