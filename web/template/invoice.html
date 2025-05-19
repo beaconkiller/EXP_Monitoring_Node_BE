@@ -141,10 +141,17 @@
 
 
         .signature {
-            width: 100%;
-            height: 100%;
-            margin-top: 5px;
+            /* background: blue; */
+            width: 80%;
+            /* height: 100%; */
+            /* margin-top: 5px; */
             border-bottom: 1px solid black;
+        }
+
+        .signature_2 {
+            /* background: red; */
+            width: 100%;
+            /* height: 65px; */
         }
 
         .footer {
@@ -210,6 +217,7 @@
                     <th>Ket</th>
                     <th>Jenis</th>
                     <th>Bank</th>
+                    <th>No Rek</th>
                     <th style="width: 80px;">Harga Satuan</th>
                     <th style="width: 26px;">QTY</th>
                     <th style="width: 26px;">PPN</th>
@@ -223,6 +231,7 @@
                     <td>{{KETERANGAN}}</td>
                     <td>{{JENIS_PEMBIAYAAN}}</td>
                     <td>{{BANK_NAME}}</td>
+                    <td>{{NO_REK}}</td>
                     <!-- <td>{{HARGA_SATUAN}}</td> -->
                     <td style="display: flex; justify-content: space-between;">
                         <span>Rp</span>
@@ -339,18 +348,18 @@
 
                 {{#if signature}}
 
-                <div style="width: 150px; height: 65px;">
-                    <img src="{{signature}}" alt="Tanda Tangan" class="signature" >
+                <div class="signature_2" style="">
+                    <img src="{{signature}}" alt="Tanda Tangan" class="signature">
                 </div>
-                
+
                 <!-- <img src="/assets/logo_tf_horizontal.png" alt="Tanda Tangan" class="signature" width="100"> -->
                 <!-- <p>/../file_storage/</p> -->
-                
+
                 {{else}}
                 <p style="height: 65px; width: 200px;"></p>
-                <div ></div>
+                <div></div>
 
-                
+
                 {{/if}}
                 <p>{{name}}</p>
 

@@ -10,9 +10,9 @@ exports.verify = (req, res, next) => {
             isSuccess: false,
             message: "Access not valid",
             data: "null"
-        })        
+        })
         return
-        
+
 
     }
     else {
@@ -24,7 +24,7 @@ exports.verify = (req, res, next) => {
                     isSuccess: false,
                     message: "Access not valid",
                     data: "null"
-                })        
+                })
                 return
             }
 
@@ -46,9 +46,9 @@ exports.verify = (req, res, next) => {
                     isSuccess: false,
                     message: "Access not valid",
                     data: "null"
-                })        
+                })
             }
-            
+
             req.data = value
             // registerUserLog(req.data.user_nik)
             next()

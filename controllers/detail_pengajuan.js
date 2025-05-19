@@ -292,6 +292,8 @@ exports.get_pdf_export = async (req, res) => {
     // const invoiceId = req.params.id;
     const invoiceData = await getInvoiceData(req_id);
 
+    console.log(invoiceData);
+
     if (!invoiceData) {
         return res.status(404).json({ message: "Invoice tidak ditemukan" });
     }
@@ -412,6 +414,7 @@ async function getInvoiceData(invoiceId) {
                 KETERANGAN: item.KETERANGAN,
                 JENIS_PEMBIAYAAN: item.JENIS_PEMBIAYAAN,
                 BANK_NAME: item.BANK_NAME,
+                NO_REK: item.NO_REK,
                 HARGA_SATUAN: formatRupiah(hargaSatuan),
                 QTY: qty,
                 PPN: ppnPersen,
@@ -462,12 +465,12 @@ async function getInvoiceData(invoiceId) {
         img_base64 = (imgPath) => {
             try {
                 const logoBgBase64 = fs.readFileSync(imgPath).toString("base64");
-                return `data:image/png;base64,${logoBgBase64}`;        
+                return `data:image/png;base64,${logoBgBase64}`;
             } catch (error) {
                 return ' - '
             }
         }
-        
+
         const formattedApproval = approvals.map((item, index) => ({
             index: index + 1, // Nomor urut dalam tabel
             empl_code: item.empl_code,
@@ -477,7 +480,7 @@ async function getInvoiceData(invoiceId) {
             stat_date: item.stat_date ?? ' - ',
             name: item.name,
             divisi: item.divisi,
-            signature: item.file_name ? img_base64(path.join(__dirname, "..", "file_storage", "ttd_approval", item.file_name)) : null  
+            signature: item.file_name ? img_base64(path.join(__dirname, "..", "file_storage", "ttd_approval", item.file_name)) : null
         }))
             .sort((a, b) => a.lvl - b.lvl); // Urutkan dari level terendah ke tertinggi
 

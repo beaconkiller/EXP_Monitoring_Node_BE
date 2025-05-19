@@ -466,23 +466,23 @@ exports.new_pengajuan = async (req, res) => {
         }
 
         const lineBr = '%0D%0A%0D%0A';
-                
-        await send_whatsapp(
-            act_req_data[0]['NO_HP'], act_req_data[0]['REQUEST_ID'], 
+
+        send_whatsapp(
+            act_req_data[0]['NO_HP'], act_req_data[0]['REQUEST_ID'],
             `${act_req_data[0]['EMPL_NAME_PEMBUAT']} meminta approve.${lineBr}` +
             `Nomor Pengajuan   : %0D%0A${act_req_data[0]['REQUEST_ID']} ${lineBr}` +
-            `Tanggal Pengajuan  : %0D%0A${moment(act_req_data[0]['CREATED_DATE'], 'YYYY-MM-DD').format("DD-MM-YYYY")} ${lineBr}`+
+            `Tanggal Pengajuan  : %0D%0A${moment(act_req_data[0]['CREATED_DATE'], 'YYYY-MM-DD').format("DD-MM-YYYY")} ${lineBr}` +
             `Judul Pengajuan      : %0D%0A*${act_req_data[0]['KATEGORI_REQUEST']}* ${lineBr}` +
-            `https://approval.transfinance.id/request-dtl?id=${act_req_data[0]['REQUEST_ID']}`        
+            `https://approval.transfinance.id/request-dtl?id=${act_req_data[0]['REQUEST_ID']}`
         );
-                
-        await send_whatsapp(
-            act_req_data[0]['NO_HP_2'], act_req_data[0]['REQUEST_ID'], 
+
+        send_whatsapp(
+            act_req_data[0]['NO_HP_2'], act_req_data[0]['REQUEST_ID'],
             `${act_req_data[0]['EMPL_NAME_PEMBUAT']} meminta approve.${lineBr}` +
             `Nomor Pengajuan   : %0D%0A${act_req_data[0]['REQUEST_ID']} ${lineBr}` +
-            `Tanggal Pengajuan  : %0D%0A${moment(act_req_data[0]['CREATED_DATE'], 'YYYY-MM-DD').format("DD-MM-YYYY")} ${lineBr}`+
+            `Tanggal Pengajuan  : %0D%0A${moment(act_req_data[0]['CREATED_DATE'], 'YYYY-MM-DD').format("DD-MM-YYYY")} ${lineBr}` +
             `Judul Pengajuan      : %0D%0A*${act_req_data[0]['KATEGORI_REQUEST']}* ${lineBr}` +
-            `https://approval.transfinance.id/request-dtl?id=${act_req_data[0]['REQUEST_ID']}`        
+            `https://approval.transfinance.id/request-dtl?id=${act_req_data[0]['REQUEST_ID']}`
         );
 
 
