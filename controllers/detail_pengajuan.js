@@ -415,6 +415,7 @@ async function getInvoiceData(invoiceId) {
                 JENIS_PEMBIAYAAN: item.JENIS_PEMBIAYAAN,
                 BANK_NAME: item.BANK_NAME,
                 NO_REK: item.NO_REK,
+                NAMA_REK: item.NAMA_REK,
                 HARGA_SATUAN: formatRupiah(hargaSatuan),
                 QTY: qty,
                 PPN: ppnPersen,
