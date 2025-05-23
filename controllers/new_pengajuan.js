@@ -112,6 +112,7 @@ exports.get_appr_person = async (req, res) => {
     empl_branch = req.query['EMPL_BRANCH'];
     empl_job = req.query['ACT_JOB'];
     empl_subarea = req.query['empl_subarea'];
+    act_user = req.query['act_user'];
 
 
     try {
@@ -120,6 +121,7 @@ exports.get_appr_person = async (req, res) => {
                 where 
                     personal_subarea = '${empl_subarea}'
                     and job_name = '${empl_job}'
+                	and empl_code != '${act_user}'
             order by job_name 
         `
 

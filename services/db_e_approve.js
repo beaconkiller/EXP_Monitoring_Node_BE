@@ -58,10 +58,13 @@ async function simpleExecute(statement, binds = [], opts = {}) {
                     console.error(err)
                 }
 
+
                 connection.query(statement, binds, (error, results, fields) => {
                     connection.release();
 
-                    if (error) throw error;
+                    if (error) {
+                        reject(error)
+                    };
 
                     // console.log(results);
                     resolve(results);
@@ -70,6 +73,7 @@ async function simpleExecute(statement, binds = [], opts = {}) {
         } catch (err) {
             console.error(err);
             reject(err);
+            throw err;
         } finally {
             // if (conn) { // conn assignment worked, need to close
             //     try {

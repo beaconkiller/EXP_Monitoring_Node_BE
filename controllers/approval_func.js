@@ -48,6 +48,7 @@ exports.approval_approve = async (req, res) => {
         `
 
 
+        // console.log(' ============================================================== ')
         let xRes = await simpleExecute(q);
         let res_msg = xRes.flat().find(item => item?.pesan)?.pesan || "Pengajuan gagal";
         console.log(res_msg);
@@ -61,7 +62,6 @@ exports.approval_approve = async (req, res) => {
                 data: res_msg
             })
         }
-
 
 
         // ===========================================================================
@@ -114,21 +114,21 @@ exports.approval_approve = async (req, res) => {
                 const lineBr = '%0D%0A%0D%0A'
 
                 send_whatsapp(
-                    curr_order_data[0]['NO_HP'], curr_order_data[0]['REQUEST_ID'], 
+                    curr_order_data[0]['NO_HP'], curr_order_data[0]['REQUEST_ID'],
                     `Pengajuan anda telah selesai.${lineBr}` +
                     `Nomor Pengajuan   : %0D%0A${curr_order_data[0]['REQUEST_ID']} ${lineBr}` +
-                    `Tanggal Pengajuan  : %0D%0A${moment(curr_order_data[0]['CREATED_DATE'], 'YYYY-MM-DD').format("DD-MM-YYYY")} ${lineBr}`+
+                    `Tanggal Pengajuan  : %0D%0A${moment(curr_order_data[0]['CREATED_DATE'], 'YYYY-MM-DD').format("DD-MM-YYYY")} ${lineBr}` +
                     `Judul Pengajuan      : %0D%0A*${curr_order_data[0]['KATEGORI_REQUEST']}* ${lineBr}` +
-                    `https://approval.transfinance.id/request-dtl?id=${curr_order_data[0]['REQUEST_ID']}`                
+                    `https://approval.transfinance.id/request-dtl?id=${curr_order_data[0]['REQUEST_ID']}`
                 );
 
                 send_whatsapp(
-                    curr_order_data[0]['NO_HP_2'], curr_order_data[0]['REQUEST_ID'], 
+                    curr_order_data[0]['NO_HP_2'], curr_order_data[0]['REQUEST_ID'],
                     `Pengajuan anda telah selesai.${lineBr}` +
                     `Nomor Pengajuan   : %0D%0A${curr_order_data[0]['REQUEST_ID']}${lineBr}` +
-                    `Tanggal Pengajuan  : %0D%0A${moment(curr_order_data[0]['CREATED_DATE'], 'YYYY-MM-DD').format("DD-MM-YYYY")} ${lineBr}`+
+                    `Tanggal Pengajuan  : %0D%0A${moment(curr_order_data[0]['CREATED_DATE'], 'YYYY-MM-DD').format("DD-MM-YYYY")} ${lineBr}` +
                     `Judul Pengajuan      : %0D%0A*${curr_order_data[0]['KATEGORI_REQUEST']}* ${lineBr}` +
-                    `https://approval.transfinance.id/request-dtl?id=${curr_order_data[0]['REQUEST_ID']}`                
+                    `https://approval.transfinance.id/request-dtl?id=${curr_order_data[0]['REQUEST_ID']}`
                 );
 
             } else {
@@ -137,11 +137,11 @@ exports.approval_approve = async (req, res) => {
                 // ====================== FIND CURRENT APPROVAL COMMITTEE =====================
                 // ===========================================================================
 
-                
+
                 var act_pengajuan = await this.search_curr_request_id(REQ_ID);
-                
+
                 console.log(act_pengajuan)
-                
+
                 if (act_pengajuan.length > 0) {
                     let mail = act_pengajuan[0]['email']
                     if (mail != null) {
@@ -160,21 +160,21 @@ exports.approval_approve = async (req, res) => {
                     const lineBr = '%0D%0A%0D%0A'
 
                     send_whatsapp(
-                        act_pengajuan[0]['NO_HP'], act_pengajuan[0]['REQUEST_ID'], 
+                        act_pengajuan[0]['NO_HP'], act_pengajuan[0]['REQUEST_ID'],
                         `${act_pengajuan[0]['EMPL_NAME_PEMBUAT']} meminta approve.${lineBr}` +
                         `Nomor Pengajuan   : %0D%0A${act_pengajuan[0]['REQUEST_ID']} ${lineBr}` +
-                        `Tanggal Pengajuan  : %0D%0A${moment(act_pengajuan[0]['CREATED_DATE'], 'YYYY-MM-DD').format("DD-MM-YYYY")} ${lineBr}`+
+                        `Tanggal Pengajuan  : %0D%0A${moment(act_pengajuan[0]['CREATED_DATE'], 'YYYY-MM-DD').format("DD-MM-YYYY")} ${lineBr}` +
                         `Judul Pengajuan      : %0D%0A*${act_pengajuan[0]['KATEGORI_REQUEST']}* ${lineBr}` +
-                        `https://approval.transfinance.id/request-dtl?id=${act_pengajuan[0]['REQUEST_ID']}`                
+                        `https://approval.transfinance.id/request-dtl?id=${act_pengajuan[0]['REQUEST_ID']}`
                     );
-    
+
                     send_whatsapp(
-                        act_pengajuan[0]['NO_HP_2'], act_pengajuan[0]['REQUEST_ID'], 
+                        act_pengajuan[0]['NO_HP_2'], act_pengajuan[0]['REQUEST_ID'],
                         `${act_pengajuan[0]['EMPL_NAME_PEMBUAT']} meminta approve.${lineBr}` +
                         `Nomor Pengajuan   : %0D%0A${act_pengajuan[0]['REQUEST_ID']} ${lineBr}` +
-                        `Tanggal Pengajuan  : %0D%0A${moment(act_pengajuan[0]['CREATED_DATE'], 'YYYY-MM-DD').format("DD-MM-YYYY")} ${lineBr}`+
+                        `Tanggal Pengajuan  : %0D%0A${moment(act_pengajuan[0]['CREATED_DATE'], 'YYYY-MM-DD').format("DD-MM-YYYY")} ${lineBr}` +
                         `Judul Pengajuan  Pengajuan     : %0D%0A*${act_pengajuan[0]['KATEGORI_REQUEST']}* ${lineBr}` +
-                        `https://approval.transfinance.id/request-dtl?id=${act_pengajuan[0]['REQUEST_ID']}`                
+                        `https://approval.transfinance.id/request-dtl?id=${act_pengajuan[0]['REQUEST_ID']}`
                     );
                 }
             }
@@ -213,24 +213,24 @@ exports.approval_approve = async (req, res) => {
             const lineBr = '%0D%0A%0D%0A'
 
             send_whatsapp(
-                curr_order_data[0]['NO_HP'], curr_order_data[0]['REQUEST_ID'], 
+                curr_order_data[0]['NO_HP'], curr_order_data[0]['REQUEST_ID'],
                 `Pengajuan anda telah di reject. ${lineBr}` +
                 `Nomor Pengajuan   : %0D%0A${curr_order_data[0]['REQUEST_ID']} ${lineBr}` +
-                `Tanggal Pengajuan  : %0D%0A${moment(curr_order_data[0]['CREATED_DATE'], 'YYYY-MM-DD').format("DD-MM-YYYY")} ${lineBr}`+
+                `Tanggal Pengajuan  : %0D%0A${moment(curr_order_data[0]['CREATED_DATE'], 'YYYY-MM-DD').format("DD-MM-YYYY")} ${lineBr}` +
                 `Judul Pengajuan      : %0D%0A*${curr_order_data[0]['KATEGORI_REQUEST']}* ${lineBr}` +
-                `https://approval.transfinance.id/request-dtl?id=${curr_order_data[0]['REQUEST_ID']}`                
+                `https://approval.transfinance.id/request-dtl?id=${curr_order_data[0]['REQUEST_ID']}`
 
             );
 
             send_whatsapp(
-                curr_order_data[0]['NO_HP_2'], curr_order_data[0]['REQUEST_ID'], 
+                curr_order_data[0]['NO_HP_2'], curr_order_data[0]['REQUEST_ID'],
                 `Pengajuan anda telah di reject. ${lineBr}` +
                 `Nomor Pengajuan   : %0D%0A${curr_order_data[0]['REQUEST_ID']} ${lineBr}` +
-                `Tanggal Pengajuan  : %0D%0A${moment(curr_order_data[0]['CREATED_DATE'], 'YYYY-MM-DD').format("DD-MM-YYYY")} ${lineBr}`+
+                `Tanggal Pengajuan  : %0D%0A${moment(curr_order_data[0]['CREATED_DATE'], 'YYYY-MM-DD').format("DD-MM-YYYY")} ${lineBr}` +
                 `Judul Pengajuan      : %0D%0A*${curr_order_data[0]['KATEGORI_REQUEST']}* ${lineBr}` +
-                `https://approval.transfinance.id/request-dtl?id=${curr_order_data[0]['REQUEST_ID']}`                
+                `https://approval.transfinance.id/request-dtl?id=${curr_order_data[0]['REQUEST_ID']}`
             );
-}
+        }
 
 
         // return res.status(200).json({
@@ -244,11 +244,13 @@ exports.approval_approve = async (req, res) => {
         })
     }
     catch (e) {
+        console.error(' ================ ERR ================= ')
         console.error(e.message)
-        res.status(500).json({
+        res.json({
+            status: 500,
             isSuccess: false,
             message: e.toString(),
-            data: null
+            data: 'Approval gagal.',
         })
     }
 }
