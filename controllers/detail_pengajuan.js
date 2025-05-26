@@ -344,10 +344,16 @@ async function getInvoiceData(invoiceId) {
         }
 
         const invoice = await simpleExecute(`
-            select * from tf_trn_fppu_hdrs a
-            join tf_absensi.hr_mst_offices b
-            on a.branch_code = b.office_code
-            where a.request_id = :invoiceId`, bind)
+            select 
+                ttfh.*,
+                fme.EMPL_BRANCH,
+                t_office.NAME_FULL 
+            from tf_eappr.tf_trn_fppu_hdrs ttfh 
+            join tf_absensi.fs_mst_employees fme 
+                on ttfh.EMPL_CODE = fme.EMPL_CODE
+            join tf_absensi.hr_mst_offices t_office 
+                on t_office.OFFICE_CODE = fme.EMPL_BRANCH
+            where ttfh.request_id = :invoiceId`, bind)
         if (invoice.length === 0) return null;
         console.log('2');
 
@@ -356,11 +362,13 @@ async function getInvoiceData(invoiceId) {
         const formatedInvoice = invoice.map((item, index) => {
             const requestId = item.REQUEST_ID;
             const createdDate = item.CREATED_DATE;
-            const officeCode = item.OFFICE_CODE;
+            const officeCode = item.EMPL_BRANCH;
             const officeName = item.NAME_FULL;
+            const JUDUL_REQUEST = item.KATEGORI_REQUEST;
             console.log('3');
 
             return {
+                JUDUL_REQUEST: JUDUL_REQUEST,
                 REQUEST_ID: requestId,
                 CREATED_DATE: createdDate,
                 officeCode: officeCode,

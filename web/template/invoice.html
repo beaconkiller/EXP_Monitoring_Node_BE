@@ -83,9 +83,10 @@
         td {
             border: 1px solid #ddd;
             padding: 6px;
-            text-align: left;
+            /* text-align: center; */
             word-wrap: break-word;
             white-space: normal;
+            font-size: 9px;
             /* Agar teks tidak terpotong */
         }
 
@@ -110,13 +111,17 @@
         }
 
         .approval-container {
+            /* padding-top: 50px; */
+
             display: flex;
             flex-wrap: wrap;
-            /* Agar elemen bisa turun ke bawah */
+
             gap: 10px;
-            /* Beri jarak antar elemen */
+
             justify-content: space-between;
-            /* Meratakan elemen */
+
+            page-break-before: always;
+            break-before: always;
 
         }
 
@@ -184,17 +189,9 @@
     <div class="container">
         <img src="{{logoBase64}}" class="watermark" alt="Watermark Logo">
 
-        <!-- <div class="header">
-            <div class="logo-container">
-                <img src="{{logoBase64}}" alt="Logo Perusahaan">
-                <p><strong>Jl. Prof. Dr. Latumeten, Jakarta Barat</strong></p>
-            </div>
-        </div> -->
-        <!-- <hr class="kop-garis"> -->
         <div class="row">
             <div class="logo-container">
                 <img src="{{logoBase64}}" alt="Logo Perusahaan">
-                <!-- <p><strong>Jl. Prof. Dr. Latumeten, Jakarta Barat</strong></p> -->
             </div>
             {{#each invoice}}
             <div>
@@ -202,10 +199,10 @@
                 <p><strong>Tanggal:</strong> {{CREATED_DATE}}</p>
             </div>
         </div>
-        <!-- <hr class="kop-garis"> -->
 
         <div>
-            <p><strong>Kantor Pusat/Cabang:</strong> {{officeCode}}/{{officeName}}</p>
+            <p style=""><strong>Judul:</strong> {{JUDUL_REQUEST}}</p>
+            <p><strong>Kantor Pusat/Cabang:</strong> {{officeCode}} / {{officeName}}</p>
         </div>
         {{/each}}
 
@@ -218,11 +215,11 @@
                     <th>Bank</th>
                     <th>No Rek</th>
                     <th>Nama Rek</th>
-                    <th style="width: 80px;">Harga Satuan</th>
-                    <th style="width: 26px;">QTY</th>
-                    <th style="width: 26px;">PPN</th>
-                    <th style="width: 26px;">PPH</th>
-                    <th style="width: 80px">Total Harga</th>
+                    <th style="width: 65px; text-align: center;">Harga Satuan</th>
+                    <th style="width: 26px; text-align: center;">QTY</th>
+                    <th style="width: 26px; text-align: center;">PPN</th>
+                    <th style="width: 26px; text-align: center;">PPH</th>
+                    <th style="width: 70px; text-align: center;">Total Harga</th>
                 </tr>
             </thead>
             <tbody>
@@ -248,52 +245,24 @@
             </tbody>
         </table>
 
-        <!-- <p class="total">Total PPN: {{totalPPN}}</p>
-        <p class="total">Total PPH: {{totalPPH}}</p> -->
-        <!-- <p class="total">Total Tagihan: {{total}}</p>
-
-        <p class="total">Sub Total Tagihan: {{grandTotal}}</p> -->
-
         <div></div>
         <table>
-            <!-- <tr>
-                <td class="total-label">Total PPN</td>
-                <td class="total-value">{{totalPPN}}</td>
-            </tr>
-            <tr>
-                <td class="total-label">Total PPH</td>
-                <td class="total-value">{{totalPPH}}</td>
-            </tr>
-            <tr>
-                <td class="total-label">Total Tagihan</td>
-                <td class="total-value">{{total}}</td>
-            </tr> -->
             <br>
-
-            <!-- <tr>
-                <td class="total-label">Total ITEM</td>
-                <td class="total-value">{{TOTAL_ITEM}}</td>
-            </tr> -->
             <tr>
-                <!-- <td style="text-align: left;">Rp</td> -->
-
                 <td class="total-label">Total PPN Dikeluarkan</td>
-                <td class="total-value" style="display: flex; justify-content: space-between;">
-                    <span>Rp</span>
+                <td class="total-value" style="">
                     {{totalPPN}}
                 </td>
             </tr>
             <tr>
                 <td class="total-label">Total PPH Dikeluarkan</td>
-                <td class="total-value" style="display: flex; justify-content: space-between;">
-                    <span>Rp</span>
+                <td class="total-value" style="">
                     {{totalPPH}}
                 </td>
             </tr>
             <tr>
                 <td class="total-label">Total Tagihan</td>
-                <td class="total-value" style="display: flex; justify-content: space-between;">
-                    <span>Rp</span>
+                <td class="total-value" style="">
                     {{grandTotal}}
                 </td>
             </tr>
@@ -301,48 +270,14 @@
 
         <p class="total">Sub Total Tagihan: {{grandTotal}}</p>
 
+    </div>
 
-
-
-        <!-- <div class="approval-container">
-            {{#each approvals}}
-            <div class="approval-box">
-                <p><strong>{{role}}</strong></p>
-                <p>{{name}}</p>
-                {{#if signature}}
-                <img src="{{signature}}" alt="Tanda Tangan" class="signature" width="100">
-                {{else}}
-                <img src="https://www.shutterstock.com/image-vector/fake-hand-drawn-autographs-set-260nw-2303856541.jpg"
-                    alt="Tanda Tangan" class="signature" width="100">
-                {{/if}}
-
-                <p><strong>{{divisi}}</strong></p>
-                {{#if status}}
-                <p><strong>{{status}} - {{stat_date}}</strong></p>
-                <p><strong>Note: {{reason}}</strong></p>
-
-                {{else}}
-                <p><strong>Pending</strong></p>
-                {{/if}}
-
-            </div>
-            {{/each}}
-        </div> -->
-
+    <div class="container" style="margin-top: 30px;">
         <div class="approval-container">
             {{#each approvals}}
             <div class="approval-box">
 
                 <p><strong>{{divisi}}</strong></p>
-
-                <!-- {{#if (eq @index 0)}}
-                <p><strong>Diajukan</strong></p>
-                {{else if (isLastThree @index ../approvals.length)}}
-                <p><strong>Disetujui</strong></p>
-                {{else}}
-                <p><strong>Diperiksa</strong></p>
-                {{/if}} -->
-
 
                 {{#if signature}}
 
@@ -350,18 +285,12 @@
                     <img src="{{signature}}" alt="Tanda Tangan" class="signature">
                 </div>
 
-                <!-- <img src="/assets/logo_tf_horizontal.png" alt="Tanda Tangan" class="signature" width="100"> -->
-                <!-- <p>/../file_storage/</p> -->
-
                 {{else}}
                 <p style="height: 65px; width: 200px;"></p>
                 <div></div>
 
-
                 {{/if}}
                 <p>{{name}}</p>
-
-                <!-- <p><strong>{{divisi}}</strong></p> -->
 
                 {{#if status}}
                 <p><strong>{{status}} - {{stat_date}}</strong></p>
