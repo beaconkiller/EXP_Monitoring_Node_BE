@@ -490,6 +490,7 @@ exports.new_pengajuan = async (req, res) => {
 
 
         return res.json({
+            status: 200,
             isSuccess: true,
             message: res_msg,
             data: res_msg
@@ -497,7 +498,8 @@ exports.new_pengajuan = async (req, res) => {
     }
     catch (e) {
         console.error(e.message)
-        res.status(500).json({
+        res.json({
+            status: 500,
             isSuccess: false,
             message: e.toString(),
             data: null

@@ -12,17 +12,17 @@ exports.get_table_data = async (req, res) => {
     let q_search = req.query.q_search;
     let q_filter = req.query.q_filter;
 
-    
+
     f_paging = () => {
         let limit = 8
-        let offset = (q_page-1) * limit
+        let offset = (q_page - 1) * limit
         return [limit, offset]
     }
 
     f_search = () => {
-        if(q_search.trim().length == 0){
+        if (q_search.trim().length == 0) {
             return ``;
-        }else{
+        } else {
             return `
             -- Con Search // BISA ADA BISA GAADA
             and (
@@ -36,9 +36,9 @@ exports.get_table_data = async (req, res) => {
     }
 
     f_filter = () => {
-        if(q_filter == 'All'){
+        if (q_filter == 'All') {
             return ``;
-        }else{
+        } else {
             return `AND tbl_fin.STATUS = '${q_filter}'`
         }
     }
@@ -115,14 +115,14 @@ exports.get_table_data_approval = async (req, res) => {
 
     f_paging = () => {
         let limit = 8
-        let offset = (q_page-1) * limit
+        let offset = (q_page - 1) * limit
         return [limit, offset]
     }
 
     f_search = () => {
-        if(q_search.trim().length == 0){
+        if (q_search.trim().length == 0) {
             return ``;
-        }else{
+        } else {
             return `
             -- Con Search // BISA ADA BISA GAADA
             and (
@@ -137,9 +137,9 @@ exports.get_table_data_approval = async (req, res) => {
 
 
     f_filter = () => {
-        if(q_filter == 'All'){
+        if (q_filter == 'All') {
             return ``;
-        }else{
+        } else {
             return `AND tbl_fin.STATUS = '${q_filter}'`
         }
     }
@@ -147,7 +147,7 @@ exports.get_table_data_approval = async (req, res) => {
 
     f_paging = () => {
         let limit = 8
-        let offset = (q_page-1) * limit
+        let offset = (q_page - 1) * limit
         return [limit, offset]
     }
 
@@ -227,14 +227,14 @@ exports.get_table_data_histori = async (req, res) => {
 
     f_paging = () => {
         let limit = 8
-        let offset = (q_page-1) * limit
+        let offset = (q_page - 1) * limit
         return [limit, offset]
     }
 
     f_search = () => {
-        if(q_search.trim().length == 0){
+        if (q_search.trim().length == 0) {
             return ``;
-        }else{
+        } else {
             return `
             -- Con Search // BISA ADA BISA GAADA
             and (
@@ -249,9 +249,9 @@ exports.get_table_data_histori = async (req, res) => {
 
 
     f_filter = () => {
-        if(q_filter == 'All'){
+        if (q_filter == 'All') {
             return ``;
-        }else{
+        } else {
             return `AND ta.STATUS = '${q_filter}'`
         }
     }
@@ -259,7 +259,7 @@ exports.get_table_data_histori = async (req, res) => {
 
     f_paging = () => {
         let limit = 8
-        let offset = (q_page-1) * limit
+        let offset = (q_page - 1) * limit
         return [limit, offset]
     }
 
