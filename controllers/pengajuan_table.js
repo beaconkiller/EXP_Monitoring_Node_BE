@@ -46,7 +46,16 @@ exports.get_table_data = async (req, res) => {
     try {
         var q = `
             select * from (
-                select ttfh.*, tb.NAME_FULL, ta.LVL, ta.EMPL_CODE as EMPL_CODE_ON_HAND, ta.EMPL_NAME as EMPL_NAME_ON_HAND  from tf_trn_fppu_hdrs ttfh 
+                select 
+                    ttfh.*, 
+                    fmo.office_code,
+                    fmo.NAME_FULL, 
+                    ta.LVL, 
+                    ta.EMPL_CODE as EMPL_CODE_ON_HAND, 
+                    ta.EMPL_NAME as EMPL_NAME_ON_HAND  
+                from tf_trn_fppu_hdrs ttfh 
+                join tf_absensi.fs_mst_employees fme on fme.EMPL_CODE = ttfh.EMPL_CODE
+                join tf_absensi.fs_mst_offices fmo on fmo.OFFICE_CODE = fme.EMPL_BRANCH
                 join tf_absensi.fs_mst_offices tb on tb.OFFICE_CODE = ttfh.BRANCH_CODE
                 join (
                     select 
@@ -65,7 +74,7 @@ exports.get_table_data = async (req, res) => {
                                 -- and
                                 -- STATUS is null
                         ) 
-                ) ta on ta.REQUEST_ID = ttfh.REQUEST_ID
+                ) ta on ta.REQUEST_ID = ttfh.REQUEST_ID            
             ) tbl_fin
             where 
                 CREATED_BY = '${empl_code}'
@@ -153,27 +162,36 @@ exports.get_table_data_approval = async (req, res) => {
 
     try {
         var q = `
-            select ttfh.*, tb.NAME_FULL, ta.LVL, ta.EMPL_CODE, ta.STATUS, ta.EMPL_NAME  from tf_trn_fppu_hdrs ttfh 
-            join tf_absensi.fs_mst_offices tb on tb.OFFICE_CODE = ttfh.BRANCH_CODE 
-            join (
-                select 
-                    ttaf.REQUEST_ID, 
-                    ttaf.EMPL_CODE, 
-                    ttaf.LVL, 
-                    ttaf.STATUS, 
-                    tlav.empl_name  
-                from tf_eappr.tf_trn_approve_fppu ttaf 
-                join tf_list_approve_v tlav on tlav.empl_code = ttaf.EMPL_CODE 
-                where 
-                    ttaf.LVL = (
-                        select MIN(LVL) from tf_eappr.tf_trn_approve_fppu ttaf2 
-                        where 
-                            ttaf2.REQUEST_ID = ttaf.REQUEST_ID 
-                            and
-                            STATUS is null
-                    ) 
-            ) ta on ta.REQUEST_ID = ttfh.REQUEST_ID 
+        select 
+            ttfh.*, 
+            fmo.NAME_FULL, 
+            ta.LVL, 
+            ta.EMPL_CODE, 
+            ta.STATUS, 
+            ta.EMPL_NAME 
+        from tf_trn_fppu_hdrs ttfh 
+        join tf_absensi.fs_mst_employees fme on fme.EMPL_CODE = ttfh.EMPL_CODE
+        join tf_absensi.fs_mst_offices fmo on fmo.OFFICE_CODE = fme.EMPL_BRANCH
+        join tf_absensi.fs_mst_offices tb on tb.OFFICE_CODE = ttfh.BRANCH_CODE 
+        join (
+            select 
+                ttaf.REQUEST_ID, 
+                ttaf.EMPL_CODE, 
+                ttaf.LVL, 
+                ttaf.STATUS, 
+                tlav.empl_name  
+            from tf_eappr.tf_trn_approve_fppu ttaf 
+            join tf_list_approve_v tlav on tlav.empl_code = ttaf.EMPL_CODE 
             where 
+                ttaf.LVL = (
+                    select MIN(LVL) from tf_eappr.tf_trn_approve_fppu ttaf2 
+                    where 
+                        ttaf2.REQUEST_ID = ttaf.REQUEST_ID 
+                        and
+                        STATUS is null
+                ) 
+        ) ta on ta.REQUEST_ID = ttfh.REQUEST_ID 
+        where 
                 ta.EMPL_CODE = '${empl_code}'
                  and ttfh.status = 'OP'
                 ${f_filter()}
@@ -265,22 +283,31 @@ exports.get_table_data_histori = async (req, res) => {
 
     try {
         var q = `
-            select ttfh.*, tb.NAME_FULL, ta.LVL, ta.EMPL_CODE, ta.STATUS, ta.EMPL_NAME  from tf_trn_fppu_hdrs ttfh 
-            join tf_absensi.fs_mst_offices tb on tb.OFFICE_CODE = ttfh.BRANCH_CODE
-            join (
-                select
-                    ttaf.REQUEST_ID,
-                    ttaf.EMPL_CODE,
-                    ttaf.LVL,
-                    ttaf.STATUS,
-                    tlav.empl_name
-                from tf_eappr.tf_trn_approve_fppu ttaf
-                join tf_list_approve_v tlav on tlav.empl_code = ttaf.EMPL_CODE
-                where
-                    STATUS is not null        
-                    and ttaf.EMPL_CODE = '${empl_code}'
-            ) ta on ta.REQUEST_ID = ttfh.REQUEST_ID 
-            where 
+        select 
+            ttfh.*, 
+            fmo.NAME_FULL, 
+            ta.LVL, 
+            ta.EMPL_CODE, 
+            ta.STATUS, 
+            ta.EMPL_NAME  
+        from tf_trn_fppu_hdrs ttfh 
+        join tf_absensi.fs_mst_employees fme on fme.EMPL_CODE = ttfh.EMPL_CODE
+        join tf_absensi.fs_mst_offices fmo on fmo.OFFICE_CODE = fme.EMPL_BRANCH
+        join tf_absensi.fs_mst_offices tb on tb.OFFICE_CODE = ttfh.BRANCH_CODE
+        join (
+            select
+                ttaf.REQUEST_ID,
+                ttaf.EMPL_CODE,
+                ttaf.LVL,
+                ttaf.STATUS,
+                tlav.empl_name
+            from tf_eappr.tf_trn_approve_fppu ttaf
+            join tf_list_approve_v tlav on tlav.empl_code = ttaf.EMPL_CODE
+            where
+                STATUS is not null        
+                and ttaf.EMPL_CODE = '${empl_code}'
+        ) ta on ta.REQUEST_ID = ttfh.REQUEST_ID 
+        where 
                 ta.REQUEST_ID IS NOT NULL
                 ${f_filter()}
                 ${f_search()}            

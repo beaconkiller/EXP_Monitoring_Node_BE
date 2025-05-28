@@ -22,6 +22,18 @@ handlebars.registerHelper("isLastThree", function (index, total) {
 });
 
 
+handlebars.registerHelper("giveIndex", function (index, total) {
+    return parseInt(index) + 1;
+});
+
+
+handlebars.registerHelper("str_decode", function (str) {
+    str = str.toString().replaceAll("%27", "'")
+    str = str.toString().replaceAll('%22', '"')
+    return str;
+});
+
+
 
 exports.get_detail_pengajuan_item = async (req, res) => {
     console.log('\n ============== get_detail_pengajuan_item ================ \n')
@@ -42,7 +54,7 @@ exports.get_detail_pengajuan_item = async (req, res) => {
 
         let xRes = await simpleExecute(q);
 
-        // console.log(xRes)
+        console.log(xRes)
 
         return res.status(200).json({
             isSuccess: true,

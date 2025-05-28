@@ -200,32 +200,38 @@
             </div>
         </div>
 
-        <div>
-            <p style=""><strong>Judul:</strong> {{JUDUL_REQUEST}}</p>
-            <p><strong>Kantor Pusat/Cabang:</strong> {{officeCode}} / {{officeName}}</p>
+        <div
+            style="display: flex; flex-direction: column; justify-items: center; align-items: center; padding-top: 15px; padding-bottom: 25px;">
+            <p style="height: fit-content; padding: 0px; margin: 0px; font-size: large; font-weight: 600;">
+                {{str_decode JUDUL_REQUEST}}</p>
+            <p style="height: fit-content; padding: 0px; margin: 0px; padding-top: 4px;">{{officeCode}} / {{officeName}}
+            </p>
         </div>
+
         {{/each}}
 
 
         <table>
             <thead>
                 <tr>
+                    <th style="width: 15px; text-align: center;">No. </th>
                     <th>Ket</th>
                     <th>Jenis</th>
                     <th>Bank</th>
                     <th>No Rek</th>
                     <th>Nama Rek</th>
-                    <th style="width: 65px; text-align: center;">Harga Satuan</th>
-                    <th style="width: 26px; text-align: center;">QTY</th>
-                    <th style="width: 26px; text-align: center;">PPN</th>
-                    <th style="width: 26px; text-align: center;">PPH</th>
-                    <th style="width: 70px; text-align: center;">Total Harga</th>
+                    <th style="width: 50px; text-align: center;">Harga Satuan</th>
+                    <th style="width: 15px; text-align: center;">QTY</th>
+                    <th style="width: 15px; text-align: center;">PPN</th>
+                    <th style="width: 15px; text-align: center;">PPH</th>
+                    <th style="width: 50px; text-align: center;">Total Harga</th>
                 </tr>
             </thead>
             <tbody>
                 {{#each products}}
                 <tr>
-                    <td>{{KETERANGAN}}</td>
+                    <td style="text-align: center;">{{giveIndex @index}}</td>
+                    <td>{{str_decode KETERANGAN}}</td>
                     <td>{{JENIS_PEMBIAYAAN}}</td>
                     <td>{{BANK_NAME}}</td>
                     <td>{{NO_REK}}</td>
@@ -233,9 +239,9 @@
                     <td style="text-align: end;">
                         {{HARGA_SATUAN}}
                     </td>
-                    <td>{{QTY}}</td>
-                    <td>{{PPN}}%</td>
-                    <td>{{PPH}}%</td>
+                    <td style="text-align: center;">{{QTY}}</td>
+                    <td style="text-align: center;">{{PPN}}%</td>
+                    <td style="text-align: center;">{{PPH}}%</td>
                     <!-- <td>{{TOTAL_ITEM}}</td> -->
                     <td style="text-align: end;">
                         {{TOTAL_ITEM}}
