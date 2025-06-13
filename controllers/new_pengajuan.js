@@ -376,7 +376,7 @@ exports.new_pengajuan = async (req, res) => {
                 '${user_data['pengajuan_type']}', 
                 '${arr_pengajuan_str}',
                 '${arr_komite_str}',
-                '${get_ttd_filename(base64_sig_data, user_data)}',
+                '', -- TADINYA BUAT TTD
                 @result
             );
             SELECT @result AS PESAN;
@@ -439,8 +439,8 @@ exports.new_pengajuan = async (req, res) => {
             await f_helper.file_upload(newFileName, selected_file['file_base64'], fileStorage_path)
         }
 
-        let file_path = path.join(__dirname, '..', 'file_storage', 'ttd_approval');
-        await f_helper.file_upload(get_ttd_filename(base64_sig_data, user_data), base64_sig_data, file_path);
+        // let file_path = path.join(__dirname, '..', 'file_storage', 'ttd_approval');
+        // await f_helper.file_upload(get_ttd_filename(base64_sig_data, user_data), base64_sig_data, file_path);
 
 
         // =======================================================================

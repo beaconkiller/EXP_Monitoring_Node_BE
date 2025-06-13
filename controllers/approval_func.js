@@ -41,7 +41,7 @@ exports.approval_approve = async (req, res) => {
                 '${EMPL_CODE}', 
                 '${STATUS}', 
                 '${REASON}', 
-                '${FILE_NAME}',
+                '',
                 @pesan
             );
             select @pesan as pesan;
@@ -68,7 +68,7 @@ exports.approval_approve = async (req, res) => {
         // ========================= SAVING THE SIGNATURE FILE ========================
         // ===========================================================================
 
-        save_file(FILE_DATA, FILE_NAME);
+        // save_file(FILE_DATA, FILE_NAME);
 
 
         if (STATUS == 'AP') {
