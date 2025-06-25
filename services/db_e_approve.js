@@ -44,19 +44,26 @@ async function simpleExecute(statement, binds = [], opts = {}) {
     return new Promise((resolve, reject) => {
         try {
             pool.getConnection(function (err, connection) {
-                connection.config.queryFormat = function (query, values) {
-                    if (!values) return query;
-                    return query.replace(/\:(\w+)/g, function (txt, key) {
-                        if (values.hasOwnProperty(key)) {
-                            return connection.escape(values[key]);
-                        }
-                        return txt;
-                    }.bind(this));
-                };
 
-                if (err) {
-                    console.error(err)
-                }
+                console.log(binds)
+                console.log(binds.length)
+
+                // if (binds.length == 0) {
+                //     connection.config.queryFormat = function (query, values) {
+                //         if (!values) return query;
+                //         return query.replace(/\:(\w+)/g, function (txt, key) {
+                //             if (values.hasOwnProperty(key)) {
+                //                 return connection.escape(values[key]);
+                //             }
+                //             return txt;
+                //         }.bind(this));
+                //     };
+
+                //     if (err) {
+                //         console.error(err)
+                //     }
+                // }
+
 
 
                 connection.query(statement, binds, (error, results, fields) => {

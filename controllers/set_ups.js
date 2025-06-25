@@ -21,12 +21,12 @@ exports.get_suppliers = async (req, res) => {
 
     f_paging = () => {
         let limit = 8
-        let offset = (q_page-1) * limit
+        let offset = (q_page - 1) * limit
         return [limit, offset]
     }
 
     f_search = () => {
-        if(q_search.trim().length > 0){
+        if (q_search.trim().length > 0) {
             return `
                 AND (
                     SUPPLIER_NAME LIKE '%${q_search}%' 
@@ -34,7 +34,7 @@ exports.get_suppliers = async (req, res) => {
                     OR REK_NAME LIKE '%${q_search}%'
                 )
             `
-        }else{
+        } else {
             return ``;
         }
     }
@@ -84,19 +84,19 @@ exports.get_bank_setup = async (req, res) => {
 
     f_paging = () => {
         let limit = 8
-        let offset = (q_page-1) * limit
+        let offset = (q_page - 1) * limit
         return [limit, offset]
     }
 
     f_search = () => {
-        if(q_search.trim().length > 0){
+        if (q_search.trim().length > 0) {
             return `
                 AND (
                     xmb.BANK_CODE LIKE '%${q_search}%' 
                     OR xmb.BANK_NAME LIKE '%${q_search}%' 
                 )
             `
-        }else{
+        } else {
             return ``;
         }
     }
@@ -157,16 +157,16 @@ exports.get_banks = async (req, res) => {
 
     try {
         return res.json({
-            status:200,
+            status: 200,
             isSuccess: true,
-            message:'Success',
+            message: 'Success',
             data: xRes
         })
     }
     catch (e) {
         console.error(e.message)
         res.status(500).json({
-            status : 500,
+            status: 500,
             isSuccess: false,
             message: e.toString(),
             data: null
@@ -195,16 +195,16 @@ exports.get_banks_parent = async (req, res) => {
 
     try {
         return res.json({
-            status:200,
+            status: 200,
             isSuccess: true,
-            message:'Success',
+            message: 'Success',
             data: xRes
         })
     }
     catch (e) {
         console.error(e.message)
         res.status(500).json({
-            status : 500,
+            status: 500,
             isSuccess: false,
             message: e.toString(),
             data: null
@@ -230,7 +230,7 @@ exports.add_supplier = async (req, res) => {
     bank_code = req.body.bank_code;
     bank_name = req.body.bank_name;
 
-    let supplier_id = bank_code+'-'+suppl_rek_no;
+    let supplier_id = bank_code + '-' + suppl_rek_no;
 
     console.log(supplier_id);
 
@@ -244,12 +244,12 @@ exports.add_supplier = async (req, res) => {
             select * from tf_mst_supplier tms
             where SUPL_ID = '${supplier_id}'
         `;
-        
+
         var xResCheck = (await simpleExecute(q_checkExist));
 
-        if(xResCheck.length > 0){
+        if (xResCheck.length > 0) {
             return res.json({
-                status:409,
+                status: 409,
                 isSuccess: false,
                 message: 'Penambahan gagal, rekening sudah terdaftar',
                 data: 'Penambahan gagal, rekening sudah terdaftar'
@@ -294,21 +294,21 @@ exports.add_supplier = async (req, res) => {
                 '${(new Date()).toISOString().split('T')[0]}'
                 )
         `
-        var xRes = await simpleExecute(q);        
+        var xRes = await simpleExecute(q);
         console.log(xRes);
         // console.log(xRes.affectedRows);
 
 
-        if(xRes.affectedRows >= 1){
+        if (xRes.affectedRows >= 1) {
             return res.json({
-                status:200,
+                status: 200,
                 isSuccess: true,
                 message: 'Penambahan supplier berhasil',
                 data: 'Penambahan supplier berhasil'
             })
-        }else{
+        } else {
             return res.json({
-                status:204,
+                status: 204,
                 isSuccess: true,
                 message: 'Penambahan supplier gagal',
                 data: 'Penambahan supplier gagal'
@@ -350,16 +350,16 @@ exports.remove_suppl = async (req, res) => {
 
     try {
         return res.json({
-            status:200,
+            status: 200,
             isSuccess: true,
-            message:'Success',
+            message: 'Success',
             data: xRes
         })
     }
     catch (e) {
         console.error(e.message)
         res.status(500).json({
-            status : 500,
+            status: 500,
             isSuccess: false,
             message: e.toString(),
             data: null
@@ -375,7 +375,7 @@ exports.update_suppl = async (req, res) => {
     console.log(req.body);
 
     let data = req.body.data;
-    
+
     let SUPL_ID = data.SUPL_ID;
     let IS_ACTIVE = data.IS_ACTIVE;
     let SUPPLIER_NAME = data.SUPPLIER_NAME;
@@ -394,16 +394,16 @@ exports.update_suppl = async (req, res) => {
 
     try {
         return res.json({
-            status:200,
+            status: 200,
             isSuccess: true,
-            message:'Success',
+            message: 'Success',
             data: xRes
         })
     }
     catch (e) {
         console.error(e.message)
         res.status(500).json({
-            status : 500,
+            status: 500,
             isSuccess: false,
             message: e.toString(),
             data: null
@@ -424,20 +424,20 @@ exports.get_jenis_pembayaran = async (req, res) => {
 
     f_paging = () => {
         let limit = 8
-        let offset = (q_page-1) * limit
+        let offset = (q_page - 1) * limit
         return [limit, offset]
     }
 
     f_search = () => {
-        if(q_search != ''){
+        if (q_search != '') {
             return `
                 where NAME_TYPE like "%${q_search}%"
             `;
-        }else{
+        } else {
             return ``;
         }
     }
-    
+
     try {
 
         // ---------------------------------------------------------
@@ -452,19 +452,19 @@ exports.get_jenis_pembayaran = async (req, res) => {
             OFFSET ${f_paging()[1]}        
         `;
         var xRes = await simpleExecute(q);
-        
+
 
         return res.json({
-            status:200,
+            status: 200,
             isSuccess: true,
-            message:'Penambahan jenis pembayaran berhasil',
-            data: xRes    
+            message: 'Penambahan jenis pembayaran berhasil',
+            data: xRes
         })
     }
     catch (e) {
         console.error(e.message)
         res.status(500).json({
-            status : 500,
+            status: 500,
             isSuccess: false,
             message: e.toString(),
             data: null
@@ -482,8 +482,8 @@ exports.add_jenis_pembayaran = async (req, res) => {
     let name_type = req.body.name_type.trim().toUpperCase();
     let group_type = req.body.group_type;
     let empl_code = req.body.empl_code;
-    
-    
+
+
     try {
 
         // ---------------------------------------------------------
@@ -498,17 +498,17 @@ exports.add_jenis_pembayaran = async (req, res) => {
 
         console.log(xRes_dupe.length);
 
-        if(xRes_dupe.length > 0){
+        if (xRes_dupe.length > 0) {
             return res.json({
-                status:409,
+                status: 409,
                 isSuccess: false,
-                message:'Data sudah ada.',
-                data: 'Data sudah ada.'    
-            })            
+                message: 'Data sudah ada.',
+                data: 'Data sudah ada.'
+            })
         }
 
-        
-        
+
+
 
         // ---------------------------------------------------------
         // --------------- FIND ORDERS / ID NUMBERING --------------
@@ -516,16 +516,16 @@ exports.add_jenis_pembayaran = async (req, res) => {
 
         let q_count = `select count(*) from tf_mst_type_request tmk`;
         var xRes_count = await simpleExecute(q_count);
-    
-        let r_count = String(parseInt(xRes_count[0]['count(*)'])+1).padStart(4, '0');    
-        
-        
-        
-        
+
+        let r_count = String(parseInt(xRes_count[0]['count(*)']) + 1).padStart(4, '0');
+
+
+
+
         // ---------------------------------------------------------
         // --------------- FIND ORDERS / ID NUMBERING --------------
         // ---------------------------------------------------------
-        
+
         const dateValue = moment().tz('Asia/Jakarta').format('YYYY-MM-DD');
         let q = `
             INSERT INTO tf_eappr.tf_mst_type_request (
@@ -547,29 +547,29 @@ exports.add_jenis_pembayaran = async (req, res) => {
         `;
 
         var xRes = await simpleExecute(q);
-        
+
         console.log(xRes.affectedRows);
 
-        if(xRes.affectedRows == 1){
+        if (xRes.affectedRows == 1) {
             return res.json({
-                status:200,
+                status: 200,
                 isSuccess: true,
-                message:'Penambahan jenis pembayaran berhasil',
-                data: 'Penambahan jenis pembayaran berhasil'    
+                message: 'Penambahan jenis pembayaran berhasil',
+                data: 'Penambahan jenis pembayaran berhasil'
             })
-        }else{
+        } else {
             return res.json({
-                status:204,
+                status: 204,
                 isSuccess: true,
-                message:'Penambahan jenis pembayaran gagal',
-                data: 'Penambahan jenis pembayaran gagal'    
-            })            
+                message: 'Penambahan jenis pembayaran gagal',
+                data: 'Penambahan jenis pembayaran gagal'
+            })
         }
     }
     catch (e) {
         console.error(e.message)
         res.status(500).json({
-            status : 500,
+            status: 500,
             isSuccess: false,
             message: e.toString(),
             data: null
@@ -589,15 +589,15 @@ exports.add_bank = async (req, res) => {
     is_va = data['is_va']
     bank_parent = data['bank_parent']
     empl_code = data['empl_code']
-    
+
     console.log(data);
 
     const bank_exist = await search_bank_code(bank_code);
     console.log(bank_exist);
 
-    if(bank_exist){
+    if (bank_exist) {
         return res.json({
-            status : 409,
+            status: 409,
             isSuccess: false,
             message: `Bank sudah terdaftar`,
             data: null
@@ -605,33 +605,33 @@ exports.add_bank = async (req, res) => {
     }
 
     f_bank_name = () => {
-        if(bank_name){
+        if (bank_name) {
             return `'${bank_name}'`;
-        }else{
+        } else {
             return null;
         }
-    } 
+    }
 
     f_bank_code = () => {
-        if(bank_code != null){
+        if (bank_code != null) {
             return `'${bank_code}'`
-        }else{
+        } else {
             return null
         }
     }
 
     f_is_va = () => {
-        if(is_va){
+        if (is_va) {
             return `'Y'`;
-        }else{
+        } else {
             return `'N'`;
         }
     }
 
     f_bank_parent = () => {
-        if(bank_parent){
+        if (bank_parent) {
             return `${bank_parent}`;
-        }else{
+        } else {
             return null;
         }
     }
@@ -664,7 +664,7 @@ exports.add_bank = async (req, res) => {
 
     try {
         return res.json({
-            status : 200,
+            status: 200,
             isSuccess: true,
             message: 'Berhasil menambahkan bank',
             data: null
@@ -673,7 +673,7 @@ exports.add_bank = async (req, res) => {
     catch (e) {
         console.error(e.message)
         res.json({
-            status : 500,
+            status: 500,
             isSuccess: false,
             message: e.toString(),
             data: null
@@ -684,7 +684,79 @@ exports.add_bank = async (req, res) => {
 
 
 
-search_bank_code = async(val) => {
+exports.update_bank = async (req, res) => {
+    console.log("\n ================= update_bank =============== \n")
+
+    data = req['body'];
+    bank_id = data['BANK_ID']
+    bank_code = data['BANK_CODE']
+    bank_name = data['BANK_NAME']
+    is_va = data['IS_VA']
+    bank_parent_id = data['BANK_PARENT_ID']
+    is_active = data['IS_ACTIVE']
+    empl_code = data['EMPL_CODE']
+
+    console.log(data);
+
+    const bank_exist = await search_bank_code(bank_code);
+    console.log(bank_exist);
+
+    q = `
+        UPDATE tf_eappr.xx_mst_bank
+        SET 
+            BANK_NAME = ?,
+            IS_VA = ?,
+            BANK_PARENT_ID = ?,
+            IS_ACTIVE = ?,
+            UPDATED_BY = ?
+        WHERE BANK_ID = ?
+    `
+
+    binds = [
+        bank_name,
+        is_va,
+        bank_parent_id,
+        is_active,
+        empl_code,
+        bank_id.toString(),
+    ]
+
+
+
+    console.log(q, binds);
+
+    var xRes = await simpleExecute(q, binds);
+
+    console.log(xRes);
+
+
+    await new Promise((resolve) => {
+        setTimeout(resolve, 2000)
+    })
+
+    try {
+        return res.json({
+            status: 200,
+            isSuccess: true,
+            message: 'Berhasil menambahkan bank',
+            data: null
+        })
+    }
+    catch (e) {
+        console.error(e.message)
+        res.json({
+            status: 500,
+            isSuccess: false,
+            message: e.toString(),
+            data: null
+        })
+    }
+
+}
+
+
+
+search_bank_code = async (val) => {
     console.log('========= search_bank_code =========');
 
     q = `
@@ -693,12 +765,12 @@ search_bank_code = async(val) => {
     `
 
     var xRes = await simpleExecute(q);
-    if(xRes.length > 0){
+    if (xRes.length > 0) {
         return true;
-    }else{
+    } else {
         return false;
     }
-    
+
 }
 
 
@@ -708,8 +780,8 @@ exports.get_menu = async (req, res) => {
     console.log('\n ==================== exports.get_menu ==================== \n')
     console.log(req.body);
 
-    
-    
+
+
     try {
 
         let q = `
@@ -717,20 +789,20 @@ exports.get_menu = async (req, res) => {
             order by MENU_LVL
         `;
         var xRes = await simpleExecute(q);
-        
+
         console.log(xRes);
 
         return res.json({
-            status:200,
+            status: 200,
             isSuccess: true,
-            message:'getMenu success',
-            data: xRes    
+            message: 'getMenu success',
+            data: xRes
         })
     }
     catch (e) {
         console.error(e.message)
         res.status(500).json({
-            status : 500,
+            status: 500,
             isSuccess: false,
             message: e.toString(),
             data: null
