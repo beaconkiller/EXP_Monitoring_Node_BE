@@ -15,7 +15,6 @@ const crypt = require('../middleware/mobile/crypt')
 const auth = require('../controllers/mobile/v1/auth')
 const { verify } = require('../middleware/auth_web')
 
-
 router.route('/login_main').get(main.login_main);
 router.route('/session_check').get(verify,main.session_check);
 
@@ -91,6 +90,9 @@ router.route('/user_change_email').post(user_edit.user_change_email);
 
 router.route('/get_banks').get(set_ups.get_banks);
 
+router.route('/get_bank_setup').get(set_ups.get_bank_setup);
+router.route('/get_banks_parent').get(set_ups.get_banks_parent);
+router.route('/add_bank').post(verify, set_ups.add_bank);
 router.route('/get_suppliers').get(set_ups.get_suppliers);
 router.route('/add_supplier').post(set_ups.add_supplier);
 router.route('/remove_suppl').post(set_ups.remove_suppl);

@@ -74,6 +74,74 @@ exports.get_suppliers = async (req, res) => {
 
 
 
+exports.get_bank_setup = async (req, res) => {
+    console.log("\n ================= get_bank_setup =============== \n")
+
+    console.log(req.query)
+
+    q_page = req.query.q_page;
+    q_search = req.query.q_search;
+
+    f_paging = () => {
+        let limit = 8
+        let offset = (q_page-1) * limit
+        return [limit, offset]
+    }
+
+    f_search = () => {
+        if(q_search.trim().length > 0){
+            return `
+                AND (
+                    xmb.BANK_CODE LIKE '%${q_search}%' 
+                    OR xmb.BANK_NAME LIKE '%${q_search}%' 
+                )
+            `
+        }else{
+            return ``;
+        }
+    }
+
+    q = `
+        select 
+            xmb.*, 
+            xmb2.BANK_NAME as BANK_PARENT_NAME 
+        from tf_eappr.xx_mst_bank xmb
+        left join tf_eappr.xx_mst_bank xmb2 on xmb.BANK_PARENT_ID = xmb2.BANK_ID 
+        WHERE 
+            1 = 1
+            ${f_search()}
+        ORDER BY xmb.BANK_NAME asc
+        LIMIT ${f_paging()[0]}
+        OFFSET ${f_paging()[1]}        
+    `
+
+    console.log(q);
+
+    var xRes = await simpleExecute(q);
+
+
+    console.log(xRes);
+
+
+
+    try {
+        return res.status(200).json({
+            isSuccess: true,
+            data: xRes
+        })
+    }
+    catch (e) {
+        console.error(e.message)
+        res.status(500).json({
+            isSuccess: false,
+            message: e.toString(),
+            data: null
+        })
+    }
+
+}
+
+
 // =======================================================================
 // ========================= GETTING THE BANKS ===========================
 // =======================================================================
@@ -83,6 +151,44 @@ exports.get_banks = async (req, res) => {
     console.log(req.query);
 
     let q = `select * from xx_mst_bank xmb order by BANK_NAME ;`;
+    var xRes = await simpleExecute(q);
+
+    // console.log(xRes);
+
+    try {
+        return res.json({
+            status:200,
+            isSuccess: true,
+            message:'Success',
+            data: xRes
+        })
+    }
+    catch (e) {
+        console.error(e.message)
+        res.status(500).json({
+            status : 500,
+            isSuccess: false,
+            message: e.toString(),
+            data: null
+        })
+    }
+}
+
+
+
+exports.get_banks_parent = async (req, res) => {
+    console.log('\n ==================== get_banks_parent ==================== \n')
+    // console.log(req.query);
+
+    let q = `    
+        select * from tf_eappr.xx_mst_bank xmb 
+        where 
+            xmb.IS_ACTIVE = 'Y'
+            and (
+                xmb.IS_VA is null or xmb.IS_VA = 'N'
+            )
+    `;
+
     var xRes = await simpleExecute(q);
 
     // console.log(xRes);
@@ -469,6 +575,130 @@ exports.add_jenis_pembayaran = async (req, res) => {
             data: null
         })
     }
+}
+
+
+
+
+exports.add_bank = async (req, res) => {
+    console.log("\n ================= add_bank =============== \n")
+
+    data = req['body'];
+    bank_code = data['bank_code']
+    bank_name = data['bank_name']
+    is_va = data['is_va']
+    bank_parent = data['bank_parent']
+    empl_code = data['empl_code']
+    
+    console.log(data);
+
+    const bank_exist = await search_bank_code(bank_code);
+    console.log(bank_exist);
+
+    if(bank_exist){
+        return res.json({
+            status : 409,
+            isSuccess: false,
+            message: `Bank sudah terdaftar`,
+            data: null
+        })
+    }
+
+    f_bank_name = () => {
+        if(bank_name){
+            return `'${bank_name}'`;
+        }else{
+            return null;
+        }
+    } 
+
+    f_bank_code = () => {
+        if(bank_code != null){
+            return `'${bank_code}'`
+        }else{
+            return null
+        }
+    }
+
+    f_is_va = () => {
+        if(is_va){
+            return `'Y'`;
+        }else{
+            return `'N'`;
+        }
+    }
+
+    f_bank_parent = () => {
+        if(bank_parent){
+            return `${bank_parent}`;
+        }else{
+            return null;
+        }
+    }
+
+    q = `
+        INSERT INTO tf_eappr.xx_mst_bank (
+            BANK_NAME,
+            IS_VA,
+            BANK_PARENT_ID,
+            IS_ACTIVE,
+            BANK_CODE,
+            CREATED_BY
+        )
+        VALUES (
+            ${f_bank_name()},
+            ${f_is_va()},
+            ${f_bank_parent()},
+            'Y',
+            ${f_bank_code()},
+            '${empl_code}'
+        )
+    `
+
+    console.log(q);
+
+    var xRes = await simpleExecute(q);
+
+    console.log(xRes);
+
+
+    try {
+        return res.json({
+            status : 200,
+            isSuccess: true,
+            message: 'Berhasil menambahkan bank',
+            data: null
+        })
+    }
+    catch (e) {
+        console.error(e.message)
+        res.json({
+            status : 500,
+            isSuccess: false,
+            message: e.toString(),
+            data: null
+        })
+    }
+
+}
+
+
+
+search_bank_code = async(val) => {
+    console.log('========= search_bank_code =========');
+
+    q = `
+        select * from tf_eappr.xx_mst_bank 
+        where bank_code = '${val}'
+    `
+
+    var xRes = await simpleExecute(q);
+    if(xRes.length > 0){
+        return true;
+    }else{
+        return false;
+    }
+    
 }
 
 
