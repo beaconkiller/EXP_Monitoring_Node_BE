@@ -3,6 +3,7 @@ const conf_e_approve = require('./config/database')
 const webServer = require('./services/web-server');
 const { send_whatsapp } = require('./controllers/f_whatsapp');
 const moment = require('moment');
+const excel_inp = require('./controllers/excel_input');
 
 
 
@@ -35,12 +36,12 @@ async function startup() {
         process.exit(1); // Non-zero failure code
     }
 
+    // ===========================================
     // ================= DEBUG ===================
+    // ===========================================
 
-    // const xRes = await db_e_approve.simpleExecute('select * from tf_eappr.tf_trn_fppu_hdrs ttfh');
-    // var x = moment(xRes[0]['CREATED_DATE'], 'YYYY-MM-DD').format("DD-MM-YYYY");
-    // console.log(x);
-    // send_whatsapp('085156951407','test','test');
+    // excel_inp.excel_read();
+    
 }
 
 async function shutdown(e) {

@@ -355,7 +355,7 @@ async function getInvoiceData(invoiceId) {
             invoiceId: invoiceId
         }
 
-        const invoice = await simpleExecute(`
+        let q = `
             select 
                 ttfh.*,
                 fme.EMPL_BRANCH,
@@ -365,7 +365,10 @@ async function getInvoiceData(invoiceId) {
                 on ttfh.EMPL_CODE = fme.EMPL_CODE
             join tf_absensi.hr_mst_offices t_office 
                 on t_office.OFFICE_CODE = fme.EMPL_BRANCH
-            where ttfh.request_id = :invoiceId`, bind)
+            where ttfh.request_id = :invoiceId
+        `
+
+        const invoice = await simpleExecute(q, bind)
         if (invoice.length === 0) return null;
         console.log('2');
 

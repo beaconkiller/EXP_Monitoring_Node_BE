@@ -704,22 +704,23 @@ exports.update_bank = async (req, res) => {
     q = `
         UPDATE tf_eappr.xx_mst_bank
         SET 
-            BANK_NAME = ?,
-            IS_VA = ?,
-            BANK_PARENT_ID = ?,
-            IS_ACTIVE = ?,
-            UPDATED_BY = ?
-        WHERE BANK_ID = ?
+            BANK_NAME = :bank_name,
+            IS_VA = :is_va,
+            BANK_PARENT_ID = :bank_parent_id,
+            IS_ACTIVE = :is_active,
+            UPDATED_BY = :empl_code
+        WHERE BANK_ID = :bank_id
     `
 
-    binds = [
-        bank_name,
-        is_va,
-        bank_parent_id,
-        is_active,
-        empl_code,
-        bank_id.toString(),
-    ]
+    binds =
+    {
+        bank_name:bank_name,
+        is_va:is_va,
+        bank_parent_id:bank_parent_id,
+        is_active:is_active,
+        empl_code:empl_code,
+        bank_id:bank_id.toString(),
+    }
 
 
 

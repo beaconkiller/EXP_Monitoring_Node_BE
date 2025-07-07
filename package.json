@@ -25,6 +25,7 @@
     "mysql": "^2.18.1",
     "node-jsencrypt": "^1.0.0",
     "nodemailer": "^6.10.0",
-    "playwright": "^1.51.1"
+    "playwright": "^1.51.1",
+    "xlsx": "^0.18.5"
   }
 }

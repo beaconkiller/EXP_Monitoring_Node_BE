@@ -48,20 +48,20 @@ async function simpleExecute(statement, binds = [], opts = {}) {
                 console.log(binds)
                 console.log(binds.length)
 
+                connection.config.queryFormat = function (query, values) {
+                    if (!values) return query;
+                    return query.replace(/\:(\w+)/g, function (txt, key) {
+                        if (values.hasOwnProperty(key)) {
+                            return connection.escape(values[key]);
+                        }
+                        return txt;
+                    }.bind(this));
+                };
+                if (err) {
+                    console.error(err)
+                }
                 // if (binds.length == 0) {
-                //     connection.config.queryFormat = function (query, values) {
-                //         if (!values) return query;
-                //         return query.replace(/\:(\w+)/g, function (txt, key) {
-                //             if (values.hasOwnProperty(key)) {
-                //                 return connection.escape(values[key]);
-                //             }
-                //             return txt;
-                //         }.bind(this));
-                //     };
 
-                //     if (err) {
-                //         console.error(err)
-                //     }
                 // }
 
 
