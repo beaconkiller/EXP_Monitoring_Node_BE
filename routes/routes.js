@@ -7,6 +7,7 @@ const detail_pengajuan = require('../controllers/detail_pengajuan')
 const approval_func = require('../controllers/approval_func')
 const revisi_pengajuan = require('../controllers/revisi_pengajuan')
 const set_ups = require('../controllers/set_ups')
+const approval_kasbon = require('../controllers/approval_kasbon')
 
 const mobile = require('../routes/mobile/v1/mobile_routes')
 const user_edit = require('../controllers/user_edit')
@@ -34,6 +35,7 @@ router.route('/get_appr_subarea').get(new_pengajuan.get_appr_subarea);
 router.route('/get_appr_person').get(new_pengajuan.get_appr_person);
 router.route('/new_pengajuan').post(new_pengajuan.new_pengajuan);
 router.route('/get_newest_pengajuan').get(new_pengajuan.get_newest_pengajuan);
+router.route('/get_list_pengajuan').get(verify, approval_kasbon.get_list_pengajuan);
 
 
 
