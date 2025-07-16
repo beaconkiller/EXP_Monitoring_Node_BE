@@ -423,7 +423,7 @@ async function getInvoiceData(invoiceId) {
             const qty = Number(item.QTY);
             const ppnPersen = Number(item.PPN);
             const pphPersen = Number(item.PPH);
-            const totalItem = hargaSatuan * qty;
+            const totalItem = Number(item['TOTAL_HARGA']);
 
             // Tambahkan ke subtotal
             subtotal += totalItem;
