@@ -5,7 +5,8 @@ const handlebars = require("handlebars");
 const { chromium } = require("playwright");
 
 // const sendMail = require('../controllers/f_mailer')
-const sendMail = require('./f_mailer')
+const sendMail = require('./f_mailer');
+const { delay } = require("./f_helper");
 
 
 // ==========================================================================
@@ -42,6 +43,9 @@ exports.get_detail_pengajuan_item = async (req, res) => {
     req_id = req.query.req_id;
 
     try {
+
+        await delay(2000);
+
         let q = `
             select ttfh.KATEGORI_REQUEST ,ttfd.* from tf_eappr.tf_trn_fppu_dtls ttfd
             join tf_eappr.tf_trn_fppu_hdrs ttfh on ttfd.REQUEST_ID = ttfh.REQUEST_ID 

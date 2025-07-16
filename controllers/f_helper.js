@@ -48,5 +48,14 @@ exports.get_timestamp_string = () => {
 
 
 exports.log_ = (v) => {
+    console.log(' ')
     console.log(`\n =================== ${v} =================== \n`)
+    console.log(' ')
+}
+
+
+exports.delay = async(t) => {
+    await new Promise((resolve) => {
+        setTimeout(resolve, t)
+    })
 }
