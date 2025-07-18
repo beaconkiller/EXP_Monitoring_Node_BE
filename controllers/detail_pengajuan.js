@@ -345,8 +345,22 @@ exports.get_pdf_export = async (req, res) => {
 
 }
 
+function give_status_str(v){
+    console.log('give_status_str');
+    console.log(v);
+
+    if(v == 'AP') {
+        return 'APPROVE'
+    }else if(v == 'RJ'){
+        return 'REJECT'
+    }else{
+        return ' - '
+    }
+}
+
 async function getInvoiceData(invoiceId) {
     try {
+
         // Ambil data invoice utama
         // const [invoice] = await db.query(`select * from tf_trn_fppu_hdrs a
         //     join tf_absensi.hr_mst_offices b
@@ -417,7 +431,7 @@ async function getInvoiceData(invoiceId) {
 
         // Format data produk agar sesuai dengan template HTML
         const formattedProducts = products.map((item, index) => {
-            console.log('7');
+            console.log('7');   
 
             const hargaSatuan = Number(item.HARGA_SATUAN);
             const qty = Number(item.QTY);
@@ -473,18 +487,21 @@ async function getInvoiceData(invoiceId) {
         console.log('9');
 
         const approvals = await simpleExecute(
-            `SELECT
-            A.EMPL_CODE as empl_code,
-            A.LVL as lvl, 
-            A.STATUS as status, 
-            A.REASON as reason, 
-            A.STAT_DATE as stat_date,
-            A.FILE_NAME as file_name,
-            B.NAME AS name, 
-            B.DIVISI as divisi
-         FROM tf_trn_approve_fppu A
-         JOIN TF_MST_DIVISION B ON A.EMPL_CODE = B.PERSONAL_NUMBER
-         WHERE A.REQUEST_ID = :invoiceId`,
+        `
+            SELECT
+                A.EMPL_CODE as empl_code,
+                A.LVL as lvl, 
+                A.STATUS as status, 
+                A.REASON as reason, 
+                A.STAT_DATE as stat_date,
+                A.FILE_NAME as file_name,
+                fme.empl_name AS name,
+                C.JOB_DESCRIPTION  as divisi
+            FROM tf_eappr.tf_trn_approve_fppu A
+            JOIN tf_absensi.fs_mst_employees fme ON A.EMPL_CODE = fme.empl_code
+            join tf_absensi.hr_mst_job_codes C on fme.EMPL_JOB = C.JOB_CODE
+            WHERE A.REQUEST_ID = :invoiceId
+        `,
             bind
         );
         console.log('10');
@@ -508,7 +525,8 @@ async function getInvoiceData(invoiceId) {
             stat_date: item.stat_date ?? ' - ',
             name: item.name,
             divisi: item.divisi,
-            signature: item.file_name ? img_base64(path.join(__dirname, "..", "file_storage", "ttd_approval", item.file_name)) : null
+            signature: item.file_name ? img_base64(path.join(__dirname, "..", "file_storage", "ttd_approval", item.file_name)) : null,
+            status_str : give_status_str(item.status),
         }))
             .sort((a, b) => a.lvl - b.lvl); // Urutkan dari level terendah ke tertinggi
 

@@ -283,24 +283,24 @@
             {{#each approvals}}
             <div class="approval-box">
 
-                <p><strong>{{divisi}}</strong></p>
+                <p style="font-size: smaller;"><strong>{{divisi}}</strong></p>
 
-                {{#if signature}}
 
-                <div class="signature_2" style="">
-                    <img src="{{signature}}" alt="Tanda Tangan" class="signature">
+                <div class="signature_2" style="display: flex; justify-content: center; align-items: center; font-size: large; color: #000000; height: 80px;">
+                    <p style="font-size: small;">{{status_str}}</p>
                 </div>
 
-                {{else}}
-                <p style="height: 65px; width: 200px;"></p>
-                <div></div>
 
-                {{/if}}
+
                 <p>{{name}}</p>
 
                 {{#if status}}
                 <p><strong>{{status}} - {{stat_date}}</strong></p>
-                <p><strong>Note: {{reason}}</strong></p>
+
+                <div style="display: flex; flex-grow: unset; flex-direction: column; ">
+                    <p style="">Note :</p>
+                    <p style="">{{reason}}</p>
+                </div>
 
                 {{else}}
                 <p><strong>Pending</strong></p>
@@ -324,7 +324,7 @@
             const containerB = document.getElementById("containerB");
 
             // Check height or width in pixels (you can convert vw if needed)
-            const threshold = window.innerHeight * 0.5; // 50vw in pixels
+            const threshold = window.innerHeight * 0.1;
 
             if (containerA.offsetHeight >= threshold) {
                 const pageBreak = document.createElement("div");
