@@ -12,16 +12,15 @@ async function startup() {
     // ----------------------------------------
     // ------------- DB_E_APPROVE -------------
     // ----------------------------------------
-    console.log(process.env.E_APPROVE_HOST);
 
-    try {
-        console.log('\n Initializing db_e_approve \n');
-        await db_e_approve.initialize();
-        console.log('db_e_approve done');
-    } catch (err) {
-        console.error(err);
-        process.exit(1);
-    }
+    // try {
+    //     console.log('\n Initializing db_e_approve \n');
+    //     await db_e_approve.initialize();
+    //     console.log('db_e_approve done');
+    // } catch (err) {
+    //     console.error(err);
+    //     process.exit(1);
+    // }
 
     // ----------------------------------------
     // -------------- WEB-SERVER --------------
