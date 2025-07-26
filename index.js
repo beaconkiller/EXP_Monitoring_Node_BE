@@ -1,13 +1,21 @@
 var db_e_approve = require('./services/db_e_approve');
 const conf_e_approve = require('./config/database')
 const webServer = require('./services/web-server');
-const { send_whatsapp } = require('./controllers/f_whatsapp');
 const moment = require('moment');
-const excel_inp = require('./controllers/excel_input');
+const path = require('path');
+const os = require('os');
 
 
 
 async function startup() {
+
+    // ----------------------------------------
+    // ------------ SET GLOBAL VAR ------------
+    // ----------------------------------------
+
+    setGlobalVariable();
+
+
 
     // ----------------------------------------
     // ------------- DB_E_APPROVE -------------
@@ -22,6 +30,8 @@ async function startup() {
     //     process.exit(1);
     // }
 
+
+
     // ----------------------------------------
     // -------------- WEB-SERVER --------------
     // ----------------------------------------
@@ -35,12 +45,14 @@ async function startup() {
         process.exit(1); // Non-zero failure code
     }
 
+
+
     // ===========================================
     // ================= DEBUG ===================
     // ===========================================
 
     // excel_inp.excel_read();
-    
+
 }
 
 async function shutdown(e) {
@@ -56,12 +68,13 @@ async function shutdown(e) {
 
 
 async function setGlobalVariable() {
-    global.base_url = 'http://localhost:4000/'
+    global.base_url = 'http://localhost:4000/';
     // global.base_url = 'http://192.168.1.20:5000/administrator/'
     // global.base_url = 'http://103.154.81.163:3000/administrator/'
-    global.app_name = 'test admin'
+    global.app_name = 'test admin';
+    global.base_dir = __dirname;
+    global.dir_sitemap = path.join(__dirname,'file_storage','file_sitemap');
 }
-
 
 
 

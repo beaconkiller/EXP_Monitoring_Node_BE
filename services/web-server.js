@@ -53,10 +53,10 @@ function initialize() {
             next();
         });
         
-        // ======================================================================
+        // ======================== PREFIX FOR ========================
 
+        app.use('/exp_sitemap', routes)
 
-        app.use('/api-eappr', routes)
 
 
         // ================ DEPLOYING IN ONE SAME NODE ================
@@ -65,6 +65,8 @@ function initialize() {
         app.get('*', (req, res) => {
             res.sendFile(path.join(__dirname, '..', 'web/index.html'));
         });
+
+
         
         // ===========================================================
 
