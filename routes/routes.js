@@ -9,8 +9,6 @@ router.use((req, res, next) => {
 
 router.use('/v1/sitemap_build', r_sitemap);
 
-
-
 router.use((req, res) => {
     console.log('API IN')
     if (req.err) {

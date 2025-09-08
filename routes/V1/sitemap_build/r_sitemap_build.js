@@ -12,4 +12,10 @@ router.route('/get_project_all')
 router.route('/get_sitemap_image')
     .get(cont_sitemap_build.get_sitemap_image);
 
+router.route('/get_project_hdrs')
+    .get(cont_sitemap_build.get_project_hdrs);
+
+router.route('/test')
+    .get(cont_sitemap_build.test);
+
 module.exports = router;

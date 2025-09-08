@@ -42,6 +42,61 @@ exports.get_project_all = (req, res) => {
 
 
 
+exports.get_project_hdrs = (req, res) => {
+    console.log('\n =========== get_project_hdrs ========= \n')
+    let data = req.query;
+    console.log(data);
+    let project_id = data['project_id'];
+
+    const arr_data = [
+        {
+            'project_id': 'PR0001',
+            'project_name': 'Tangerang Estate',
+        },
+        {
+            'project_id': 'PR0002',
+            'project_name': 'Cinere Resort',
+        },
+        {
+            'project_id': 'PR0003',
+            'project_name': 'Gandul Land',
+        },
+        {
+            'project_id': 'PR0004',
+            'project_name': 'Jaktim Pride',
+        },
+    ];
+
+
+    try {
+        for (var el of arr_data) {
+            if (el['project_id'] == project_id) {
+                return res.json({
+                    status: 200,
+                    isSuccess: true,
+                    message: 'nih',
+                    data: el,
+                })
+            }
+        }
+
+        res.json({
+            status: 400,
+            isSuccess: true,
+            message: 'Tidak ada data',
+            data: null,
+        })
+
+    } catch (error) {
+        console.log('\n ============= ERR ============= \n')
+        console.log(error)
+        console.log('\n ============= ERR ============= \n')
+        return error
+    }
+}
+
+
+
 exports.get_project_pin = (req, res) => {
     console.log('\n =========== get_project_pin ========= \n')
 
@@ -181,6 +236,65 @@ exports.get_sitemap_image = (req, res) => {
     let imgPath = data['imgPath'];
 
 
+
+
+    try {
+
+        let arr_files = fs.readdirSync(path.join(global.dir_sitemap))
+
+        if (!arr_files.includes(imgPath)) {
+            return res.json({
+                status: 500,
+                isSuccess: false,
+                message: 'File not found',
+                data: null,
+            })
+        }
+
+        let ext_map = {
+            '.jpg': 'image/jpeg',
+            '.jpeg': 'image/jpeg',
+            '.png': 'image/png',
+            '.gif': 'image/gif',
+            '.webp': 'image/webp'
+        }
+
+        let file_path = path.join(global.dir_sitemap, imgPath);
+        let file_read = fs.readFileSync(path.join(global.dir_sitemap, imgPath));
+        let file_ext = path.extname(file_path).toLowerCase();
+
+        let img_base64 = fs.readFileSync(path.join(global.dir_sitemap, imgPath)).toString('base64');
+
+        let img_uri = `data:${ext_map[file_ext]};base64,${img_base64}`;
+
+
+        return res.json({
+            status: 200,
+            isSuccess: true,
+            message: 'nih',
+            data: img_uri,
+        })
+
+    } catch (error) {
+        console.log('\n ============= ERR ============= \n')
+        console.log(error)
+        console.log('\n ============= ERR ============= \n')
+
+        return res.json({
+            status: 500,
+            isSuccess: false,
+            message: error.toString(),
+            data: error,
+        })
+
+    }
+
+}
+
+
+
+exports.test = (req, res) => {
+    console.log('\n =========== test(req, res) ========= \n');
 
 
     try {
