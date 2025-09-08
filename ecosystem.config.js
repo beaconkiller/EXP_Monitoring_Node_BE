@@ -16,14 +16,14 @@ module.exports = {
         THE_KEY_V1 : 'klapaucius',
       },
       env_dev: {
-          PORT: 4100,
+          PORT: 4020,
           NODE_ENV: "dev",
           E_APPROVE_HOST: '192.168.18.4',
           E_APPROVE_USER: 'itdev',
           E_APPROVE_PWD: 'bima123456',
       },
       env_prod: {
-          PORT: 4100,
+          PORT: 4020,
           NODE_ENV: "prod",
           E_APPROVE_HOST: '192.168.18.4',
           E_APPROVE_USER: 'itdev',

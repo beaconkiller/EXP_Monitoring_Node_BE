@@ -161,8 +161,8 @@ exports.get_project_pin = (req, res) => {
             status: 200,
             isSuccess: true,
             message: 'nih',
-            data: arr_data_2,
-            // data: arr_data,
+            // data: arr_data_2,
+            data: arr_data,
         })
     } catch (error) {
         console.log('\n ============= ERR ============= \n');
