@@ -15,6 +15,9 @@ router.route('/get_sitemap_image')
 router.route('/get_project_hdrs')
     .get(cont_sitemap_build.get_project_hdrs);
 
+router.route('/get_project_pin_from_db')
+    .get(cont_sitemap_build.get_project_pin_from_db);
+
 router.route('/test')
     .get(cont_sitemap_build.test);
 

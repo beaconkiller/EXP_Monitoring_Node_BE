@@ -1,4 +1,4 @@
-var db_e_approve = require('./services/db_e_approve');
+var db_sitemap = require('./services/db_sitemap');
 const conf_e_approve = require('./config/database')
 const webServer = require('./services/web-server');
 const moment = require('moment');
@@ -18,18 +18,16 @@ async function startup() {
 
 
     // ----------------------------------------
-    // ------------- DB_E_APPROVE -------------
+    // ------------- DB_SITEMAP -------------
     // ----------------------------------------
 
-    // try {
-    //     console.log('\n Initializing db_e_approve \n');
-    //     await db_e_approve.initialize();
-    //     console.log('db_e_approve done');
-    // } catch (err) {
-    //     console.error(err);
-    //     process.exit(1);
-    // }
-
+    try {
+        db_sitemap.initialize();
+        console.log('Initializing web DB_SITEMAP');
+    } catch (err) {
+        console.error(`${err}`);
+        process.exit(1);
+    }
 
 
     // ----------------------------------------

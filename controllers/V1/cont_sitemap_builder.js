@@ -229,6 +229,84 @@ exports.get_project_pin = (req, res) => {
 
 
 
+exports.get_project_pin_from_db = (req, res) => {
+    console.log('\n =========== get_project_pin_from_db ========= \n')
+
+    let data = req['query'];
+    let project_id = data['project_id'];
+    console.log(project_id);
+
+    const arr_data = [
+        {
+            'project_id': 'Tangerang Estate',
+            'pin_id': 'A1',
+            'blok_id': 'A',
+            'x': '405.17840175446037',
+            'y': '216.52341539237315',
+            'img_name': 'Tangerang_Estate.jpg',
+        },
+        {
+            'project_id': 'Tangerang Estate',
+            'pin_id': 'A2',
+            'blok_id': 'A',
+            'x': '492.6181176346023',
+            'y': '321',
+            'img_name': 'Tangerang_Estate.jpg',
+        },
+        {
+            'project_id': 'Tangerang Estate',
+            'pin_id': 'B1',
+            'blok_id': 'B',
+            'x': '120',
+            'y': '325',
+            'img_name': 'Tangerang_Estate.jpg',
+        },
+        {
+            'project_id': 'Tangerang Estate',
+            'pin_id': 'B2',
+            'blok_id': 'B',
+            'x': '142',
+            'y': '132',
+            'img_name': 'Tangerang_Estate.jpg',
+        },
+        {
+            'project_id': 'Tangerang Estate',
+            'pin_id': 'B3',
+            'blok_id': 'B',
+            'x': '482',
+            'y': '152',
+            'img_name': 'Tangerang_Estate.jpg',
+        },
+        {
+            'project_id': 'Tangerang Estate',
+            'pin_id': 'C1',
+            'blok_id': 'C',
+            'x': '482',
+            'y': '152',
+            'img_name': 'Tangerang_Estate.jpg',
+        },
+    ];
+
+
+
+    try {
+        res.json({
+            status: 200,
+            isSuccess: true,
+            message: 'nih',
+            // data: arr_data_2,
+            data: arr_data,
+        })
+    } catch (error) {
+        console.log('\n ============= ERR ============= \n');
+        console.log(error);
+        console.log('\n ============= ERR ============= \n');
+        return error;
+    }
+}
+
+
+
 exports.get_sitemap_image = (req, res) => {
     console.log('\n =========== get_sitemap_image(req, res) ========= \n');
 
