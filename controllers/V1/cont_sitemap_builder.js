@@ -2,6 +2,7 @@ const path = require("path");
 const fs = require('fs');
 const db_sitemap = require('../../services/db_sitemap');
 const repoDb = require("../../repository/repo.db");
+const HelperV2 = require("../../repository/repo.helperV2");
 
 exports.get_project_all = (req, res) => {
     console.log('\n =========== get_project(req, res) ========= \n')
@@ -389,10 +390,12 @@ exports.get_sitemap_image = (req, res) => {
 exports.export_save_unit_mapping = async (req, res) => {
     console.log('\n =========== export_save_unit_mapping ========= \n')
     let data = req['body'];
+    console.log(data);
+
     let arr_units = data['arr_unit_data'];
+    let new_image = data['new_image'];
+    let project_id = data['act_project']['project_id'];
 
-
-    // console.log(arr_units);
 
     let client;
     try {
@@ -400,33 +403,51 @@ exports.export_save_unit_mapping = async (req, res) => {
         client = await pool.connect();
         await client.query('BEGIN');
 
+
+
+        // ==============================================
+        // =========== UPDATING UNIT MAPPING ============
+        // ==============================================
+
+
+        if (new_image != null) {
+            let new_image_file_name = `${new_image['file_name']}.${new_image['file_extension']}`
+
+            let q_sitemap_img = `
+                UPDATE public.sm_mst_project
+                SET 
+                    sitemap_img='${new_image_file_name}'
+                WHERE 
+                    project_id='${project_id}'
+            `
+            await client.query(q_sitemap_img);
+
+            let file_path = path.join(__dirname, '..', '..', 'file_storage', 'file_sitemap');
+            HelperV2.file_upload(
+                `${new_image['file_name']}.${new_image['file_extension']}`,
+                new_image['file_base64'],
+                file_path
+            );
+        }
+
+
+        // ==============================================
+        // =========== UPDATING UNIT MAPPING ============
+        // ==============================================
+
         for (const el of arr_units) {
-
-            // UPDATE public.sm_mst_pin_mapping
-            // 	SET y_pixel='123',x_pixel='231'
-            // 	WHERE unit_id='B2' AND blok_id='B' AND x_pixel='142' AND y_pixel='132' AND project_id='PR0001'            
-
-            console.log(el);
-
-            // {
-            // unit_id: 'B2',
-            // blok_id: 'B',
-            // x_pixel: '142',
-            // y_pixel: '132',
-            // project_id: 'PR0001',
-            // sitemap_img: 'Tangerang_Estate.jpg',
-            // xV: 14.185814185814186,
-            // yV: 11.956521739130434
-            // }            
-
             let q = `
                 UPDATE public.sm_mst_pin_mapping
                     SET y_pixel='${el['y_pixel']}', x_pixel='${el['x_pixel']}'
                     WHERE unit_id='${el['unit_id']}' AND project_id='${el['project_id']}'                        
             `
 
-            let xRes = await client.query(q);
+            await client.query(q);
         }
+
+        // ==============================================
+        // =============== END // COMMIT ================
+        // ==============================================
 
         await client.query('COMMIT');
 
