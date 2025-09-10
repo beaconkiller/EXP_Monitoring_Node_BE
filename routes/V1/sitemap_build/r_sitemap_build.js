@@ -18,7 +18,12 @@ router.route('/get_project_hdrs')
 router.route('/get_project_pin_from_db')
     .get(cont_sitemap_build.get_project_pin_from_db);
 
+router.route('/export_save_unit_mapping')
+    .post(cont_sitemap_build.export_save_unit_mapping);
+
 router.route('/test')
     .get(cont_sitemap_build.test);
+
+    
 
 module.exports = router;

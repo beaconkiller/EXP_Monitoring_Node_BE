@@ -1,5 +1,7 @@
 const path = require("path");
 const fs = require('fs');
+const db_sitemap = require('../../services/db_sitemap');
+const repoDb = require("../../repository/repo.db");
 
 exports.get_project_all = (req, res) => {
     console.log('\n =========== get_project(req, res) ========= \n')
@@ -229,7 +231,7 @@ exports.get_project_pin = (req, res) => {
 
 
 
-exports.get_project_pin_from_db = (req, res) => {
+exports.get_project_pin_from_db = async (req, res) => {
     console.log('\n =========== get_project_pin_from_db ========= \n')
 
     let data = req['query'];
@@ -290,12 +292,25 @@ exports.get_project_pin_from_db = (req, res) => {
 
 
     try {
+
+
+        let q = `
+            select smpm.*, smp.sitemap_img from sm_mst_pin_mapping smpm 
+            join sm_mst_project smp on smp.project_id = smpm.project_id 
+            where 
+                smpm.project_id = '${project_id}'
+        `
+
+        let xRes = await db_sitemap.simpleExecute(q);
+
+        console.log(xRes);
+
         res.json({
             status: 200,
             isSuccess: true,
             message: 'nih',
             // data: arr_data_2,
-            data: arr_data,
+            data: xRes,
         })
     } catch (error) {
         console.log('\n ============= ERR ============= \n');
@@ -345,6 +360,7 @@ exports.get_sitemap_image = (req, res) => {
 
         let img_uri = `data:${ext_map[file_ext]};base64,${img_base64}`;
 
+        // console.log(img_uri);
 
         return res.json({
             status: 200,
@@ -366,7 +382,78 @@ exports.get_sitemap_image = (req, res) => {
         })
 
     }
+}
 
+
+
+exports.export_save_unit_mapping = async (req, res) => {
+    console.log('\n =========== export_save_unit_mapping ========= \n')
+    let data = req['body'];
+    let arr_units = data['arr_unit_data'];
+
+
+    // console.log(arr_units);
+
+    let client;
+    try {
+        let pool = repoDb.getter_pool();
+        client = await pool.connect();
+        await client.query('BEGIN');
+
+        for (const el of arr_units) {
+
+            // UPDATE public.sm_mst_pin_mapping
+            // 	SET y_pixel='123',x_pixel='231'
+            // 	WHERE unit_id='B2' AND blok_id='B' AND x_pixel='142' AND y_pixel='132' AND project_id='PR0001'            
+
+            console.log(el);
+
+            // {
+            // unit_id: 'B2',
+            // blok_id: 'B',
+            // x_pixel: '142',
+            // y_pixel: '132',
+            // project_id: 'PR0001',
+            // sitemap_img: 'Tangerang_Estate.jpg',
+            // xV: 14.185814185814186,
+            // yV: 11.956521739130434
+            // }            
+
+            let q = `
+                UPDATE public.sm_mst_pin_mapping
+                    SET y_pixel='${el['y_pixel']}', x_pixel='${el['x_pixel']}'
+                    WHERE unit_id='${el['unit_id']}' AND project_id='${el['project_id']}'                        
+            `
+
+            let xRes = await client.query(q);
+        }
+
+        await client.query('COMMIT');
+
+        return res.json({
+            status: 200,
+            isSuccess: true,
+            message: 'nih',
+            data: null,
+        })
+    } catch (error) {
+        console.log('\n ============= ERR ============= \n');
+        console.log(error);
+        console.log('\n ============= ERR ============= \n');
+
+        console.error(err);
+
+        await client.query('ROLLBACK');
+
+        return res.json({
+            status: 500,
+            isSuccess: false,
+            message: 'Proses menyimpan data gagal',
+            data: null,
+        });
+    } finally {
+        client.release()
+    }
 }
 
 

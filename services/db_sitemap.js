@@ -83,12 +83,9 @@ async function simpleExecute_many(statements, binds = [], opts = {}) {
 
     try {
         let arr_res = [];
-
         await client.query('BEGIN');
 
-
         for (const sql of statements) {
-
             let xRes = await client.query(sql);
             arr_res.push(xRes.rows);
         }
