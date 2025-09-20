@@ -1,197 +1,150 @@
-const crypto = require('crypto')
+const crypto = require('crypto');
 const JSEncrypt = require('node-jsencrypt');
 
-
 class NE2EE {
-    constructor({ selfPrivateKey, otherPublicKey, aesKey }) {
+    /**
+     * @param {Object} options
+     * @param {string} options.selfPrivateKey The RSA private key in PEM format.
+     */
+    constructor({ selfPrivateKey }) {
         this.privateKey = selfPrivateKey;
-        this.publicKey = otherPublicKey;
-        this.aesKey = aesKey
-    }
-
-    decrypt(encrypted) {
-        try {
-            //#region Get RSA and AES key
-            const privateKey = Buffer.from(this.privateKey, 'base64').toString('utf8');
-            const key = Buffer.from(this.aesKey, 'base64');
-            //#endregion
-
-            //#region Separate encrypted IV and Data
-            var encryptedBuffer = Buffer.from(encrypted, 'base64')
-            var encryptedIv = encryptedBuffer.subarray(0, 344)
-            var encryptedData = encryptedBuffer.subarray(344, encryptedBuffer.length)
-            //#endregion
-
-            //#region Decrypt IV
-            const crypt = new JSEncrypt();
-            crypt.setPrivateKey(privateKey);
-            var decryptedRsa = crypt.decrypt(encryptedIv.toString('utf8'));
-            var iv = Buffer.from(decryptedRsa, 'base64')
-            //#endregion
-
-            //#region Decrypt data
-            let decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
-            let decrypted = decipher.update(encryptedData);
-            decrypted = Buffer.concat([decrypted, decipher.final()]);
-            //#endregion
-
-            //#region Split data string and image
-            // String
-            var finalDecrypted = decrypted.toString();
-            return finalDecrypted;
-            //#endregion
-        }
-        catch (e) {
-            console.error(e);
-            throw new Error(e)
+        console.log("NE2EE instance created with private key:", this.privateKey ? "set" : "not set");
+        if (this.privateKey) {
+            console.log("Private key start:", this.privateKey.substring(0, 50) + '...');
         }
     }
 
-    decryptV2(encrypted) {
+    /**
+     * Decrypts an encrypted message using AES and RSA.
+     * @param {string} encryptedAesStr
+     * @param {string} encryptedIvStr
+     * @param {string} encryptedDataBase64
+     * @returns {Object}
+     */
+    decrypt(encryptedAesStr, encryptedIvStr, encryptedDataBase64) {
         try {
-            console.log(`Ini ecnrypted nya ${encrypted}`);
-            //#region Get RSA and AES key
-            console.log('debug 1');
-            console.log(this.privateKey);
-            const privateKey = Buffer.from(this.privateKey, 'base64').toString('utf8');
-            // const key = Buffer.from(this.aesKey, 'base64');
-            //#endregion
-            console.log('debug 2');
-
-            //#region Separate encrypted IV and Data
-            var encryptedBuffer = Buffer.from(encrypted, 'base64')
-            console.log('debug 3');
-
-            var encryptedAes = encryptedBuffer.subarray(0, 344)
-            console.log('debug 4');
-
-            var encryptedIv = encryptedBuffer.subarray(344, 688)
-            console.log('debug 5');
-
-            var publicKey = encryptedBuffer.subarray(688, 1280)
-            console.log('debug 6');
-
-            var encryptedData = encryptedBuffer.subarray(1280, encryptedBuffer.length)
-            //#endregion
-            console.log('debug 7');
-
-
-
-            //#region Decrypt IV
-            const crypt = new JSEncrypt();
-            console.log('debug 8');
-
-            crypt.setPrivateKey(privateKey);
-            console.log('debug 9');
-
-            var decryptedIV = crypt.decrypt(encryptedIv.toString('utf8'));
-            console.log('debug 10');
-
-            var decryptedAES = crypt.decrypt(encryptedAes.toString('utf8'));
-            console.log('debug 11');
-
-
-            if (!decryptedIV || !decryptedAES) {
-                console.log('debug 12');
-
-                throw new Error("RSA decryption failed. Ensure valid keys.");
+            if (!this.privateKey) {
+                throw new Error("Private key not set. Cannot decrypt.");
             }
-            
-            var iv = Buffer.from(decryptedIV, 'base64')
-            var key = Buffer.from(decryptedAES, 'base64')
-            //#endregion
 
-            //#region Decrypt data
-            let decipher = crypto.createDecipheriv('aes-128-cbc', key, iv);
+            const crypt = new JSEncrypt();
+            crypt.setPrivateKey(this.privateKey);
+
+            // 1. RSA Decrypt the AES key and IV
+            const decryptedIVBase64 = crypt.decrypt(encryptedIvStr);
+            const decryptedAESBase64 = crypt.decrypt(encryptedAesStr);
+
+            console.log("Decrypted AES key (Base64) string:", decryptedAESBase64);
+            console.log("Decrypted IV (Base64) string:", decryptedIVBase64);
+
+            if (!decryptedIVBase64 || !decryptedAESBase64) {
+                // Perbaiki pesan error agar lebih informatif
+                throw new Error("RSA decryption failed. Ensure front-end library is compatible.");
+            }
+
+            // 2. Convert Base64 strings back to Buffers
+            const iv = Buffer.from(decryptedIVBase64, 'base64');
+            const key = Buffer.from(decryptedAESBase64, 'base64');
+            const encryptedData = Buffer.from(encryptedDataBase64, 'base64');
+
+            if (key.length !== 16) {
+                throw new RangeError(`Invalid key length: ${key.length} bytes. Expected 16 bytes for aes-128-cbc.`);
+            }
+
+            // 3. AES Decrypt the data
+            const decipher = crypto.createDecipheriv('aes-128-cbc', key, iv);
             let decrypted = decipher.update(encryptedData);
             decrypted = Buffer.concat([decrypted, decipher.final()]);
-            //#endregion
 
-            //#region Split data string and image
-            // String
-            var finalDecrypted = decrypted.toString();
+            const finalDecrypted = decrypted.toString();
             return {
                 aes: key.toString('base64'),
-                publicKey: publicKey.toString('utf8'),
+                iv: iv.toString('base64'),
                 data: finalDecrypted,
             };
-            //#endregion
-        }
-        catch (e) {
-            console.error(e);
-            throw new Error(e)
+        } catch (e) {
+            console.error("Decryption Error:", e);
+            throw e;
         }
     }
 
-    encrypt(data, aesAlgorithm = { algorithm: 'aes-256-cbc' }) {
-        const publicKey = Buffer.from(this.publicKey, 'base64').toString('utf8');
-        const aesKey = Buffer.from(this.aesKey, 'base64');
-        const iv = crypto.randomBytes(16);
+    /**
+     * Decrypts an encrypted message using AES hanya saja ketika user telah login.
+     * @param {string} encryptedDataBase64
+     * @param {string} aesKey
+     * @param {string} iv
+     * @returns {Object}
+     */
+    decryptWithSession(encryptedDataBase64, aesKey, iv) {
+    const key = Buffer.from(aesKey, 'base64');
+    const ivBuf = Buffer.from(iv, 'base64');
+    const encryptedData = Buffer.from(encryptedDataBase64, 'base64');
 
-        let cipher = crypto.createCipheriv(aesAlgorithm.algorithm, aesKey, iv);
-        let encryptedData = cipher.update(data);
-        encryptedData = Buffer.concat([encryptedData, cipher.final()]);
-
-        const crypt = new JSEncrypt();
-        crypt.setPublicKey(publicKey)
-        var encryptedIv = crypt.encrypt(iv.toString('base64'));
-
-        var finalEncrypted = Buffer.concat([Buffer.from(encryptedIv), encryptedData]);
-
-        return finalEncrypted.toString('base64')
-    }
-
-    encryptV2(data, { aesKey, publicKey, algorithm = 'aes-128-cbc' }) {
-        if (aesKey == undefined) throw new Error('aesKey must definied')
-        if (publicKey == undefined) throw new Error('publicKey must definied')
-        publicKey = Buffer.from(publicKey, 'base64').toString('utf8');
-        aesKey = Buffer.from(aesKey, 'base64');
-        const iv = crypto.randomBytes(16);
-
-        let cipher = crypto.createCipheriv(algorithm, aesKey, iv);
-        let encryptedData = cipher.update(data);
-        encryptedData = Buffer.concat([encryptedData, cipher.final()]);
-
-        const crypt = new JSEncrypt();
-        crypt.setPublicKey(publicKey)
-        var encryptedIv = crypt.encrypt(iv.toString('base64'));
-        var encryptedAes = crypt.encrypt(aesKey.toString('base64'));
-
-        var finalEncrypted = Buffer.concat([Buffer.from(encryptedAes), Buffer.from(encryptedIv), encryptedData]);
-
-        return finalEncrypted.toString('base64')
-    }
+    const decipher = crypto.createDecipheriv('aes-128-cbc', key, ivBuf);
+    let decrypted = decipher.update(encryptedData);
+    decrypted = Buffer.concat([decrypted, decipher.final()]);
+    return decrypted.toString();
 }
 
-function generateKey(
-    aesKeySize = 16,
-    rsaKeyLength = 2048,
-    publicKeyType = 'spki',
-    publicKeyFormat = 'pem',
-    privateKeyType = 'pkcs8',
-    privateKeyFormat = 'pem'
-) {
-    const aesKey = crypto.randomBytes(aesKeySize).toString('base64')
-    const rsaKeyPair = crypto.generateKeyPairSync('rsa', {
-        modulusLength: rsaKeyLength,
+
+    /**
+     * Encrypts a message using AES and RSA.
+     * @param {string} data
+     * @param {Object} options
+     * @param {string} options.aesKey The AES key in Base64 format.
+     * @param {string} options.publicKey The RSA public key in PEM format.
+     * @returns {string} The combined encrypted string.
+     */
+    encryptV2(data, { aesKey, publicKey, iv, algorithm = 'aes-128-cbc' }) {
+        if (!aesKey) throw new Error('aesKey must be defined');
+        if (!iv) throw new Error('iv must be defined');
+        if (!publicKey) throw new Error('publicKey must be defined');
+
+        let cipher = crypto.createCipheriv(
+            algorithm,
+            Buffer.from(aesKey, 'base64'),
+            Buffer.from(iv, 'base64')   // FIXED
+        );
+
+        let encryptedData = cipher.update(JSON.stringify(data));
+        encryptedData = Buffer.concat([encryptedData, cipher.final()]);
+
+        const crypt = new JSEncrypt();
+        crypt.setPublicKey(publicKey);
+
+        const encryptedIv = crypt.encrypt(iv);     // tetap kirim base64 string
+        const encryptedAes = crypt.encrypt(aesKey);
+
+        if (!encryptedIv || !encryptedAes) {
+            throw new Error('RSA encryption of IV or AES key failed');
+        }
+
+        return `${encryptedAes}::${encryptedIv}::${encryptedData.toString('base64')}`;
+    }
+
+}
+
+/**
+ * Generates a new RSA key pair.
+ * @returns {Object}
+ */
+function generateKeyPair() {
+    const keyPair = crypto.generateKeyPairSync('rsa', {
+        modulusLength: 2048,
         publicKeyEncoding: {
-            type: publicKeyType,
-            format: publicKeyFormat,
+            type: 'spki',
+            format: 'pem',
         },
         privateKeyEncoding: {
-            type: privateKeyType,
-            format: privateKeyFormat
+            type: 'pkcs8',
+            format: 'pem'
         }
-    })
+    });
 
-    const keyPair = {
-        aesKey,
-        privateKey: rsaKeyPair.privateKey.toString('base64'),
-        publicKey: rsaKeyPair.publicKey.toString('base64'),
-    }
-
-    return keyPair
+    return {
+        privateKey: keyPair.privateKey,
+        publicKey: keyPair.publicKey
+    };
 }
 
-exports.NE2EE = NE2EE
-exports.generateKey = generateKey
+module.exports = { NE2EE, generateKeyPair };

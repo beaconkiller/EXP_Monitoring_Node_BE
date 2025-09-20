@@ -1,106 +1,82 @@
-const dbConfig = require('../config/database.js');
-const repoDb = require('../repository/repo.db.js');
 const { Pool } = require('pg');
+const dbConfig = require('../config/database.js');
 
-var pool;
-
+let pool;
 
 async function initialize() {
     try {
         pool = new Pool(dbConfig.db_sitemap);
-        repoDb.setter_pool(pool);
 
-        // try {
-        //     pool.getConnection((err, connection) => {
-        //         if (err) {
-        //             console.error('Error connecting to the db_e_approve', err.message);
-        //             // process.exit(1); // Exit the process if connection fails
-        //         }
+        const client = await pool.connect();
+        console.log('Connected to PostgreSQL');
+        client.release();
+    } catch (e) {
+        console.error('Failed to connect PostgreSQL:', e.message);
 
-        //         try {
-        //             connection.release(); // Release the connection back to the pool
-        //         } catch (error) {
-        //             console.error(error)
-        //         }
-        //     });
-        // } catch (error) {
-        //     console.error(error);
-        // }
-
-
-    } catch (error) {
-        console.error(error);
+        try {
+            pool = new Pool(dbConfig.db_sitemap);
+            const client = await pool.connect();
+            console.log('Connected to PostgreSQL (retry)');
+            client.release();
+        } catch (err) {
+            throw new Error(err);
+        }
     }
 }
 
 module.exports.initialize = initialize;
 
-async function close() {
-    pool.end()
-}
 
+async function close() {
+    if (pool) {
+        try {
+            await pool.end();
+            console.log('PostgreSQL pool closed');
+        } catch (err) {
+            console.error('Error closing pool:', err.message);
+        }
+    }
+}
 
 module.exports.close = close;
 
-async function simpleExecute(statement, binds = [], opts = {}) {
-    return new Promise(async (resolve, reject) => {
-        try {
-
-            let xRes = await pool.query(statement);
-            // console.log(xRes)
-            resolve(xRes.rows);
-
-
-        } catch (err) {
-            console.error(err);
-            reject(err);
-            throw err;
-        } finally {
-            // if (conn) { // conn assignment worked, need to close
-            //     try {
-            //         conn.close();
-            //     } catch (err) {
-            //         console.log(err);
-            //     }
-            // }
-        }
-    })
+async function simpleExecute(statement, binds = []) {
+    const client = await pool.connect(); // Dapatkan koneksi dari pool
+    try {
+        const result = await client.query(statement, binds);
+        return result.rows;
+    } catch (err) {
+        throw err; // Lemparkan error
+    } finally {
+        client.release(); // Pastikan koneksi dikembalikan ke pool
+    }
 }
 
 
 module.exports.simpleExecute = simpleExecute;
 
 
-async function simpleExecute_many(statements, binds = [], opts = {}) {
-    let client;
-
-    try {
-        client = await pool.connect();
-    } catch (error) {
-        initialize();
-    }
-
+async function simpleExecute_many(statements, bindsArr = []) {
+    const client = await pool.connect();
 
     try {
         let arr_res = [];
         await client.query('BEGIN');
 
-        for (const sql of statements) {
-            let xRes = await client.query(sql);
-            arr_res.push(xRes.rows);
+        for (let i = 0; i < statements.length; i++) {
+            const sql = statements[i];
+            const binds = bindsArr[i] || [];
+            const result = await client.query(sql, binds);
+            arr_res.push(result.rows);
         }
 
         await client.query('COMMIT');
-
         return arr_res;
     } catch (err) {
-        console.error(err);
-
         await client.query('ROLLBACK');
-
         throw err;
     } finally {
-        await client.release();
+        client.release();
     }
 }
 
