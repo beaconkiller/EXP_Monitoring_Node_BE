@@ -107,34 +107,72 @@ exports.inp_new_blok = async (req, res) => {
 
     try {
 
-        // p_input_mst_blok(
-        //     IN p_blok_name text, 
-        //     IN p_type_blok text, 
-        //     IN p_proyek_id text, 
-        //     IN p_jumlah integer, 
-        //     IN p_user_id text, 
-        //     OUT p_msg text
-        // ) 
-        
-        let q = `
-            CALL p_input_mst_blok(
-                '${data['str_blok_name']}', 
-                '${data['str_type_blok']}', 
-                '${data['str_proyek_id']}', 
-                '${data['int_jumlah']}',
-                '${data['str_empl_code']}',
-                p_msg
-            );
-        `
+        const query = `
+            CALL p_input_mst_blok($1, $2, $3, $4, $5, NULL)
+        `;
 
-        // let xRes = await db_sitemap.simpleExecute(q);
-        // console.log(xRes);
+        const values = [
+            data['str_blok_name'],
+            data['str_type_block'],
+            data['str_proyek_id'],
+            data['int_jumlah_block'],
+            data['empl_code']
+        ];
+
+        let xRes = await db_sitemap.simpleExecute(query, values);
+
+        await HelperV2.set_delay(2000);
 
         res.json({
             status: 200,
             isSuccess: true,
-            message: 'success',
+            message: xRes[0]['p_msg'],
             data: null,
+        })
+
+    } catch (error) {
+        console.log('\n ============= ERR ============= \n')
+        console.log(error)
+        console.log('\n ============= ERR ============= \n')
+        return res.json({
+            status: 500,
+            isSuccess: false,
+            message: error,
+            data: null,
+        })
+    }
+}
+
+
+
+exports.get_all_blok = async (req, res) => {
+    console.log('\n =========== get_all_blok(req, res) ========= \n')
+    let data = req.query;
+    console.log(data);
+
+    try {
+
+        const query = `
+            select * from ms_blok mb 
+            where 
+                proyek_id = $1
+            ;
+        `;
+
+        const values = [
+            data['proyek_id'],
+        ];
+
+        let xRes = await db_sitemap.simpleExecute(query, values);
+        console.log(xRes);
+
+        // await HelperV2.set_delay(2000);
+
+        res.json({
+            status: 200,
+            isSuccess: true,
+            message: null,
+            data: xRes,
         })
 
     } catch (error) {

@@ -12,6 +12,9 @@ router.route('/get_project_all')
 router.route('/inp_new_blok')
     .post(cont_setup_project.inp_new_blok);
 
+router.route('/get_all_blok')
+    .get(cont_setup_project.get_all_blok);
+
     
 
 module.exports = router;
