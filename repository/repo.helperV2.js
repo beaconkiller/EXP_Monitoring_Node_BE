@@ -64,6 +64,14 @@ class HelperV2 {
     }
 
 
+    async set_delay(val){
+        await new Promise((resolve) => {
+            setTimeout(() => {
+                resolve();
+            }, val);
+        })
+    }
+
 
     get_curr_date() {
         return (new Date()).toISOString().split('.')[0].replaceAll('T', ' ');

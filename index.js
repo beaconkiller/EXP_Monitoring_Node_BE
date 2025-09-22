@@ -72,6 +72,7 @@ async function setGlobalVariable() {
     global.app_name = 'test admin';
     global.base_dir = __dirname;
     global.dir_sitemap = path.join(__dirname,'file_storage','file_sitemap');
+    global.dir_controllers = path.join(__dirname,'controllers');
 }
 
 
