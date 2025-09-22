@@ -1,5 +1,7 @@
 const crypto = require('crypto');
 const JSEncrypt = require('node-jsencrypt');
+const path = require('path');
+const fs = require('fs');
 
 class NE2EE {
     /**
@@ -141,10 +143,53 @@ function generateKeyPair() {
         }
     });
 
+    console.log(`Ini hasil private Key nya : ${keyPair.privateKey}`)
+    console.log(`Ini hasil public Key nya : ${keyPair.publicKey}`)
+
     return {
         privateKey: keyPair.privateKey,
         publicKey: keyPair.publicKey
     };
 }
 
-module.exports = { NE2EE, generateKeyPair };
+function generateOrLoadKeyPair() {
+  const privateKeyPath = path.join(__dirname, '../keys/private.pem');
+  const publicKeyPath = path.join(__dirname, '../keys/public.pem');
+
+  // kalau sudah ada file key → langsung baca
+  if (fs.existsSync(privateKeyPath) && fs.existsSync(publicKeyPath)) {
+    console.log('🔑 Loading RSA keypair dari file...');
+    const privateKey = fs.readFileSync(privateKeyPath, 'utf8');
+    const publicKey = fs.readFileSync(publicKeyPath, 'utf8');
+    return { privateKey, publicKey };
+  }
+
+  // kalau belum ada → generate baru
+  console.log('⚡ Generating RSA keypair baru...');
+  const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', {
+    modulusLength: 2048,
+    publicKeyEncoding: {
+      type: 'spki',
+      format: 'pem',
+    },
+    privateKeyEncoding: {
+      type: 'pkcs8',
+      format: 'pem',
+    },
+  });
+
+  // pastikan folder `keys/` ada
+  if (!fs.existsSync(path.dirname(privateKeyPath))) {
+    fs.mkdirSync(path.dirname(privateKeyPath), { recursive: true });
+  }
+
+  // simpan ke file
+  fs.writeFileSync(privateKeyPath, privateKey);
+  fs.writeFileSync(publicKeyPath, publicKey);
+
+  console.log('✅ RSA keypair baru disimpan ke folder keys/');
+  return { privateKey, publicKey };
+}
+
+
+module.exports = { NE2EE, generateKeyPair, generateOrLoadKeyPair };

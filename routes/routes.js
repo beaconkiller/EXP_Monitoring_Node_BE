@@ -4,6 +4,7 @@ const r_sitemap = require('./V1/sitemap_build/r_sitemap_build')
 const r_setup_project = require('./V1/r_setup_project')
 const { verify } = require('../middleware/auth_web')
 const auth = require('../routes/V1/auth/auth')
+const rv = require('../routes/V1/rv/rv-input')
 
 
 router.use((req, res, next) => {
@@ -12,7 +13,7 @@ router.use((req, res, next) => {
 
 
 router.use('/v1/auth', auth);
-
+router.use('/v1/rv', rv);
 
 router.use('/v1/sitemap_build', r_sitemap);
 router.use('/v1/setup_project', r_setup_project);
