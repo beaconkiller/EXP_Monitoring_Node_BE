@@ -55,7 +55,7 @@ function initialize() {
         
         // ======================== PREFIX FOR ========================
 
-        app.use('/exp_sitemap', routes)
+        app.use('/exp_monitoring', routes)
 
 
 

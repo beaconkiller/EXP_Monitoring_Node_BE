@@ -4,6 +4,7 @@ const webServer = require('./services/web-server');
 const moment = require('moment');
 const path = require('path');
 const os = require('os');
+const websocket = require('./repository/repo.ws');
 
 
 
@@ -18,15 +19,14 @@ async function startup() {
 
 
     // ----------------------------------------
-    // ------------- DB_SITEMAP -------------
+    // ------------ WEBSOCKET INIT ------------
     // ----------------------------------------
 
     try {
-        db_sitemap.initialize();
-        console.log('Initializing web DB_SITEMAP');
+        websocket.initialize()
     } catch (err) {
         console.error(`${err}`);
-        process.exit(1);
+        process.exit(1); // Non-zero failure code
     }
 
 
@@ -66,13 +66,10 @@ async function shutdown(e) {
 
 
 async function setGlobalVariable() {
-    global.base_url = 'http://localhost:4000/';
-    // global.base_url = 'http://192.168.1.20:5000/administrator/'
-    // global.base_url = 'http://103.154.81.163:3000/administrator/'
     global.app_name = 'test admin';
     global.base_dir = __dirname;
-    global.dir_sitemap = path.join(__dirname,'file_storage','file_sitemap');
-    global.dir_controllers = path.join(__dirname,'controllers');
+    global.dir_sitemap = path.join(__dirname, 'file_storage', 'file_sitemap');
+    global.dir_controllers = path.join(__dirname, 'controllers');
 }
 
 

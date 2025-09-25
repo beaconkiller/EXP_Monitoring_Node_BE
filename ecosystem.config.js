@@ -2,7 +2,7 @@
 
 module.exports = {
   apps: [{
-    name: "Exp_sitemap",
+    name: "EXP_Monitoring_Server",
     script: 'index.js',
     instances: 1,
     autorestart: true,
@@ -16,14 +16,14 @@ module.exports = {
       THE_KEY_V1: 'klapaucius',
     },
     env_dev: {
-      PORT: 4020,
+      PORT: 4098,
       NODE_ENV: "dev",
       POSTGREE_CONN: '103.150.101.128',
       POSTGREE_USER: 'def_user',
       POSTGREE_PWD: 'P@ssw0rd',
     },
     env_prod: {
-      PORT: 4020,
+      PORT: 4098,
       NODE_ENV: "prod",
       POSTGREE_CONN: '103.150.101.128',
       POSTGREE_USER: 'def_user',
