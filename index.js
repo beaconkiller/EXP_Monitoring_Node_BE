@@ -5,6 +5,7 @@ const moment = require('moment');
 const path = require('path');
 const os = require('os');
 const websocket = require('./repository/repo.ws');
+const repoHelperV2 = require('./repository/repo.helperV2');
 
 
 
@@ -14,6 +15,7 @@ async function startup() {
     // ------------ SET GLOBAL VAR ------------
     // ----------------------------------------
 
+    repoHelperV2.c_log_start();
     setGlobalVariable();
 
 
@@ -36,7 +38,6 @@ async function startup() {
 
     try {
         console.log('Initializing web server module');
-
         await webServer.initialize();
     } catch (err) {
         console.error(`${err}`);

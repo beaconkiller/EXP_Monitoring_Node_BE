@@ -7,37 +7,30 @@ class Repo_WS {
     // Connect to a WebSocket server
     wss = null;
     arr_clients = new Map();
-
+    ws_connection = null;
+    port = 4099;
 
     initialize() {
         try {
-            let tmp_wss = new WebSocket.Server({ port: 4099 });
+            let tmp_wss = new WebSocket.Server({ port: this.port });
             this.wss = tmp_wss;
 
 
             this.wss.on('connection', (ws) => {
-                console.log(' ');
-                console.log(' ');
-                console.log(' ');
-
-
-                // ws.send('Hello from server 👋');
+                this.ws_connection = ws;
 
                 ws.on('message', (message) => {
                     this.handle_register(ws, message);
-
-                    console.log(`message: ${message}`);
-
-                    // this.handle_message(message);
-                    // ws.send(`Server received: ${message}`);
+                    this.handle_message(ws, message);
                 });
 
                 ws.on('close', () => {
                     this.handle_disconnect(ws);
                 });
+
             });
 
-            console.log('WebSocket server is running on ws://localhost:8080');
+            console.log(`WebSocket server is running on :${this.port}`);
         } catch (error) {
             console.log(error);
         }
@@ -45,40 +38,93 @@ class Repo_WS {
 
 
 
-    handle_message(data) {
-        let type = data['type'];
-        let message = data['message'];
+    async test_message() {
 
-        if (type == 'register') {
-            client_id = message;
+    };
 
+
+
+    handle_message(ws, data) {
+        console.log('======== handle_message() =========');
+
+        let device_id = ws['deviceId'];
+        let message = JSON.parse(data);
+        let type = message['type'];
+
+        // console.log(device_id);
+        // console.log(message);
+        // console.log(type);
+
+        if (type == 'get_storage') {
+            this.send_message('get_storage', 'get_storage', message['payload'], device_id,);
+        }
+
+        if (type == 'give_storage') {
+            this.send_message('give_storage', message['payload'], 'HOST_21', device_id,);
+        }
+    }
+
+
+    send_message(type, message, client, device_id) {
+        console.log('======== send_message() =========');
+
+        // console.log(type);
+        // console.log(message);
+        // console.log(client);
+
+        try {
+            if (!client) {
+                this.ws_connection.send(JSON.stringify({ type: type, message: message, device_id: device_id }));
+            } else {
+                let target_client = this.arr_clients.get(client);
+                target_client.send(JSON.stringify({ type: type, message: message, device_id: device_id }));
+            }
+        } catch (error) {
+            // console.error(error);
+            console.log('failed to send msg');
         }
     }
 
 
 
     handle_register(ws_data, message) {
-        message = JSON.parse(message);
+        if (typeof message == 'object') {
+            message = JSON.parse(message);
 
-        let type = message['type'];
-        let deviceId = message['deviceId'];
+            let type = message['type'];
+            let deviceId = message['deviceId'];
 
-        // console.log('--- NEW CLIENT ---');
 
-        if (type == 'register') {
-            ws_data.deviceId = deviceId;
-            this.arr_clients.set(deviceId, ws_data);
+            if (type == 'register') {
+                console.log(' ');
+                console.log('----- NEW CLIENT CONNECTED -----');
+                console.log(deviceId);
+                console.log(' ');
 
-            // console.log(this.arr_clients);
-        }
+                ws_data.deviceId = deviceId;
+                this.arr_clients.set(deviceId, ws_data);
+
+                this.send_message('get_clients', this.getter_clients(), 'HOST_21', deviceId);
+            }
+
+        };
     }
 
 
 
     handle_disconnect(ws) {
-        if (ws.deviceId) {
-            this.clients.delete(ws.deviceId);
+
+        try {
+            console.log(' ');
+            
+            this.arr_clients.delete(ws.deviceId);
             console.log(`--- REMOVED CLIENT --- ${ws.deviceId}`);
+            this.send_message('get_clients', this.getter_clients(), 'HOST_21', 'MAIN');
+            
+            
+            console.log(' ');
+        } catch (error) {
+            console.error(error);
         }
     }
 
@@ -87,9 +133,24 @@ class Repo_WS {
     getter_clients() {
         console.log('======== getter_clients() =======');
 
-        console.log(this.arr_clients);
-        return this.arr_clients;
+        let arr_tmp = [];
+        this.arr_clients.forEach((el) => {
+            if (el.deviceId != 'HOST_21') {
+                let newObj = {}
+
+                newObj['device_id'] = el.deviceId;
+
+                arr_tmp.push(newObj);
+            }
+        });
+
+        console.log(arr_tmp);
+        return arr_tmp;
+
     }
+
+
+
 }
 
 module.exports = new Repo_WS();

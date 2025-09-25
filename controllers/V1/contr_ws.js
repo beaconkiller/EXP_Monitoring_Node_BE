@@ -36,5 +36,29 @@ exports.get_ws_clients = (req, res) => {
     }
 }
 
+exports.test_cmd = (req, res) => {
+    console.log('\n =========== test_cmd ========= \n')
+
+
+    Repo_WS.send_message('get_storage', '102.321.323.12');
+
+
+    try {
+
+        res.json({
+            status: 200,
+            isSuccess: true,
+            message: 'test',
+            data: null,
+        })
+
+    } catch (error) {
+        console.log('\n ============= ERR ============= \n')
+        console.log(error)
+        console.log('\n ============= ERR ============= \n')
+        return error
+    }
+}
+
 
 
