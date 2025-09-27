@@ -45,15 +45,15 @@ class Repo_WS {
 
 
     handle_message(ws, data) {
-        console.log('======== handle_message() =========');
+        // console.log('======== handle_message() =========');
 
         let device_id = ws['deviceId'];
         let message = JSON.parse(data);
         let type = message['type'];
 
-        // console.log(device_id);
-        // console.log(message);
-        // console.log(type);
+        console.log(device_id);
+        console.log(message);
+        console.log(type);
 
         if (type == 'get_storage') {
             this.send_message('get_storage', 'get_storage', message['payload'], device_id,);
@@ -66,7 +66,7 @@ class Repo_WS {
 
 
     send_message(type, message, client, device_id) {
-        console.log('======== send_message() =========');
+        // console.log('========= send_message() ==========');
 
         // console.log(type);
         // console.log(message);
@@ -81,7 +81,7 @@ class Repo_WS {
             }
         } catch (error) {
             // console.error(error);
-            console.log('failed to send msg');
+            console.log('failed to send msg to ' + client);
         }
     }
 
@@ -116,12 +116,11 @@ class Repo_WS {
 
         try {
             console.log(' ');
-            
+
             this.arr_clients.delete(ws.deviceId);
             console.log(`--- REMOVED CLIENT --- ${ws.deviceId}`);
             this.send_message('get_clients', this.getter_clients(), 'HOST_21', 'MAIN');
-            
-            
+
             console.log(' ');
         } catch (error) {
             console.error(error);
