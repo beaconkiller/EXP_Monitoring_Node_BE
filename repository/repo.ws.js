@@ -51,9 +51,7 @@ class Repo_WS {
         let message = JSON.parse(data);
         let type = message['type'];
 
-        console.log(device_id);
-        console.log(message);
-        console.log(type);
+        // this.log_incoming_message(ws, data);
 
         if (type == 'get_storage') {
             this.send_message('get_storage', 'get_storage', message['payload'], device_id,);
@@ -61,6 +59,10 @@ class Repo_WS {
 
         if (type == 'give_storage') {
             this.send_message('give_storage', message['payload'], 'HOST_21', device_id,);
+        }
+
+        if (type == 'server_info') {
+            this.send_message('server_info', message['payload'], 'HOST_21', device_id,);
         }
     }
 
@@ -145,9 +147,22 @@ class Repo_WS {
 
         console.log(arr_tmp);
         return arr_tmp;
-
     }
 
+
+
+    log_incoming_message(ws, data) {
+        let device_id = ws['deviceId'];
+        let message = JSON.parse(data);
+        let type = message['type'];
+
+
+        console.log('=====================================')
+        console.log(`FROM :  ${device_id}`);
+        console.log(`TYPE :  ${type}`);
+        console.log(message);
+        console.log('=====================================')
+    }
 
 
 }
