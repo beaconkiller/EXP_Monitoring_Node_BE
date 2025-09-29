@@ -68,6 +68,19 @@ class Repo_WS {
         if (type == 'get_installed_db') {
             this.send_message('get_installed_db', 'get_installed_db', message['payload'], device_id,);
         }
+
+        if (type == 'give_installed_db') {
+            this.send_message('give_installed_db', message['payload'], 'HOST_21', device_id,);
+        }
+
+        if (type == 'get_status_active_postgree') {
+            this.send_message('get_status_active_postgree', 'get_status_active_postgree', message['payload'], device_id,);
+        }
+
+        if (type == 'give_status_active_postgree') {
+            this.send_message('give_status_active_postgree', message['payload'], 'HOST_21', device_id,);
+        }
+
     }
 
 
