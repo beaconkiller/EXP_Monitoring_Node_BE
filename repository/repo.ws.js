@@ -64,6 +64,10 @@ class Repo_WS {
         if (type == 'server_info') {
             this.send_message('server_info', message['payload'], 'HOST_21', device_id,);
         }
+
+        if (type == 'get_installed_db') {
+            this.send_message('get_installed_db', 'get_installed_db', message['payload'], device_id,);
+        }
     }
 
 

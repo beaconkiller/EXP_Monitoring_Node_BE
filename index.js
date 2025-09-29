@@ -51,8 +51,9 @@ async function startup() {
     // ===========================================
 
     // excel_inp.excel_read();
+};
 
-}
+
 
 async function shutdown(e) {
     try {
@@ -61,8 +62,8 @@ async function shutdown(e) {
         console.log('db_e_approve closed');
     } catch (error) {
         console.error(error);
-    }
-}
+    };
+};
 
 
 
@@ -71,7 +72,7 @@ async function setGlobalVariable() {
     global.base_dir = __dirname;
     global.dir_sitemap = path.join(__dirname, 'file_storage', 'file_sitemap');
     global.dir_controllers = path.join(__dirname, 'controllers');
-}
+};
 
 
 
