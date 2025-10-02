@@ -81,6 +81,22 @@ class Repo_WS {
             this.send_message('give_status_active_postgree', message['payload'], 'HOST_21', device_id, 'host');
         }
 
+        if (type == 'get_pm2_list') {
+            this.send_message('get_pm2_list', 'get_pm2_list', message['payload'], device_id);
+        }
+
+        if (type == 'give_pm2_list') {
+            this.send_message('give_pm2_list', message['payload'], 'HOST_21', device_id, 'host');
+        }
+
+        if (type == 'get_pm2_sudo_list') {
+            this.send_message('get_pm2_sudo_list', 'get_pm2_sudo_list', message['payload'], device_id);
+        }
+
+        if (type == 'give_pm2_sudo_list') {
+            this.send_message('give_pm2_sudo_list', message['payload'], 'HOST_21', device_id, 'host');
+        }
+
     }
 
 
