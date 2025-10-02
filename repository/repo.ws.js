@@ -58,11 +58,11 @@ class Repo_WS {
         }
 
         if (type == 'give_storage') {
-            this.send_message('give_storage', message['payload'], 'HOST_21', device_id,);
+            this.send_message('give_storage', message['payload'], 'HOST_21', device_id, 'host');
         }
 
         if (type == 'server_info') {
-            this.send_message('server_info', message['payload'], 'HOST_21', device_id,);
+            this.send_message('server_info', message['payload'], 'HOST_21', device_id, 'host');
         }
 
         if (type == 'get_installed_db') {
@@ -70,7 +70,7 @@ class Repo_WS {
         }
 
         if (type == 'give_installed_db') {
-            this.send_message('give_installed_db', message['payload'], 'HOST_21', device_id,);
+            this.send_message('give_installed_db', message['payload'], 'HOST_21', device_id, 'host');
         }
 
         if (type == 'get_status_active_postgree') {
@@ -78,18 +78,30 @@ class Repo_WS {
         }
 
         if (type == 'give_status_active_postgree') {
-            this.send_message('give_status_active_postgree', message['payload'], 'HOST_21', device_id,);
+            this.send_message('give_status_active_postgree', message['payload'], 'HOST_21', device_id, 'host');
         }
 
     }
 
 
-    send_message(type, message, client, device_id) {
+    send_message(type, message, client, device_id, device_type) {
         // console.log('========= send_message() ==========');
 
         // console.log(type);
         // console.log(message);
         // console.log(client);
+        // console.log(this.arr_clients);
+
+
+        if (device_type == 'host') {
+            this.arr_clients.forEach((el) => {
+                if (el['device_type'] == 'host') {
+                    el.send(JSON.stringify({ type: type, message: message, device_id: device_id }));
+                }
+            })
+            return;
+        }
+
 
         try {
             if (!client) {
@@ -100,7 +112,7 @@ class Repo_WS {
             }
         } catch (error) {
             // console.error(error);
-            console.log('failed to send msg to ' + client);
+            // console.log('failed to send msg to ' + client);
         }
     }
 
@@ -112,18 +124,21 @@ class Repo_WS {
 
             let type = message['type'];
             let deviceId = message['deviceId'];
+            let device_type = message['device_type'];
 
 
             if (type == 'register') {
                 console.log(' ');
                 console.log('----- NEW CLIENT CONNECTED -----');
                 console.log(deviceId);
+                console.log(device_type);
                 console.log(' ');
 
                 ws_data.deviceId = deviceId;
+                ws_data.device_type = device_type;
                 this.arr_clients.set(deviceId, ws_data);
 
-                this.send_message('get_clients', this.getter_clients(), 'HOST_21', deviceId);
+                this.send_message('get_clients', this.getter_clients(), 'HOST_21', deviceId, 'host');
             }
 
         };
@@ -153,7 +168,7 @@ class Repo_WS {
 
         let arr_tmp = [];
         this.arr_clients.forEach((el) => {
-            if (el.deviceId != 'HOST_21') {
+            if (el['device_type'] != 'host') {
                 let newObj = {}
 
                 newObj['device_id'] = el.deviceId;
