@@ -33,6 +33,8 @@ async function main() {
         return;
     }
 
+    console.log(args);
+
     try {
         baseDir = path.join(
             __dirname,  // JS_SCRIPTS FOLDER
