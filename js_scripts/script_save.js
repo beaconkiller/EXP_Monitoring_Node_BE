@@ -33,7 +33,7 @@ async function main() {
         return;
     }
 
-    console.log(args);
+    // console.log(args);
 
     try {
         baseDir = path.join(
