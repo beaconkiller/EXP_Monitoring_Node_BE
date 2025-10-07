@@ -56,16 +56,12 @@ async function main() {
                     resolve(stdout);
                 })
             })
-
+            
             console.log(_res);
-
         }
     } catch (error) {
         console.error(error);
     }
-
-
-
 };
 
 
