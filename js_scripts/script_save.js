@@ -44,7 +44,7 @@ async function main() {
             proj_dir = path.join(baseDir, el['path']);
             let cmd = ''
                 + 'cd ' + proj_dir+ ' && ' 
-                + 'git add . &&' 
+                + 'git add . && ' 
                 + 'git commit -m "quicksave : '+args+'" && '
                 + 'git push origin '+el['branch']
             ;
@@ -56,7 +56,7 @@ async function main() {
                     resolve(stdout);
                 })
             })
-            
+
             console.log(_res);
         }
     } catch (error) {
