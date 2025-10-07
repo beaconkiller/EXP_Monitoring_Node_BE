@@ -59,7 +59,7 @@ async function main() {
                 })
             })
 
-            console.log(_res);
+            // console.log(_res);
         }
     } catch (error) {
         console.error(error);
