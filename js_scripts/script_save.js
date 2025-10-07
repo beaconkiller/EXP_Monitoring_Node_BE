@@ -54,12 +54,12 @@ async function main() {
 
             let _res = await new Promise((resolve, reject) => {
                 exec(cmd, (err, stdout) => {
-                    if (err) reject(err);
+                    if (err) console.log(err);
                     resolve(stdout);
                 })
             })
 
-            // console.log(_res);
+            console.log(_res);
         }
     } catch (error) {
         console.error(error);
